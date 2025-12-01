@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aquí abajo es donde puedes usar @layer base */
+
+@layer base {
+
+  :root {
+
+    --background: 0 0% 100%;
+
+    --foreground: 222.2 84% 4.9%;
+
+    /* ... resto de tus variables ... */
+
+  }
+
+  body {
+
+    @apply bg-background text-foreground;
+
+  }
+
+}
+ 
