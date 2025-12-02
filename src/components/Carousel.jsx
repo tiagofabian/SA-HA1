@@ -21,16 +21,7 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-20"> {/* Cambiado a max-w-6xl para más ancho */}
-      {/* Título y subtítulo */}
-      {/* <div className="mb-12 text-center animate-fade-in">
-        <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-          {title}
-        </h2>
-        <p className="mx-auto max-w-2xl text-muted-foreground">
-          {subtitle}
-        </p>
-      </div> */}
+    <div className="w-full max-w-6xl mx-auto py-20"> 
 
       {/* Slider container */}
       <div className="relative overflow-hidden">

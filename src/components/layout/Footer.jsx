@@ -12,7 +12,7 @@ const Footer = () => {
             <h3 className="text-2xl font-bold">Hoseki Joyas</h3>
             <p className="text-sm text-primary-foreground/80">
               Joyería artesanal inspirada en anime y videojuegos. Calidad
-              premium para verdaderos fans.
+              para verdaderos fans.
             </p>
           </div>
 
