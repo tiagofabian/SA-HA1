@@ -55,19 +55,20 @@ const HeroSlider = () => {
             alt={slide.title}
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent" />
+          {/* Cambia el overlay a algo más oscuro */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-6 md:px-12">
               <div className="max-w-2xl animate-fade-in-up">
-                <h1 className="mb-4 text-4xl font-bold text-white md:text-6xl lg:text-7xl">
+                <h1 className="mb-4 text-4xl font-bold text-white md:text-6xl lg:text-7xl drop-shadow-lg">
                   {slide.title}
                 </h1>
-                <p className="mb-8 text-lg text-white/90 md:text-xl">
+                <p className="mb-8 text-lg text-white md:text-xl drop-shadow">
                   {slide.subtitle}
                 </p>
                 <Button
                   size="lg"
-                  className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-all hover:scale-105"
+                  className="bg-white text-black hover:bg-white/90 shadow-2xl transition-all hover:scale-105 px-8 py-6 text-lg font-bold rounded-full"
                 >
                   Explorar Colección
                 </Button>
