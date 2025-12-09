@@ -23,4 +23,54 @@
   }
 
 }
+
+/* Animaciones personalizadas */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Efectos hover para tarjetas de equipo */
+.bg-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #e9ecef;
+}
+
+.bg-card:hover {
+  border-color: #4f7e6b;
+  transform: translateY(-4px);
+}
+
+/* Gradientes con la paleta Hoseki */
+.from-primary\/20 {
+  --tw-gradient-from: rgba(48, 65, 49, 0.2);
+}
+
+.to-accent\/20 {
+  --tw-gradient-to: rgba(254, 107, 57, 0.2);
+}
  
