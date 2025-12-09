@@ -72,7 +72,7 @@ const ContactForm = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Teléfono</h3>
-                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                    <p className="text-muted-foreground">+569 80085 80085</p>
                   </div>
                 </div>
 
@@ -83,9 +83,9 @@ const ContactForm = () => {
                   <div>
                     <h3 className="font-semibold text-foreground">Dirección</h3>
                     <p className="text-muted-foreground">
-                      Calle de las Joyas 123
+                      Calle Perón Perales 123
                       <br />
-                      Ciudad, País 12345
+                      Pudahuel, Chile
                     </p>
                   </div>
                 </div>

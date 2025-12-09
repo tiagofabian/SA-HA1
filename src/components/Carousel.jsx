@@ -1,12 +1,16 @@
 import { useState } from "react";
 
-const Carousel = ({ products }) => {
+const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Descubre nuestras piezas más exclusivas" }) => {
   const [current, setCurrent] = useState(0);
 
-  const slides = [
-    products.slice(0, 6),
-    products.slice(6, 12),
-  ];
+  // CAMBIAR: De 3 a 4 productos por slide
+  const productsPerSlide = 4;
+  
+  // Crear slides dinámicamente basado en productsPerSlide
+  const slides = [];
+  for (let i = 0; i < products.length; i += productsPerSlide) {
+    slides.push(products.slice(i, i + productsPerSlide));
+  }
 
   const nextSlide = () => {
     setCurrent((prev) => (prev + 1) % slides.length);
@@ -17,7 +21,8 @@ const Carousel = ({ products }) => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto py-20"> 
+
       {/* Slider container */}
       <div className="relative overflow-hidden">
 
@@ -27,18 +32,21 @@ const Carousel = ({ products }) => {
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {slides.map((slide, index) => (
-            <div key={index} className="w-full flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-              {slide.map((product) => (
-                <div key={product.id} className="border rounded-xl shadow p-4 bg-white">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-full h-80 object-cover rounded-md"
-                  />
-                  <h3 className="mt-3 font-semibold text-lg">{product.title}</h3>
-                  <p className="text-gray-500">{product.price}</p>
-                </div>
-              ))}
+            <div key={index} className="w-full flex-shrink-0">
+              {/* CAMBIAR: grid-cols-4 en lugar de grid-cols-3 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
+                {slide.map((product) => (
+                  <div key={product.id} className="border rounded-xl shadow p-4 bg-white hover:shadow-lg transition-shadow">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-full h-64 object-cover rounded-md" /* Ajusté altura para 4 columnas */
+                    />
+                    <h3 className="mt-3 font-semibold text-lg line-clamp-1">{product.title}</h3>
+                    <p className="text-gray-500 font-medium">{product.price}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -46,26 +54,30 @@ const Carousel = ({ products }) => {
         {/* Buttons */}
         <button
           onClick={prevSlide}
-          className="absolute top-1/2 -translate-y-1/2 left-2 bg-black/60 text-white px-3 py-2 rounded-full"
+          className="absolute top-1/2 -translate-y-1/2 left-2 bg-black/70 hover:bg-black text-white px-4 py-3 rounded-full shadow-lg transition-colors"
         >
           ←
         </button>
         <button
           onClick={nextSlide}
-          className="absolute top-1/2 -translate-y-1/2 right-2 bg-black/60 text-white px-3 py-2 rounded-full"
+          className="absolute top-1/2 -translate-y-1/2 right-2 bg-black/70 hover:bg-black text-white px-4 py-3 rounded-full shadow-lg transition-colors"
         >
           →
         </button>
       </div>
 
       {/* Indicators */}
-      <div className="flex justify-center gap-2 mt-3">
+      <div className="flex justify-center gap-2 mt-6">
         {slides.map((_, i) => (
-          <div
+          <button
             key={i}
+            onClick={() => setCurrent(i)}
             className={`w-3 h-3 rounded-full transition-all ${
-              current === i ? "bg-black" : "bg-gray-400"
+              current === i 
+                ? "bg-black scale-125" 
+                : "bg-gray-300 hover:bg-gray-400"
             }`}
+            aria-label={`Ir a slide ${i + 1}`}
           />
         ))}
       </div>

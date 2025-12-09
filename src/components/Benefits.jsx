@@ -9,7 +9,7 @@ const benefits = [
   {
     icon: Truck,
     title: "Envío Gratis",
-    description: "Envíos gratuitos en compras superiores a $50",
+    description: "Envíos gratuitos en compras superiores a $75.000",
   },
   {
     icon: CreditCard,

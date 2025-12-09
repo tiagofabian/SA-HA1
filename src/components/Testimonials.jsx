@@ -20,10 +20,10 @@ const testimonials = [
   },
   {
     id: 3,
-    name: "Ana Martínez",
-    rating: 5,
+    name: "Guido Perez",
+    rating: 2,
     comment:
-      "Me encantan todas sus colecciones. Ya tengo varias piezas y siempre recibo cumplidos. Totalmente recomendado.",
+      "No tienen productos de Sailor Uranus y pesimo servicio post venta, solo ponen excusas y agravan su falta",
     date: "Hace 3 semanas",
   },
 ];
