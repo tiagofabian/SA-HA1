@@ -1,27 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
-import heroSlider1 from "./../assets/hero-slider-1.jpg";
-import heroSlider2 from "./../assets/hero-slider-2.jpg";
-import heroSlider3 from "./../assets/hero-slider-3.jpg";
-
-const slides = [
-  {
-    image: heroSlider1,
-    title: "Joyas Inspiradas en Anime",
-    subtitle: "Descubre nuestra colección exclusiva de piezas únicas",
-  },
-  {
-    image: heroSlider2,
-    title: "Elegancia Otaku",
-    subtitle: "Artesanía de alta calidad con diseños legendarios",
-  },
-  {
-    image: heroSlider3,
-    title: "Gaming en Oro y Plata",
-    subtitle: "Celebra tu pasión por los videojuegos con estilo",
-  },
-];
+import { slides } from "@/lib/hero-slider";
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -60,7 +40,7 @@ const HeroSlider = () => {
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-6 md:px-12">
               <div className="max-w-2xl animate-fade-in-up">
-                <h1 className="mb-4 text-4xl font-bold text-white md:text-6xl lg:text-7xl drop-shadow-lg">
+                <h1 className="google-font-title mb-4 text-4xl text-white md:text-6xl lg:text-[5rem] drop-shadow-lg">
                   {slide.title}
                 </h1>
                 <p className="mb-8 text-lg text-white md:text-xl drop-shadow">

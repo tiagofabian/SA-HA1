@@ -33,7 +33,7 @@ const Testimonials = () => {
     <section className="bg-muted py-20">
       <div className="container mx-auto px-6 md:px-12">
         <div className="mb-12 text-center animate-fade-in">
-          <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
+          <h2 className="google-font-title mb-4 text-3xl font-bold text-foreground md:text-4xl lg:text-7xl">
             Lo Que Dicen Nuestros Clientes
           </h2>
           <p className="mx-auto max-w-2xl text-muted-foreground">

@@ -73,4 +73,9 @@
 .to-accent\/20 {
   --tw-gradient-to: rgba(254, 107, 57, 0.2);
 }
+
+.google-font-title {
+  font-family: 'Tangerine';
+  font-weight: 900;
+}
  

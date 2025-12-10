@@ -27,7 +27,7 @@ const Benefits = () => {
   return (
     <section className="bg-muted py-16">
       <div className="container mx-auto px-6 md:px-12">
-        <h2 className="mb-12 text-center text-3xl font-bold text-foreground md:text-4xl animate-fade-in">
+        <h2 className="google-font-title mb-12 text-center text-3xl font-bold text-foreground md:text-4xl lg:text-7xl animate-fade-in">
           Beneficios
         </h2>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
