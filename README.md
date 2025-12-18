@@ -103,13 +103,13 @@ Contiene las vistas principales de la aplicación como la portada o páginas de 
 
 ## 🖼️ Capturas de pantalla 
 
-```md
+
 ### 🏠 Pantalla principal
 ![Home](src/assets/images/screenshot/home.jpg)
 
 ### 💍 Colecciones
 ![Detalle](src/assets/images/screenshot/colecciones.jpg)
-```
+
 
 
 ---
