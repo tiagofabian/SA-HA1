@@ -12,8 +12,8 @@ export const teamMembers = [
     role: "Fundador & Diseñador Principal",
     bio: "Apasionado del anime y joyería por más de 10 años. Creador de la visión Hoseki.",
     animeFav: "Naruto Shippuden",
-    github: "alexchen",
-    linkedin: "alexchen",
+    github: "tiagofabian",
+    linkedin: "tiago-fabian",
     photo: tiagoPhoto,  // ← AGREGAR FOTO
   },
   {
@@ -21,9 +21,9 @@ export const teamMembers = [
     name: "Francis Chavez",
     role: "Artista & Joyera",
     bio: "Especialista en técnicas tradicionales japonesas. Transforma conceptos en joyas.",
-    animeFav: "Sailor Moon",
-    github: "sakurat",
-    linkedin: "sakura-tanaka",
+    animeFav: "Rurouni Kenshin",
+    github: "Phransye",
+    linkedin: "francis-chavez-osses-287371393",
     photo: francisPhoto,  // ← AGREGAR FOTO
   },
   {
@@ -32,8 +32,8 @@ export const teamMembers = [
     role: "Desarrollador Full-Stack",
     bio: "Geek de corazón, asegura que la magia de Hoseki llegue a tu pantalla.",
     animeFav: "Neon Genesis Evangelion",
-    github: "marcord",
-    linkedin: "marco-rodriguez",
+    github: "DiegoAndresVF",
+    linkedin: "diego-villagran-fuentes/",
     photo: diegoPhoto,  // ← AGREGAR FOTO
   },
   {
@@ -42,8 +42,8 @@ export const teamMembers = [
     role: "Marketing & Comunidad",
     bio: "Conecta a los fans con piezas únicas que cuentan sus historias.",
     animeFav: "Demon Slayer",
-    github: "lunam",
-    linkedin: "luna-martinez",
+    github: "BelAlmendras",
+    linkedin: "belen-almendros-dev",
     photo: belenPhoto,  // ← AGREGAR FOTO
   },
   {
@@ -52,8 +52,8 @@ export const teamMembers = [
     role: "Especialista en Calidad",
     bio: "Garantiza que cada pieza cumpla con los más altos estándares de excelencia.",
     animeFav: "One Piece",
-    github: "kenjis",
-    linkedin: "kenji-sato",
+    github: "Elsilla",
+    linkedin: "",
     photo: brahimPhoto,  // ← AGREGAR FOTO
   },
   {
@@ -62,8 +62,8 @@ export const teamMembers = [
     role: "Diseñador UX/UI",
     bio: "Crea experiencias digitales tan elegantes como nuestras joyas físicas.",
     animeFav: "Jujutsu Kaisen",
-    github: "valcosta",
-    linkedin: "valeria-costa",
+    github: "sylarms23",
+    linkedin: "",
     photo: hectorPhoto,  // ← AGREGAR FOTO
   }
 ];
