@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,23 +7,55 @@ import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
 
+
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      toast.error("Por favor completa todos los campos");
-      return;
-    }
+  if (!formData.email || !formData.password) {
+    toast.error("Por favor completa todos los campos");
+    return;
+  }
 
-    toast.success("¡Inicio de sesión exitoso!");
-    setFormData({ email: "", password: "" });
-  };
+  // Obtener usuarios del localStorage
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+
+  // Buscar usuario
+  const userFound = users.find(
+    (user) =>
+      user.email === formData.email &&
+      user.password === formData.password
+  );
+
+  // Validar
+  if (!userFound) {
+    toast.error("Email o contraseña incorrectos");
+    return;
+  }
+
+  // Guardar sesión
+  localStorage.setItem(
+    "currentUser",
+    JSON.stringify({
+      name: userFound.name,
+      email: userFound.email,
+    })
+  );
+
+  toast.success(`¡Bienvenido/a ${userFound.name}! 💎`);
+
+  // Redirigir al inicio
+  navigate("/");
+
+  setFormData({ email: "", password: "" });
+};
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

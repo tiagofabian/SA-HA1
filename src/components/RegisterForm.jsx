@@ -24,6 +24,34 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+// 1️⃣ Obtener usuarios existentes
+const users = JSON.parse(localStorage.getItem("users")) || [];
+
+// 2️⃣ Verificar si el email ya está registrado
+const emailExists = users.some(
+  (user) => user.email === formData.email
+);
+
+if (emailExists) {
+  toast.error("Este email ya está registrado");
+  return;
+}
+
+// 3️⃣ Crear usuario para guardar
+const newUser = {
+  name: formData.name,
+  phone: formData.phone,
+  email: formData.email,
+  password: formData.password,
+  address: formData.address,
+  city: formData.city,
+  region: formData.region,
+  postalCode: formData.postalCode,
+};
+
+// 4️⃣ Guardar usuario
+users.push(newUser);
+localStorage.setItem("users", JSON.stringify(users));
 
     // Validaciones obligatorias
     if (!formData.name || !formData.email || !formData.password) {
