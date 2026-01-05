@@ -41,9 +41,15 @@ const Nav = () => {
             <Button variant="ghost" size="icon" aria-label="Buscar">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Usuario">
-              <User className="h-5 w-5" />
-            </Button>
+
+
+            <Link to="/login">
+              <Button variant="ghost" size="icon" aria-label="Usuario">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+
+
             <Button
               variant="default"
               size="icon"
@@ -84,11 +90,18 @@ const Nav = () => {
                   {link.name}
                 </Link>
               ))}
+
               <div className="flex gap-4 pt-4">
-                <Button variant="outline" size="sm" className="flex-1">
-                  <User className="mr-2 h-4 w-4" />
-                  Usuario
-                </Button>
+
+
+                <Link to="/login" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <User className="mr-2 h-4 w-4" />
+                    Usuario
+                  </Button>
+                </Link>
+
+
                 <Button
                   variant="default"
                   size="sm"
