@@ -30,8 +30,8 @@ const App = () => {
         <Route path="/contacto" element={<Contact />} />
         <Route path="/productos" element={<Products />} />
         <Route path="/crear-producto" element={<AdminProductos />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/acceder" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
 
         {/* Ruta para páginas no encontradas */}
         <Route path="*" element={<NotFound />} />

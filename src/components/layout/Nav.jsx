@@ -1,10 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, ShoppingCart, Search, User } from "lucide-react";
 import { Button } from "./../ui/button";
 
+import { useNavigate } from "react-router-dom";
+
+
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+ const [currentUser, setCurrentUser] = useState(null);
+const navigate = useNavigate();
+
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("currentUser");
+  if (storedUser) {
+    setCurrentUser(JSON.parse(storedUser));
+  }
+}, []);
+
+const handleLogout = () => {
+  localStorage.removeItem("currentUser");
+  setCurrentUser(null);
+  navigate("/");
+};
+
 
   const navLinks = [
     { name: "Inicio", href: "/" },
@@ -43,11 +63,28 @@ const Nav = () => {
             </Button>
 
 
-            <Link to="/login">
-              <Button variant="ghost" size="icon" aria-label="Usuario">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
+            {currentUser ? (
+  <div className="flex items-center gap-3">
+    <span className="google-font-text text-sm font-medium">
+      Hola, {currentUser.name}
+    </span>
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleLogout}
+      className="text-sm"
+    >
+      Cerrar sesión
+    </Button>
+  </div>
+) : (
+  <Link to="/login">
+    <Button variant="ghost" size="icon" aria-label="Usuario">
+      <User className="h-5 w-5" />
+    </Button>
+  </Link>
+)}
+
 
 
             <Button
