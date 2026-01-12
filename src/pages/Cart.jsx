@@ -4,7 +4,7 @@ import { useCart } from "../context/cartContext";
 import { Trash2, Plus, Minus } from "lucide-react";
 
 const Cart = () => {
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } =
+  const { cart, removeFromCart, addToCart, decreaseQuantity } =
     useCart();
 
   const totalPrice = cart.reduce(
@@ -69,7 +69,7 @@ const Cart = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => increaseQuantity(item.id)}
+                    onClick={() => addToCart(item)}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
