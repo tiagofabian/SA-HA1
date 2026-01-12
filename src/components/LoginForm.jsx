@@ -6,56 +6,53 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
-
+import { useUser } from "../context/userContext"; // <-- context reactivo
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useUser(); // <-- usamos el login del context
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.email || !formData.password) {
-    toast.error("Por favor completa todos los campos");
-    return;
-  }
+    if (!formData.email || !formData.password) {
+      toast.error("Por favor completa todos los campos");
+      return;
+    }
 
-  // Obtener usuarios del localStorage
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+    // Obtener usuarios del localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-  // Buscar usuario
-  const userFound = users.find(
-    (user) =>
-      user.email === formData.email &&
-      user.password === formData.password
-  );
+    // Buscar usuario
+    const userFound = users.find(
+      (user) =>
+        user.email === formData.email &&
+        user.password === formData.password
+    );
 
-  // Validar
-  if (!userFound) {
-    toast.error("Email o contraseña incorrectos");
-    return;
-  }
+    if (!userFound) {
+      toast.error("Email o contraseña incorrectos");
+      return;
+    }
 
-  // Guardar sesión
-  localStorage.setItem(
-    "currentUser",
-    JSON.stringify({
+    // Guardar sesión de forma reactiva
+    login({
       name: userFound.name,
       email: userFound.email,
-    })
-  );
+    });
 
-  toast.success(`¡Bienvenido/a ${userFound.name}! 💎`);
+    toast.success(`¡Bienvenido/a ${userFound.name}! 💎`);
 
-  // Redirigir al inicio
-  navigate("/");
+    // Redirigir al inicio
+    navigate("/");
 
-  setFormData({ email: "", password: "" });
-};
-
+    // Reset del formulario
+    setFormData({ email: "", password: "" });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -138,7 +135,7 @@ const LoginForm = () => {
               </form>
 
               {/* Divider */}
-              <div className="relative text-center">
+              <div className="relative text-center my-4">
                 <span className="bg-background px-4 text-sm text-muted-foreground">
                   o
                 </span>
@@ -160,10 +157,10 @@ const LoginForm = () => {
               </Button>
 
               {/* Register link */}
-              <p className="google-font-text text-center text-sm text-muted-foreground">
+              <p className="google-font-text text-center text-sm text-muted-foreground mt-4">
                 ¿No tienes cuenta?{" "}
                 <a
-                  href="/register"
+                  href="/registro"
                   className="font-semibold text-accent hover:underline"
                 >
                   Regístrate aquí
