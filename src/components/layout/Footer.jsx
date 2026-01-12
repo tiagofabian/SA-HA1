@@ -60,7 +60,7 @@ const Footer = () => {
             <h4 className="google-font-text text-[1rem] !font-semibold">Servicios</h4>
             <ul className="space-y-2 text-sm">
               <li className="google-font-text text-[0.85rem] text-primary-foreground/80">
-                Envío gratis +$50
+                Envío gratis +$75.000
               </li>
               <li className="google-font-text text-[0.85rem] text-primary-foreground/80">
                 Garantía de calidad

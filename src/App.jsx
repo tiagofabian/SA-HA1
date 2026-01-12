@@ -12,6 +12,7 @@ import Catalog from "./pages/Catalog";
 import AdminProductos from "./pages/AdminProductos";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Cart from "./pages/Cart";
 
 const App = () => {
   useEffect(() => {
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/crear-producto" element={<AdminProductos />} />
         <Route path="/acceder" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+        <Route path="carrito" element={<Cart />} />
 
         {/* Ruta para páginas no encontradas */}
         <Route path="*" element={<NotFound />} />
