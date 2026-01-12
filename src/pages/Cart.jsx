@@ -2,10 +2,13 @@ import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { useCart } from "../context/cartContext";
 import { Trash2, Plus, Minus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { cart, removeFromCart, addToCart, decreaseQuantity } =
     useCart();
+
+const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.precio * item.quantity,
@@ -100,9 +103,13 @@ const Cart = () => {
             </span>
           </div>
 
-          <Button className="w-full mt-6">
-            Finalizar compra
-          </Button>
+          <Button
+  className="w-full mt-6"
+  onClick={() => navigate("/checkout")}
+>
+  Finalizar compra
+</Button>
+  
         </div>
       </div>
     </div>

@@ -3,26 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, ShoppingCart, Search, User } from "lucide-react";
 import { Button } from "./../ui/button";
 import { useCart } from "./../../context/cartContext";
+import { useUser } from "./../../context/userContext";
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const navigate = useNavigate();
-
   const { cart } = useCart();
+  const { user, logout } = useUser();
+
+  const navigate = useNavigate();
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-    }
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    setCurrentUser(null);
+    logout();
     navigate("/");
   };
 
@@ -65,10 +58,10 @@ const Nav = () => {
               <Search className="h-5 w-5" />
             </Button>
 
-            {currentUser ? (
+            {user ? (
               <div className="flex items-center gap-3">
                 <span className="google-font-text text-sm font-medium">
-                  Hola, {currentUser.name}
+                  Hola, {user.name}
                 </span>
                 <Button
                   variant="ghost"
@@ -113,11 +106,7 @@ const Nav = () => {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Menu"
           >
-            {isMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
 
@@ -137,12 +126,23 @@ const Nav = () => {
               ))}
 
               <div className="flex gap-4 pt-4">
-                <Link to="/acceder" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <User className="mr-2 h-4 w-4" />
-                    Usuario
+                {user ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 w-full"
+                    onClick={handleLogout}
+                  >
+                    Hola, {user.name}
                   </Button>
-                </Link>
+                ) : (
+                  <Link to="/acceder" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <User className="mr-2 h-4 w-4" />
+                      Usuario
+                    </Button>
+                  </Link>
+                )}
 
                 {/* Mobile Cart */}
                 <Link to="/carrito" className="flex-1">
