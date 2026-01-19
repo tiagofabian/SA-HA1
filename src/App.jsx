@@ -10,6 +10,12 @@ import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import Catalog from "./pages/Catalog";
 import AdminProductos from "./pages/AdminProductos";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Cart from "./pages/Cart";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import Checkout from "./pages/Checkout";
+
 
 const App = () => {
   useEffect(() => {
@@ -28,6 +34,16 @@ const App = () => {
         <Route path="/contacto" element={<Contact />} />
         <Route path="/productos" element={<Products />} />
         <Route path="/crear-producto" element={<AdminProductos />} />
+        <Route path="/acceder" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
+        <Route path="carrito" element={<Cart />} />
+
+<Route path="/checkout" element={
+  <ProtectedRoute>
+    <Checkout />
+  </ProtectedRoute>
+  }/>
+
 
         {/* Ruta para páginas no encontradas */}
         <Route path="*" element={<NotFound />} />
