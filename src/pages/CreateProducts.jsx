@@ -8,7 +8,7 @@ import { CATEGORY_ID_RULES } from '@/lib/helpers';
 
 const STORAGE_KEY = 'products';
 
-const AdminProductos = () => {
+const CreateProducts = () => {
   const [productos, setProductos] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -230,4 +230,4 @@ const AdminProductos = () => {
   );
 };
 
-export default AdminProductos;
+export default CreateProducts;
