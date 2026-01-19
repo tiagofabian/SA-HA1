@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { CATEGORY_ID_RULES } from '@/lib/helpers';
+// import { CATEGORY_ID_RULES } from '@/lib/helpers';
 import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
-const CATEGORIES = Object.keys(CATEGORY_ID_RULES);
+const CATEGORY_STORAGE_KEY = 'categories';
 
 const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
   const isEditing = Boolean(initialData);
 
-  const [formData, setFormData] = useState({
+  const [product, setProduct] = useState({
     nombre: '',
     precio: '',
     categoria: '',
     descripcion: '',
     imagen: '',
   });
+  const [categories, setCategories] = useState([]);
 
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    const storedCategories = localStorage.getItem(CATEGORY_STORAGE_KEY);
+    if (storedCategories) {
+      setCategories(JSON.parse(storedCategories));
+    }
+
     if (initialData) {
-      setFormData({
+      setProduct({
         nombre: initialData.nombre || '',
         precio: initialData.precio || '',
         categoria: initialData.categoria || '',
@@ -33,7 +39,7 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    setFormData(prev => ({
+    setProduct(prev => ({
       ...prev,
       [name]: files ? files[0] : value,
     }));
@@ -43,10 +49,10 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
     e.preventDefault();
 
     const newErrors = {};
-    if (!formData.nombre.trim()) newErrors.nombre = 'Nombre requerido';
-    if (!formData.descripcion.trim()) newErrors.descripcion = 'Descripción requerida';
-    if (!formData.categoria.trim()) newErrors.categoria = 'Categoría requerida';
-    if (!formData.precio || Number(formData.precio) <= 0)
+    if (!product.nombre.trim()) newErrors.nombre = 'Nombre requerido';
+    if (!product.descripcion.trim()) newErrors.descripcion = 'Descripción requerida';
+    if (!product.categoria.trim()) newErrors.categoria = 'Categoría requerida';
+    if (!product.precio || Number(product.precio) <= 0)
       newErrors.precio = 'Precio válido requerido';
 
     if (Object.keys(newErrors).length > 0) {
@@ -54,10 +60,10 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
       return;
     }
 
-    if (!formData.imagen)
+    if (!product.imagen)
     newErrors.imagen = 'Imagen requerida';
 
-    onSubmit(formData);
+    onSubmit(product);
   };
 
   return (
@@ -70,7 +76,7 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
             <input
               type="text"
               name="nombre"
-              value={formData.nombre}
+              value={product.nombre}
               onChange={handleChange}
               className="sm:w-[80%] w-full border px-3 py-2 rounded"
               placeholder="Nombre"
@@ -86,7 +92,7 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
             <input
               type="number"
               name="precio"
-              value={formData.precio}
+              value={product.precio}
               onChange={handleChange}
               className="sm:w-[80%] w-full border px-3 py-2 rounded"
               placeholder="Precio"
@@ -101,16 +107,16 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
             <label className="block text-sm font-medium mb-1">Categoría</label>
             <select
               name="categoria"
-              value={formData.categoria}
+              value={product.categoria}
               onChange={handleChange}
               disabled={isEditing}
               className="sm:w-[80%] w-full border px-3 py-2 rounded bg-white disabled:bg-gray-100"
             >
               <option value="">Selecciona una categoría</option>
 
-              {CATEGORIES.map((categoria) => (
-                <option key={categoria} value={categoria}>
-                  {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+              {categories.map((categorie) => (
+                <option key={categorie.id} value={categorie.nombre}>
+                  {categorie.nombre}
                 </option>
               ))}
             </select>
@@ -129,7 +135,7 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
             <label className="block text-sm font-medium mb-1">Descripción</label>
             <textarea
               name="descripcion"
-              value={formData.descripcion}
+              value={product.descripcion}
               onChange={handleChange}
               className="sm:w-[80%] w-full border px-3 py-2 rounded resize-none"
               rows={3}
@@ -155,7 +161,7 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
             maxLocalFileSizeBytes={2_000_000} // 2MB
             sourceList="local, camera"
             onFileUploadSuccess={(file) => {
-              setFormData(prev => ({
+              setProduct(prev => ({
                 ...prev,
                 imagen: file.cdnUrl, // 👈 URL pública
               }));
@@ -164,9 +170,9 @@ const ProductForm = ({ initialData = null, onSubmit, onCancel }) => {
           {errors.imagen && (
             <p className="text-sm text-red-500 mt-1">{errors.imagen}</p>
           )}
-          {formData.imagen && (
+          {product.imagen && (
             <img
-              src={formData.imagen}
+              src={product.imagen}
               alt="preview"
               className="mt-3 w-32 h-32 object-cover rounded"
             />
