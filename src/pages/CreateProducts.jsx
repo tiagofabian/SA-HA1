@@ -6,6 +6,10 @@ import initialProducts from '../data/products.json';
 import Modal from '@/components/reuse/Modal';
 import { CATEGORY_ID_RULES } from '@/lib/helpers';
 
+// metodos http
+import { fetchAllProducts } from "../services/product.service"
+import { saveProduct } from "../services/product.service"
+
 const STORAGE_KEY = 'products';
 
 const CreateProducts = () => {
@@ -24,24 +28,12 @@ const CreateProducts = () => {
     }
   }, []);
 
-  // ID por categoría
-  const generateProductId = (categoria, productos) => {
-    const baseId = CATEGORY_ID_RULES[categoria.toLowerCase()];
-    if (!baseId) throw new Error('Categoría inválida');
-
-    const ids = productos
-      .filter(p => p.categoria.toLowerCase() === categoria.toLowerCase())
-      .map(p => p.id);
-
-    return ids.length ? Math.max(...ids) + 1 : baseId;
-  };
-
   // Validaciones
   const validateProduct = (product) => {
     if (!product.nombre?.trim()) return 'El nombre es obligatorio';
     if (!product.categoria) return 'La categoría es obligatoria';
-    if (!CATEGORY_ID_RULES[product.categoria.toLowerCase()])
-      return 'Categoría no válida';
+    if (!product.categoria || product.categoria <= 0)
+    return "La categoría es obligatoria";
     if (!product.precio || Number(product.precio) <= 0)
       return 'El precio debe ser mayor a 0';
 
@@ -49,34 +41,34 @@ const CreateProducts = () => {
   };
 
   // Crear
-  const handleCreateProduct = (productData) => {
-    const error = validateProduct(productData);
-    if (error) {
-      toast.error(error);
-      return;
-    }
+  const handleCreateProduct = async (productData) => {
+  const error = validateProduct(productData);
+  if (error) {
+    toast.error(error);
+    return;
+  }
 
-    const nuevoProducto = {
-      ...productData,
-      id: generateProductId(productData.categoria, productos),
-      precio: Number(productData.precio),
-      imagen:
-        typeof productData.imagen === 'string'
-          ? productData.imagen
-          : productData.imagen?.name || '',
-    };
+  const nuevoProducto = {
+    name: productData.nombre,          // ✅ CORRECTO
+    categoryId: productData.categoria, // ✅ NUMBER
+    price: Number(productData.precio),
+  };
 
-    const updated = [nuevoProducto, ...productos];
-    setProductos(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  console.log("PRODUCTO A ENVIAR:", nuevoProducto);
 
-    console.log("ID agregado: ", generateProductId(productData.categoria, productos))
+  try {
+    const createdProduct = await saveProduct(nuevoProducto);
 
+    setProductos((prev) => [createdProduct, ...prev]);
+
+    toast.success("Producto creado correctamente");
     setShowForm(false);
     setEditingProduct(null);
+  } catch (err) {
+    toast.error(err.message || "Error al crear producto");
+  }
+};
 
-    toast.success('Producto creado correctamente');
-  };
 
   // Editar
   const handleEditProduct = (productData) => {
