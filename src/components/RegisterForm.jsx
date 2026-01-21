@@ -72,6 +72,7 @@ const Register = () => {
     // users.push(newUser);
     
     register(newUser)
+    // nnew comment
     // localStorage.setItem("users", JSON.stringify(users));
 
     // // Generar JSON
