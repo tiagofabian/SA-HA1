@@ -28,33 +28,3 @@ export const register = async (newUser) => {
 
   return data;
 };
-
-// /**
-//  * LOGOUT
-//  */
-// export const logoutService = () => {
-//   authToken = null;
-// };
-
-// /**
-//  * GET TOKEN (memoria)
-//  */
-// export const getToken = () => {
-//   return authToken;
-// };
-
-// /**
-//  * AUTH HEADER
-//  */
-// export const getAuthHeader = () => {
-//   return authToken
-//     ? { Authorization: `Bearer ${authToken}` }
-//     : {};
-// };
-
-// /**
-//  * IS AUTHENTICATED
-//  */
-// export const isAuthenticated = () => {
-//   return Boolean(authToken);
-// };
