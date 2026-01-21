@@ -9,6 +9,7 @@ import CollectionsAlternate from "@/components/CollectionsAlternate";
 import FeaturedCollection from "@/components/FeaturedCollection"; // Importar nuevo componente
 
 const Home = () => {
+  console.log()
   return (
     <div className='container-home'>
       <HeroSlider/>

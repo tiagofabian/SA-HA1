@@ -6,17 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
-import { useUser } from "../context/userContext"; // <-- context reactivo
+
+// metodos http
+import { login } from "@/services/auth.service";
+import { fetchCustomerByEmail } from "@/services/customer.service";
+
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { login } = useUser(); // <-- usamos el login del context
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -24,34 +27,37 @@ const LoginForm = () => {
       return;
     }
 
-    // Obtener usuarios del localStorage
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      // 1️⃣ Resolver la promesa
+      // const userFound = await fetchCustomerByEmail(formData.email);
+      // console.log("userFound", userFound);
 
-    // Buscar usuario
-    const userFound = users.find(
-      (user) =>
-        user.email === formData.email &&
-        user.password === formData.password
-    );
+      // if (!userFound) {
+      //   toast.error("Email o contraseña incorrectos");
+      //   return;
+      // }
 
-    if (!userFound) {
-      toast.error("Email o contraseña incorrectos");
-      return;
+      // 2️⃣ Resolver login (también es async)
+      const authData = await login({
+        email: formData.email,
+        password: formData.password
+      });
+
+      console.log("login", authData);
+
+      toast.success(`¡Bienvenido/a ${userFound.name}! 💎`);
+
+      navigate("/");
+
+      setFormData({ email: "", password: "" });
+
+    } catch (error) {
+      if (error.message.includes("404")) {
+        toast.error("Email o contraseña incorrectos");
+      } else {
+        toast.error("Error del servidor");
+      }
     }
-
-    // Guardar sesión de forma reactiva
-    login({
-      name: userFound.name,
-      email: userFound.email,
-    });
-
-    toast.success(`¡Bienvenido/a ${userFound.name}! 💎`);
-
-    // Redirigir al inicio
-    navigate("/");
-
-    // Reset del formulario
-    setFormData({ email: "", password: "" });
   };
 
   const handleChange = (e) => {

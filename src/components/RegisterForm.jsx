@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { UserPlus } from "lucide-react";
+import { register } from "../services/auth.service";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -59,15 +60,20 @@ const Register = () => {
       phone: formData.phone,
       email: formData.email,
       password: formData.password,
-      address: formData.address,
-      city: formData.city,
-      region: formData.region,
-      postalCode: formData.postalCode,
+      // address: formData.address,
+      // city: formData.city,
+      // region: formData.region,
+      // postalCode: formData.postalCode,
     };
 
+
     // 4️⃣ Guardar usuario
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
+    console.log("aquiiiiii", newUser);
+    // users.push(newUser);
+    
+    register(newUser)
+    // nnew comment
+    // localStorage.setItem("users", JSON.stringify(users));
 
     // // Generar JSON
     // const userJSON = {
