@@ -8,8 +8,7 @@ import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 // metodos http
-import { login } from "@/services/auth.service";
-import { fetchCustomerByEmail } from "@/services/customer.service";
+import { login } from "../hooks/use-auth";
 
 
 const LoginForm = () => {
@@ -20,45 +19,35 @@ const LoginForm = () => {
   });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      toast.error("Por favor completa todos los campos");
+  if (!formData.email || !formData.password) {
+    toast.error("Por favor completa todos los campos");
+    return;
+  }
+
+  try {
+    // Llamada al hook useAuth
+    const { ok, user, message } = await login({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (!ok) {
+      toast.error(message || "Email o contraseña incorrectos");
       return;
     }
 
-    try {
-      // 1️⃣ Resolver la promesa
-      // const userFound = await fetchCustomerByEmail(formData.email);
-      // console.log("userFound", userFound);
+    toast.success(`¡Bienvenido/a ${user.name || user.username}! 💎`);
 
-      // if (!userFound) {
-      //   toast.error("Email o contraseña incorrectos");
-      //   return;
-      // }
+    navigate("/"); // redirigir al home
 
-      // 2️⃣ Resolver login (también es async)
-      const authData = await login({
-        email: formData.email,
-        password: formData.password
-      });
-
-      console.log("login", authData);
-
-      toast.success(`¡Bienvenido/a ${userFound.name}! 💎`);
-
-      navigate("/");
-
-      setFormData({ email: "", password: "" });
-
-    } catch (error) {
-      if (error.message.includes("404")) {
-        toast.error("Email o contraseña incorrectos");
-      } else {
-        toast.error("Error del servidor");
-      }
-    }
-  };
+    setFormData({ email: "", password: "" });
+  } catch (error) {
+    console.error(error);
+    toast.error("Error del servidor");
+  }
+};
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

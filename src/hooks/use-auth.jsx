@@ -1,53 +1,36 @@
-// src/modules/auth/hook/useAuth.jsx
-import { useEffect, useState } from 'react';
-import { users as seedUsers } from '../utils/dummyData.js';
-
-const USERS_KEY = 'auth_users';
-const AUTH_KEY = 'auth_user';
-
-function readUsers() {
-  const raw = localStorage.getItem(USERS_KEY);
-  if (raw) return JSON.parse(raw);
-  localStorage.setItem(USERS_KEY, JSON.stringify(seedUsers));
-  return seedUsers;
-}
+import { useState } from "react";
+import { login as loginService, register as registerService } from "@/services/auth.service";
 
 export function useAuth() {
   const [user, setUser] = useState(() => {
-    const raw = sessionStorage.getItem(AUTH_KEY);
+    const raw = sessionStorage.getItem("auth_user");
     return raw ? JSON.parse(raw) : null;
   });
 
-  useEffect(() => {
-    readUsers(); // asegura semilla
-  }, []);
-
-  const login = (username, password) => {
-    const db = readUsers();
-    const found = db.find(u => u.username === username && u.password === password);
-    if (found) {
-      sessionStorage.setItem(AUTH_KEY, JSON.stringify(found));
-      setUser(found);
-      return { ok: true, user: found };
+  const login = async (email, password) => {
+    try {
+      const data = await loginService({ email, password });
+      sessionStorage.setItem("auth_user", JSON.stringify(data.user));
+      setUser(data.user);
+      return { ok: true, user: data.user };
+    } catch (err) {
+      return { ok: false, message: err.message };
     }
-    return { ok: false, message: 'Usuario o contraseña inválidos.' };
   };
 
-  const register = (username, password) => {
-    const db = readUsers();
-    const exists = db.some(u => u.username.toLowerCase() === username.toLowerCase());
-    if (exists) return { ok: false, message: 'El usuario ya existe.' };
-
-    const newUser = { id: Date.now(), username, password };
-    const updated = [...db, newUser];
-    localStorage.setItem(USERS_KEY, JSON.stringify(updated));
-    sessionStorage.setItem(AUTH_KEY, JSON.stringify(newUser));
-    setUser(newUser);
-    return { ok: true, user: newUser };
+  const register = async (newUser) => {
+    try {
+      const data = await registerService(newUser);
+      sessionStorage.setItem("auth_user", JSON.stringify(data.user));
+      setUser(data.user);
+      return { ok: true, user: data.user };
+    } catch (err) {
+      return { ok: false, message: err.message };
+    }
   };
 
   const logout = () => {
-    sessionStorage.removeItem(AUTH_KEY);
+    sessionStorage.removeItem("auth_user");
     setUser(null);
   };
 
