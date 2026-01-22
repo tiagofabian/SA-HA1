@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
-const ProductForm = ({ initialData = null, categories,collections, onSubmit, onCancel }) => {
+const ProductForm = ({ initialData = null, categories, collections, onSubmit, onCancel }) => {
   const isEditing = Boolean(initialData);
 
   const [product, setProduct] = useState({
@@ -26,12 +26,16 @@ const ProductForm = ({ initialData = null, categories,collections, onSubmit, onC
         precio: initialData.price ?? "",
         categoria: initialData.id_category ?? 0,
         descripcion: initialData.description ?? "",
-        imageUrl: initialData.imageUrl ?? "", // ← adaptado
-        coleccion: initialData.id_collection ?? 0, // 👈 NUEVO
+        imageUrl: initialData.imageUrl ?? "",
+        coleccion:
+          initialData.id_collection ??
+          initialData.collection?.id_collection ??
+          0,
         stock: initialData.stock ?? "",
       });
     }
   }, [initialData]);
+
 
   /* =========================
      CAMBIOS DE INPUT
@@ -103,7 +107,7 @@ const ProductForm = ({ initialData = null, categories,collections, onSubmit, onC
       />
       {errors.stock && <p className="text-red-500 text-sm">{errors.stock}</p>}
 
-      {/* Categoría */} 
+      {/* Categoría */}
       <select
         name="categoria"
         value={product.categoria}
@@ -117,11 +121,11 @@ const ProductForm = ({ initialData = null, categories,collections, onSubmit, onC
           </option>
         ))}
       </select>
-      
-      {/* Colección */} 
+
+      {/* Colección */}
       <select
         name="coleccion"
-        value={product.coleccion} 
+        value={product.coleccion}
         onChange={handleChange}
         className="border p-2 rounded w-full"
       >
