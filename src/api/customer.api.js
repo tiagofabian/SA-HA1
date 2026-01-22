@@ -1,4 +1,5 @@
 import { API_URL } from "../config/env";
+import { getAuthToken } from "@/lib/helpers";
 
 // Obtener por ID
 export const getCustomerById = async (id) => {
@@ -15,7 +16,7 @@ export const getCustomerById = async (id) => {
 
 // Obtener por Email
 export const getCustomerByEmail = async (email) => {
-  const response = await fetch(`${API_URL}/api/customer/${encodeURIComponent(email)}`, {
+  const response = await fetch(`${API_URL}/api/customer/email/${encodeURIComponent(email)}`, {
     method: "GET",
   });
 
@@ -59,6 +60,9 @@ export const getAllCustomers = async () => {
 
 // Actualizar usuario
 export const updateCustomer = async (id, customer) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/customer/${id}`, {
     method: "PUT",
     headers: {
@@ -77,6 +81,9 @@ export const updateCustomer = async (id, customer) => {
 
 // Eliminar usuario
 export const removeCustomer = async (id) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/customer/${id}`, {
     method: "DELETE",
     headers: {

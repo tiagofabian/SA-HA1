@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { UserPlus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { saveAddress } from "@/services/address.service"
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -46,25 +47,29 @@ const Register = () => {
       return;
     }
 
-    // Crear objeto de nuevo usuario
-    const newUser = {
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      password: formData.password,
-      // address: formData.address,
-      // city: formData.city,
-      // region: formData.region,
-      // postalCode: formData.postalCode,
-    };
-
     try {
-      // Llamada al hook useAuth
-      const { ok, user, message } = await register(newUser); // register viene de useAuth
+      // 1️⃣ Registrar usuario
+      const { ok, user, message } = await register({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        password: formData.password,
+      });
 
       if (!ok) {
         toast.error(message || "Error al registrar el usuario");
         return;
+      }
+
+      // 2️⃣ Guardar dirección solo si hay al menos un campo completado
+      if (formData.address || formData.city || formData.region || formData.postalCode) {
+        await saveAddress({
+          address: formData.address || "",
+          city: formData.city || "",
+          region: formData.region || "",
+          zip_code: formData.postalCode || "",
+          id_customer: user.id,
+        });
       }
 
       toast.success(`¡Registro exitoso! Bienvenido/a ${user.name || user.email}`);
@@ -81,9 +86,8 @@ const Register = () => {
         postalCode: "",
       });
 
-      // Redirigir al login o home si quieres
+      // Redirigir al home o login
       navigate("/");
-
     } catch (error) {
       console.error("Error en registro:", error);
       toast.error("Error del servidor, inténtalo más tarde");

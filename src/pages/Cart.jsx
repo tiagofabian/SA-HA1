@@ -11,7 +11,7 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
-    (acc, item) => acc + item.precio * item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
@@ -36,24 +36,18 @@ const Cart = () => {
         {/* Productos */}
         <div className="md:col-span-2 space-y-6">
           {cart.map((item) => (
-            <div
-              //key={item.id}
-              key={item.id_product} // 👈 NUEVO
-              className="flex gap-4 border rounded-lg p-4 shadow-sm"
-            >
+            <div key={item.id_product} className="flex gap-4 border rounded-lg p-4 shadow-sm">
+              {/* Imagen */}
               <img
-                src={item.imageSrc}
-                alt={item.nombre}
+                src={item.imageSrc || "/placeholder.png"} // si no hay imagen
+                alt={item.product_name}
                 className="w-24 h-24 object-cover rounded"
               />
 
               <div className="flex-1">
-                <h3 className="font-semibold text-lg">
-                  {item.nombre}
-                </h3>
-
+                <h3 className="font-semibold text-lg">{item.product_name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  ${item.precio.toLocaleString("es-CL")}
+                  ${item.price.toLocaleString("es-CL")}
                 </p>
 
                 {/* Cantidad */}
@@ -61,14 +55,12 @@ const Cart = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => decreaseQuantity(item.id_product)} // 👈 Modificado
+                    onClick={() => decreaseQuantity(item.id_product)}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
 
-                  <span className="w-8 text-center">
-                    {item.quantity}
-                  </span>
+                  <span className="w-8 text-center">{item.quantity}</span>
 
                   <Button
                     variant="outline"
@@ -84,13 +76,14 @@ const Cart = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => removeFromCart(item.id_product)} // 👈 Modificado
+                onClick={() => removeFromCart(item.id_product)}
                 aria-label="Eliminar producto"
               >
                 <Trash2 className="h-5 w-5 text-red-500" />
               </Button>
             </div>
           ))}
+
         </div>
 
         {/* Resumen */}
@@ -110,7 +103,6 @@ const Cart = () => {
           >
             Finalizar compra
           </Button>
-
         </div>
       </div>
     </div>
