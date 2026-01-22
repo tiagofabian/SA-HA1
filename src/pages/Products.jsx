@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; // 🔹 importar Link
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { fetchAllProducts } from "@/services/product.service";
 
 const Products = () => {
