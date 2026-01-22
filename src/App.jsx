@@ -17,6 +17,8 @@ import Cart from "./pages/Cart";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Checkout from "./pages/Checkout";
 import ProductDescription from "./pages/ProductDescription";
+import CollectionCreate from "./pages/CollectionCreate";
+
 
 
 const App = () => {
@@ -38,6 +40,7 @@ const App = () => {
         <Route path="/productos/:id" element={<ProductDescription />} />
         <Route path="/crear-producto" element={<ProductCreate />} />
         <Route path="/crear-categoria" element={<CategoryCreate />} />
+        <Route path="/crear-coleccion" element={<CollectionCreate />} />
         <Route path="/iniciar-sesion" element={<Login />} />
         <Route path="/registro" element={<Register />} />
         <Route path="carrito" element={<Cart />} />

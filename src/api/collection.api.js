@@ -1,4 +1,5 @@
 import { API_URL } from "../config/env";
+import { getAuthToken } from "@/lib/helpers";
 
 export const getCollectionById = async (id) => {
   const response = await fetch(`${API_URL}/api/collection/${id}`, {
@@ -6,7 +7,7 @@ export const getCollectionById = async (id) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Error al obtener la coleccion (${response.status})`);
+    throw new Error(`Error al obtener la collección (${response.status})`);
   }
 
   return response.json();
@@ -18,14 +19,17 @@ export const getAllCollections = async () => {
   });
 
   if (!response.ok) {
-    throw new Error("Error al listar las colecciones");
+    throw new Error("Error al listar las collecciónes");
   }
 
   return response.json();
 };
 
 export const createCollection = async (collection) => {
-  const response = await fetch(`${API_URL}/api/collection`, {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
+  const response = await fetch(`${API_URL}/api/collection/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,13 +39,16 @@ export const createCollection = async (collection) => {
   });
 
   if (!response.ok) {
-    throw new Error("Error al crear la coleccion");
+    throw new Error("Error al crear la collección");
   }
 
   return response.json();
 };
 
 export const updateCollection = async (id, collection) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/collection/${id}`, {
     method: "PUT",
     headers: {
@@ -52,13 +59,16 @@ export const updateCollection = async (id, collection) => {
   });
 
   if (!response.ok) {
-    throw new Error("Error al actualizar la coleccion");
+    throw new Error("Error al actualizar la collección");
   }
 
   return response.json();
 };
 
 export const removeCollection = async (id) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/collection/${id}`, {
     method: "DELETE",
     headers: {
@@ -68,7 +78,7 @@ export const removeCollection = async (id) => {
   });
 
   if (!response.ok) {
-    throw new Error("Error al eliminar la coleccion");
+    throw new Error("Error al eliminar la collección");
   }
 
   return true;

@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
-const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => {
+const ProductForm = ({ initialData = null, categories,collections, onSubmit, onCancel }) => {
   const isEditing = Boolean(initialData);
 
   const [product, setProduct] = useState({
     nombre: "",
     precio: "",
     categoria: 0,
+    coleccion: 0,   // 👈 NUEVO
     descripcion: "",
     imageUrl: "", // ← aquí usamos imageUrl
     stock: "",
@@ -26,6 +27,7 @@ const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => 
         categoria: initialData.id_category ?? 0,
         descripcion: initialData.description ?? "",
         imageUrl: initialData.imageUrl ?? "", // ← adaptado
+        coleccion: initialData.id_collection ?? 0, // 👈 NUEVO
         stock: initialData.stock ?? "",
       });
     }
@@ -38,8 +40,8 @@ const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => 
     const { name, value } = e.target;
     setProduct((prev) => ({
       ...prev,
-      [name]: name === "categoria" ? Number(value) : value,
-    }));
+      [name]: name === "categoria" || name === "coleccion" ? Number(value) : value,
+    }));  // 👈 NUEVO
   };
 
   /* =========================
@@ -55,6 +57,7 @@ const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => 
     if (!product.precio || Number(product.precio) <= 0) newErrors.precio = "Precio válido requerido";
     if (product.stock !== "" && Number(product.stock) < 0) newErrors.stock = "El stock no puede ser negativo";
     if (!product.imageUrl.trim()) newErrors.imageUrl = "Imagen requerida"; // validación de imageUrl
+    if (!product.coleccion || Number(product.coleccion) <= 0) newErrors.coleccion = "Colección requerida"; // 👈 NUEVO
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -100,7 +103,7 @@ const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => 
       />
       {errors.stock && <p className="text-red-500 text-sm">{errors.stock}</p>}
 
-      {/* Categoría */}
+      {/* Categoría */} 
       <select
         name="categoria"
         value={product.categoria}
@@ -114,6 +117,23 @@ const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => 
           </option>
         ))}
       </select>
+      
+      {/* Colección */} 
+      <select
+        name="coleccion"
+        value={product.coleccion} 
+        onChange={handleChange}
+        className="border p-2 rounded w-full"
+      >
+        <option value={0}>Selecciona una colección</option>
+        {collections?.map((col) => (
+          <option key={col.id_collection} value={col.id_collection}>
+            {col.collection_name}
+          </option>
+        ))}
+      </select>
+
+
 
       {/* Descripción */}
       <textarea
@@ -128,7 +148,7 @@ const ProductForm = ({ initialData = null, categories, onSubmit, onCancel }) => 
       {/* Imagen */}
       <FileUploaderRegular
         pubkey={import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY}
-        multiple={false}
+        multiple={true}
         imgOnly
         onFileUploadSuccess={(file) =>
           setProduct((prev) => ({
