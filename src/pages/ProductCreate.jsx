@@ -126,7 +126,22 @@ const ProductCreate = () => {
       const updated = await editProduct(editingProduct.id_product, payload);
 
       setProductos((prev) =>
-        prev.map((p) => (p.id_product === editingProduct.id_product ? updated : p))
+        prev.map((p) => {
+          if (p.id_product === editingProduct.id_product) {
+            return {
+              ...p,
+              ...updated,
+              product_name: payload.product_name,
+              description: payload.description,
+              price: payload.price,
+              stock: payload.stock,
+              id_category: payload.id_category,
+              id_collection: payload.id_collection,
+              imageUrl: payload.imageUrl,
+            };
+          }
+          return p;
+        })
       );
 
       toast.success("Producto actualizado");
