@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./main.css";
-import { CartProvider } from "./context/CartContext";
+import { CartProvider } from "./context/cartContext";
 import { AuthProvider } from "@/context/AuthContext";
 
 const container = document.getElementById("root");
