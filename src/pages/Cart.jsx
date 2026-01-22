@@ -11,9 +11,10 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + Number(item.precio || 0) * item.quantity,
     0
   );
+
 
   if (cart.length === 0) {
     return (
@@ -47,7 +48,7 @@ const Cart = () => {
               <div className="flex-1">
                 <h3 className="font-semibold text-lg">{item.product_name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  ${item.price.toLocaleString("es-CL")}
+                  ${Number(item.precio || 0).toLocaleString("es-CL")}
                 </p>
 
                 {/* Cantidad */}
