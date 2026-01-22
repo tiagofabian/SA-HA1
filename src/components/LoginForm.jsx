@@ -6,48 +6,44 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { Mail, Lock, LogIn } from "lucide-react";
-
-// metodos http
-import { login } from "../hooks/use-auth";
+import { useAuth } from "../context/AuthContext";
 
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.email || !formData.password) {
-    toast.error("Por favor completa todos los campos");
-    return;
-  }
-
-  try {
-    // Llamada al hook useAuth
-    const { ok, user, message } = await login({
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (!ok) {
-      toast.error(message || "Email o contraseña incorrectos");
+    if (!formData.email || !formData.password) {
+      toast.error("Por favor completa todos los campos");
       return;
     }
 
-    toast.success(`¡Bienvenido/a ${user.name || user.username}! 💎`);
+    try {
+      // Llamada al hook useAuth
+      const { ok, user, message } = await login(formData);
 
-    navigate("/"); // redirigir al home
+      if (!ok) {
+        toast.error(message || "Email o contraseña incorrectos");
+        return;
+      }
 
-    setFormData({ email: "", password: "" });
-  } catch (error) {
-    console.error(error);
-    toast.error("Error del servidor");
-  }
-};
+      toast.success(`¡Bienvenido/a ${user.name}! `);
+
+      navigate("/");
+
+      setFormData({ email: "", password: "" });
+    } catch (error) {
+      console.error(error);
+      toast.error("Error del servidor");
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { UserPlus } from "lucide-react";
-import { register } from "../services/auth.service";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,23 +19,15 @@ const Register = () => {
     region: "",
     postalCode: "",
   });
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 1️⃣ Obtener usuarios existentes
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    // 2️⃣ Verificar si el email ya está registrado
-    const emailExists = users.some((user) => user.email === formData.email);
-
-    if (emailExists) {
-      toast.error("Este email ya está registrado");
-      return;
-    }
 
     // Validaciones obligatorias
     if (!formData.name || !formData.email || !formData.password) {
@@ -48,13 +41,12 @@ const Register = () => {
     }
 
     const phoneRegex = /^\+?\d{8,15}$/;
-
     if (formData.phone && !phoneRegex.test(formData.phone)) {
       toast.error("Teléfono inválido. Ej: +56912345678");
       return;
     }
 
-    // 3️⃣ Crear usuario para guardar
+    // Crear objeto de nuevo usuario
     const newUser = {
       name: formData.name,
       phone: formData.phone,
@@ -66,45 +58,36 @@ const Register = () => {
       // postalCode: formData.postalCode,
     };
 
+    try {
+      // Llamada al hook useAuth
+      const { ok, user, message } = await register(newUser); // register viene de useAuth
 
-    // 4️⃣ Guardar usuario
-    console.log("aquiiiiii", newUser);
-    // users.push(newUser);
-    
-    register(newUser)
-    // nnew comment
-    // localStorage.setItem("users", JSON.stringify(users));
+      if (!ok) {
+        toast.error(message || "Error al registrar el usuario");
+        return;
+      }
 
-    // // Generar JSON
-    // const userJSON = {
-    //   nombre: formData.name,
-    //   telefono: formData.phone,
-    //   email: formData.email,
-    //   contrasenia: formData.password,
-    //   direccionEnvio: formData.address
-    //     ? {
-    //         direccion: formData.address,
-    //         ciudad: formData.city,
-    //         region: formData.region,
-    //         codigoPostal: formData.postalCode,
-    //       }
-    //     : null,
-    // };
+      toast.success(`¡Registro exitoso! Bienvenido/a ${user.name || user.email}`);
 
-    console.log("Usuario registrado:", JSON.stringify(users));
+      // Limpiar formulario
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        password: "",
+        address: "",
+        city: "",
+        region: "",
+        postalCode: "",
+      });
 
-    toast.success("¡Registro exitoso! Puedes iniciar sesión ahora");
+      // Redirigir al login o home si quieres
+      navigate("/");
 
-    setFormData({
-      name: "",
-      phone: "",
-      email: "",
-      password: "",
-      address: "",
-      city: "",
-      region: "",
-      postalCode: "",
-    });
+    } catch (error) {
+      console.error("Error en registro:", error);
+      toast.error("Error del servidor, inténtalo más tarde");
+    }
   };
 
   return (

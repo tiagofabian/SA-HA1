@@ -1,15 +1,34 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ShoppingCart, Search, User } from "lucide-react";
-import { Button } from "./../ui/button";
-import { useCart } from "./../../context/cartContext";
-import { useUser } from "./../../context/userContext";
+import {
+  Menu,
+  X,
+  ShoppingCart,
+  Search,
+  User,
+  LogIn,
+  UserPlus,
+  LogOut,
+  UserCircle,
+} from "lucide-react";
+
+import { Button } from "../ui/button";
+import { useCart } from "../../context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+
+// services
+import { fetchProductsByTerm } from "@/services/product.service";
+
+let searchTimeout; // para debounce
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { cart } = useCart();
-  const { user, logout } = useUser();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  const { cart } = useCart();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -18,6 +37,31 @@ const Nav = () => {
     logout();
     navigate("/");
   };
+
+  // =========================
+  // Búsqueda de productos
+  // =========================
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setProducts([]);
+      return;
+    }
+
+    // Debounce: esperar 500ms antes de hacer la petición
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      try {
+        const results = await fetchProductsByTerm(searchTerm);
+        setProducts(results);
+      } catch (err) {
+        console.error("Error buscando productos:", err);
+        setProducts([]);
+      }
+    }, 500);
+
+    // Limpiar timeout al desmontar
+    return () => clearTimeout(searchTimeout);
+  }, [searchTerm]);
 
   const navLinks = [
     { name: "Inicio", href: "/" },
@@ -39,13 +83,13 @@ const Nav = () => {
             />
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Links */}
           <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
-                className="google-font-text text-sm !font-medium text-foreground transition-colors hover:text-accent"
+                className="text-sm font-medium hover:text-accent"
               >
                 {link.name}
               </Link>
@@ -54,38 +98,106 @@ const Nav = () => {
 
           {/* Desktop Actions */}
           <div className="hidden items-center gap-4 md:flex">
-            <Button variant="ghost" size="icon" aria-label="Buscar">
-              <Search className="h-5 w-5" />
-            </Button>
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8 pr-2 py-1 border rounded w-64 focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+              {/* Dropdown de resultados */}
+              {products.length > 0 && (
+                <div className="absolute top-full mt-1 w-full bg-white border rounded shadow-lg max-h-64 overflow-y-auto z-50">
+                  {products.map((p) => (
+                    <Link
+                      key={p.id_product}
+                      to={`/producto/${p.id_product}`}
+                      className="block px-3 py-2 hover:bg-accent/10 text-sm"
+                      onClick={() => setSearchTerm("")} // limpia input al click
+                    >
+                      {p.product_name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
 
-            {user ? (
-              <div className="flex items-center gap-3">
-                <span className="google-font-text text-sm font-medium">
-                  Hola, {user.name}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-sm"
-                >
-                  Cerrar sesión
-                </Button>
-              </div>
-            ) : (
-              <Link to="/acceder">
-                <Button variant="ghost" size="icon" aria-label="Usuario">
-                  <User className="h-5 w-5" />
-                </Button>
-              </Link>
-            )}
+            {/* Usuario */}
+            <div className="relative">
+              <Button
+                variant="ghost"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 px-2"
+                aria-label="Usuario"
+              >
+                <User className="h-5 w-5" />
+                {user && (
+                  <span className="text-sm font-medium">{user.name}</span>
+                )}
+              </Button>
 
-            {/* Desktop Cart */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-md border bg-white shadow-lg z-50 overflow-hidden">
+                  {user ? (
+                    <>
+                      <div className="flex items-center gap-3 px-4 py-3 border-b bg-muted/40">
+                        <img
+                          src="/hoseki.png"
+                          alt="logo"
+                          className="h-8 w-8 object-contain"
+                        />
+                        <span className="text-sm font-medium">Mi cuenta</span>
+                      </div>
+
+                      <Link
+                        to="/perfil"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <UserCircle className="h-4 w-4" /> Mi perfil
+                      </Link>
+
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          handleLogout();
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-left hover:bg-accent/10"
+                      >
+                        <LogOut className="h-4 w-4" /> Cerrar sesión
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/iniciar-sesion"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <LogIn className="h-4 w-4" /> Iniciar sesión
+                      </Link>
+
+                      <Link
+                        to="/registro"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <UserPlus className="h-4 w-4" /> Registrarse
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Carrito */}
             <Link to="/carrito">
               <Button
-                variant="default"
                 size="icon"
-                className="bg-accent text-accent-foreground hover:bg-accent/90 relative"
+                className="relative bg-accent text-accent-foreground hover:bg-accent/90"
                 aria-label="Carrito"
               >
                 <ShoppingCart className="h-5 w-5" />
@@ -104,61 +216,10 @@ const Nav = () => {
             size="icon"
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Menu"
           >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMenuOpen ? <X /> : <Menu />}
           </Button>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="border-t border-border py-4 md:hidden animate-fade-in">
-            <div className="space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className="block text-sm font-medium text-foreground transition-colors hover:text-accent"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-
-              <div className="flex gap-4 pt-4">
-                {user ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 w-full"
-                    onClick={handleLogout}
-                  >
-                    Hola, {user.name}
-                  </Button>
-                ) : (
-                  <Link to="/acceder" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <User className="mr-2 h-4 w-4" />
-                      Usuario
-                    </Button>
-                  </Link>
-                )}
-
-                {/* Mobile Cart */}
-                <Link to="/carrito" className="flex-1">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Carrito ({totalItems})
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   );

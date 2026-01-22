@@ -2,7 +2,7 @@ import { API_URL } from "../config/env";
 
 // Obtener por ID
 export const getCustomerById = async (id) => {
-  const response = await fetch(`${API_URL}/api/customers/${id}`, {
+  const response = await fetch(`${API_URL}/api/customer/${id}`, {
     method: "GET",
   });
 
@@ -15,7 +15,7 @@ export const getCustomerById = async (id) => {
 
 // Obtener por Email
 export const getCustomerByEmail = async (email) => {
-  const response = await fetch(`${API_URL}/api/customers/${encodeURIComponent(email)}`, {
+  const response = await fetch(`${API_URL}/api/customer/${encodeURIComponent(email)}`, {
     method: "GET",
   });
 
@@ -28,7 +28,7 @@ export const getCustomerByEmail = async (email) => {
 
 // Obtener todos
 export const getAllCustomers = async () => {
-  const response = await fetch(`${API_URL}/api/customers`, {
+  const response = await fetch(`${API_URL}/api/customer`, {
     method: "GET",
   });
 
@@ -40,26 +40,26 @@ export const getAllCustomers = async () => {
 };
 
 // Crear usuario
-export const createCustomer = async (customer) => {
-  const response = await fetch(`${API_URL}/api/customers`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(customer),
-  });
+// export const createCustomer = async (customer) => {
+//   const response = await fetch(`${API_URL}/api/customer/create`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Bearer ${token}`,
+//     },
+//     body: JSON.stringify(customer),
+//   });
 
-  if (!response.ok) {
-    throw new Error("Error al crear usuario");
-  }
+//   if (!response.ok) {
+//     throw new Error("Error al crear usuario");
+//   }
 
-  return response.json();
-};
+//   return response.json();
+// };
 
 // Actualizar usuario
 export const updateCustomer = async (id, customer) => {
-  const response = await fetch(`${API_URL}/api/customers/${id}`, {
+  const response = await fetch(`${API_URL}/api/customer/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export const updateCustomer = async (id, customer) => {
 
 // Eliminar usuario
 export const removeCustomer = async (id) => {
-  const response = await fetch(`${API_URL}/api/customers/${id}`, {
+  const response = await fetch(`${API_URL}/api/customer/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

@@ -9,13 +9,14 @@ import Contact from "./pages/Contact";
 import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import Catalog from "./pages/Catalog";
-import CreateProducts from "./pages/CreateProducts";
-import CreateCategories from "./pages/CreateCategories";
+import ProductCreate from "./pages/ProductCreate";
+import CategoryCreate from "./pages/CategoryCreate";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./pages/Cart";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Checkout from "./pages/Checkout";
+import ProductDescription from "./pages/ProductDescription";
 
 
 const App = () => {
@@ -34,8 +35,9 @@ const App = () => {
         <Route path="/nosotros" element={<AboutUs />} />
         <Route path="/contacto" element={<Contact />} />
         <Route path="/productos" element={<Products />} />
-        <Route path="/crear-producto" element={<CreateProducts />} />
-        <Route path="/crear-categoria" element={<CreateCategories />} />
+        <Route path="/productos/:id" element={<ProductDescription />} />
+        <Route path="/crear-producto" element={<ProductCreate />} />
+        <Route path="/crear-categoria" element={<CategoryCreate />} />
         <Route path="/iniciar-sesion" element={<Login />} />
         <Route path="/registro" element={<Register />} />
         <Route path="carrito" element={<Cart />} />
