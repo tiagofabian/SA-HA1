@@ -14,12 +14,21 @@ export const getAddressById = async (id) => {
 };
 
 export const getAddressByIdCustomer = async (idCustomer) => {
-  const response = await fetch(`${API_URL}/api/address/${idCustomer}`, {
+  if (!idCustomer) throw new Error("Id del cliente no definido");
+
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
+  // ✅ Asegúrate de usar el id directamente, sin {} en la URL
+  const response = await fetch(`${API_URL}/api/address/customer/${idCustomer}`, {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!response.ok) {
-    throw new Error(`Error al obtener la direccion (${response.status})`);
+    throw new Error(`Error al obtener la dirección (${response.status})`);
   }
 
   return response.json();
@@ -41,7 +50,7 @@ export const createAddress = async (address) => {
   const token = getAuthToken();
   if (!token) throw new Error("Token no disponible");
 
-  const response = await fetch(`${API_URL}/api/address`, {
+  const response = await fetch(`${API_URL}/api/address/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -41,17 +41,16 @@ export const fetchAddressByIdCustomer = async (id) => {
    CREAR
 ========================= */
 export const saveAddress = async (address) => {
-  if (!address) {
-    throw new Error("Los datos de la dirección son obligatorios");
-  }
-
-  if (!address.address_name?.trim()) {
-    throw new Error("El nombre de la categoría es obligatorio");
+  if (!address.id_customer) {
+    throw new Error("No se puede crear dirección sin un id_customer válido");
   }
 
   const payload = {
-    address_name: address.address_name,
-    description: address.description ?? "",
+    address: address.address || null,
+    city: address.city || null,
+    region: address.region || null,
+    zip_code: address.zip_code != null ? Number(address.zip_code) : null,
+    id_customer: address.id_customer,
   };
 
   const createdAddress = await createAddress(payload);
@@ -90,7 +89,7 @@ export const editAddress = async (id, address) => {
 ========================= */
 export const deleteAddress = async (id) => {
   if (!id) {
-    throw new Error("El id de la categoría es obligatorio");
+    throw new Error("El id de la dirección es obligatorio");
   }
 
   await removeAddress(id);
