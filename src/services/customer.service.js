@@ -1,7 +1,7 @@
 import {
   getAllCustomers,
   getCustomerById,
-  createCustomer,
+  // createCustomer,
   updateCustomer,
   removeCustomer,
   getCustomerByEmail,
@@ -36,7 +36,7 @@ export const fetchCustomerById = async (id) => {
  */
 export const fetchCustomerByEmail = async (email) => {
   if (!email) {
-    throw new Error("El id del usuario es obligatorio");
+    throw new Error("El email del usuario es obligatorio");
   }
 
   return await getCustomerByEmail(email);

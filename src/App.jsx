@@ -18,6 +18,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Checkout from "./pages/Checkout";
 import ProductDescription from "./pages/ProductDescription";
 import CollectionCreate from "./pages/CollectionCreate";
+import MyAccount from "./pages/MyAccount";
 
 
 
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/crear-coleccion" element={<CollectionCreate />} />
         <Route path="/iniciar-sesion" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+        <Route path="/mi-cuenta/:email" element={<MyAccount />} />
         <Route path="carrito" element={<Cart />} />
 
 <Route path="/checkout" element={
