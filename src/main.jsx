@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./main.css";
-import { CartProvider } from "./context/cartContext";
-import { UserProvider } from "./context/userContext";
+import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -12,11 +12,11 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <UserProvider>
+      <AuthProvider>
         <CartProvider>
           <App />
         </CartProvider>
-      </UserProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -45,17 +45,17 @@ export const fetchCustomerByEmail = async (email) => {
 /**
  * Crear customero
  */
-export const saveCustomer = async (customer) => {
-  if (!customer?.name) {
-    throw new Error("El nombre del usuario es obligatorio");
-  }
+// export const saveCustomer = async (customer) => {
+//   if (!customer?.name) {
+//     throw new Error("El nombre del usuario es obligatorio");
+//   }
 
-  if (customer.price <= 0) {
-    throw new Error("El precio debe ser mayor a 0");
-  }
+//   if (customer.price <= 0) {
+//     throw new Error("El precio debe ser mayor a 0");
+//   }
 
-  return await createCustomer(customer);
-};
+//   return await createCustomer(customer);
+// };
 
 /**
  * Actualizar customero

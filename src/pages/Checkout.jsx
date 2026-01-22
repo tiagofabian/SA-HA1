@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/cartContext";
+import { useCart } from "../context/CartContext";
 import { Button } from "../components/ui/button";
 
 const Checkout = () => {

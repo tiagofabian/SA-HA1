@@ -1,23 +1,25 @@
-export const CATEGORY_ID_RULES = {
-  collares: 1000,
-  anillos: 2000,
-  aros: 3000,
-  pulseras: 4000,
-  dijes: 5000,
+export const CATEGORY_RULES = {
+  collares: 1,
+  anillos: 2,
+  aros: 3,
+  pulseras: 4,
+  dijes: 5,
 };
 
-export const generateProductId = (categoryId, productos) => {
-  if (!categoryId || categoryId <= 0) {
-    throw new Error("categoryId inválido");
+export const getAuthToken = () => {
+  const raw = sessionStorage.getItem("auth_user");
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed.token;
+  } catch {
+    return null;
   }
-
-  const baseId = Math.floor(categoryId / 1000) * 1000;
-
-  const ids = productos
-    .filter(
-      (p) => Math.floor(p.categoryId / 1000) === baseId / 1000
-    )
-    .map((p) => p.id);
-
-  return ids.length ? Math.max(...ids) + 1 : baseId;
 };
+
+export const capitalizeFirst = (value = "") =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/^\w/, (c) => c.toUpperCase());
