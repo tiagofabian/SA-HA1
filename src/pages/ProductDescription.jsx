@@ -86,7 +86,7 @@ const ProductDescription = () => {
           ) : (
             <button
               onClick={() => addToCart({ ...product, imageSrc: product.imageUrl })}
-              className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition-colors w-full"
+              className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition-colors w-[80%] block mx-auto"
             >
               Agregar al carrito
             </button>
