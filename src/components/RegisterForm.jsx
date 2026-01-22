@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { UserPlus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { saveAddress } from "@/services/address.service"
+import { saveAddress } from "@/services/address.service";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones obligatorias
+    // 🔹 Validaciones obligatorias
     if (!formData.name || !formData.email || !formData.password) {
       toast.error("Completa todos los campos obligatorios");
       return;
@@ -49,9 +49,9 @@ const Register = () => {
 
     try {
       // 1️⃣ Registrar usuario
-      const { ok, user, message } = await register({
+      const { ok, user: registeredUser, message } = await register({
         name: formData.name,
-        phone: formData.phone,
+        phone: formData.phone || null,
         email: formData.email,
         password: formData.password,
       });
@@ -60,21 +60,23 @@ const Register = () => {
         toast.error(message || "Error al registrar el usuario");
         return;
       }
-
-      // 2️⃣ Guardar dirección solo si hay al menos un campo completado
+      console.log("sadasdasdasd", registeredUser.id)
+      // 2️⃣ Crear dirección solo si hay al menos un campo completado
       if (formData.address || formData.city || formData.region || formData.postalCode) {
-        await saveAddress({
+        const payload = {
           address: formData.address || "",
           city: formData.city || "",
           region: formData.region || "",
-          zip_code: formData.postalCode || "",
-          id_customer: user.id,
-        });
+          zip_code: formData.postalCode ? Number(formData.postalCode) : null,
+          id_customer: registeredUser.id,
+        };
+
+        await saveAddress(payload);
       }
 
-      toast.success(`¡Registro exitoso! Bienvenido/a ${user.name || user.email}`);
+      toast.success(`¡Registro exitoso! Bienvenido/a ${registeredUser.name || registeredUser.email}`);
 
-      // Limpiar formulario
+      // 3️⃣ Limpiar formulario
       setFormData({
         name: "",
         phone: "",
@@ -86,7 +88,7 @@ const Register = () => {
         postalCode: "",
       });
 
-      // Redirigir al home o login
+      // 4️⃣ Redirigir al home o login
       navigate("/");
     } catch (error) {
       console.error("Error en registro:", error);
@@ -111,9 +113,7 @@ const Register = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Nombre */}
               <div>
-                <Label className="google-font-text !font-semibold">
-                  Nombre *
-                </Label>
+                <Label className="google-font-text !font-semibold">Nombre *</Label>
                 <Input
                   name="name"
                   value={formData.name}
@@ -125,9 +125,7 @@ const Register = () => {
 
               {/* Teléfono */}
               <div>
-                <Label className="google-font-text !font-semibold">
-                  Teléfono
-                </Label>
+                <Label className="google-font-text !font-semibold">Teléfono</Label>
                 <Input
                   name="phone"
                   type="tel"
@@ -139,9 +137,7 @@ const Register = () => {
 
               {/* Email */}
               <div>
-                <Label className="google-font-text !font-semibold">
-                  Email *
-                </Label>
+                <Label className="google-font-text !font-semibold">Email *</Label>
                 <Input
                   name="email"
                   type="email"
@@ -154,9 +150,7 @@ const Register = () => {
 
               {/* Contraseña */}
               <div>
-                <Label className="google-font-text !font-semibold">
-                  Contraseña *
-                </Label>
+                <Label className="google-font-text !font-semibold">Contraseña *</Label>
                 <Input
                   name="password"
                   type="password"
@@ -172,7 +166,6 @@ const Register = () => {
                 <h3 className="google-font-text font-semibold text-lg mb-2">
                   Dirección de envío (opcional)
                 </h3>
-
                 <div className="space-y-3">
                   <Input
                     name="address"
