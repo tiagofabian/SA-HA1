@@ -2,24 +2,32 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { fetchAllProducts } from "@/services/product.service";
+import { fetchAllCategorys } from "@/services/category.service"; // 👈 NUEVO
+
 
 const ProductDescription = () => {
   const { id } = useParams(); // Obtenemos el id desde la URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]); // 👈 NUEVO
 
   const { cart, addToCart, decreaseQuantity } = useCart();
 
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        const products = await fetchAllProducts();
+        // const products = await fetchAllProducts(); // 👈 NUEVO
+        const [products, categoriesData] = await Promise.all([ // 👈 NUEVO
+          fetchAllProducts(),
+          fetchAllCategorys(),
+        ]);
         const prod = products.find(
           (p) => p.id_product.toString() === id
         );
         if (!prod) throw new Error("Producto no encontrado");
         setProduct(prod);
+        setCategories(categoriesData); // 👈 NUEVO
       } catch (err) {
         setError(err.message || "Error al cargar producto");
       } finally {
@@ -51,8 +59,11 @@ const ProductDescription = () => {
       <div className="flex flex-col flex-grow gap-4">
         <h1 className="text-3xl md:text-4xl font-bold">{product.product_name}</h1>
 
+        {/* 👈 NUEVO */}
         <p className="text-gray-500 text-sm md:text-base">
-          Categoría: {product.category_name ?? "Sin categoría"}
+          Categoría:{" "}
+          {categories.find(cat => cat.id_category === product.id_category)
+            ?.category_name ?? "Sin categoría"}
         </p>
 
         <p className="text-gray-700 leading-relaxed">{product.description}</p>
@@ -98,3 +109,7 @@ const ProductDescription = () => {
 };
 
 export default ProductDescription;
+
+
+
+
