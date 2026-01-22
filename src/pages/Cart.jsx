@@ -8,7 +8,7 @@ const Cart = () => {
   const { cart, removeFromCart, addToCart, decreaseQuantity } =
     useCart();
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.precio * item.quantity,
@@ -19,7 +19,7 @@ const navigate = useNavigate();
     return (
       <div className="container mx-auto px-6 py-20 text-center">
         <h2 className="text-2xl font-semibold mb-4">
-          Tu carrito está vacío 
+          Tu carrito está vacío
         </h2>
         <Link to="/catalogo">
           <Button>Ir al catálogo</Button>
@@ -37,14 +37,15 @@ const navigate = useNavigate();
         <div className="md:col-span-2 space-y-6">
           {cart.map((item) => (
             <div
-              key={item.id}
+              //key={item.id}
+              key={item.id_product} // 👈 NUEVO
               className="flex gap-4 border rounded-lg p-4 shadow-sm"
             >
-             <img
-  src={item.imageSrc}
-  alt={item.nombre}
-  className="w-24 h-24 object-cover rounded"
-/>
+              <img
+                src={item.imageSrc}
+                alt={item.nombre}
+                className="w-24 h-24 object-cover rounded"
+              />
 
               <div className="flex-1">
                 <h3 className="font-semibold text-lg">
@@ -60,7 +61,7 @@ const navigate = useNavigate();
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => decreaseQuantity(item.id)}
+                    onClick={() => decreaseQuantity(item.id_product)} // 👈 Modificado
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -83,7 +84,7 @@ const navigate = useNavigate();
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => removeFromCart(item.id)}
+                onClick={() => removeFromCart(item.id_product)} // 👈 Modificado
                 aria-label="Eliminar producto"
               >
                 <Trash2 className="h-5 w-5 text-red-500" />
@@ -104,12 +105,12 @@ const navigate = useNavigate();
           </div>
 
           <Button
-  className="w-full mt-6"
-  onClick={() => navigate("/checkout")}
->
-  Finalizar compra
-</Button>
-  
+            className="w-full mt-6"
+            onClick={() => navigate("/checkout")}
+          >
+            Finalizar compra
+          </Button>
+
         </div>
       </div>
     </div>
