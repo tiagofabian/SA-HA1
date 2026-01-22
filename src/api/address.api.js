@@ -1,7 +1,20 @@
 import { API_URL } from "../config/env";
+import { getAuthToken } from "@/lib/helpers";
 
 export const getAddressById = async (id) => {
   const response = await fetch(`${API_URL}/api/address/${id}`, {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error al obtener la direccion (${response.status})`);
+  }
+
+  return response.json();
+};
+
+export const getAddressByIdCustomer = async (idCustomer) => {
+  const response = await fetch(`${API_URL}/api/address/${idCustomer}`, {
     method: "GET",
   });
 
@@ -25,6 +38,9 @@ export const getAllAddresss = async () => {
 };
 
 export const createAddress = async (address) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/address`, {
     method: "POST",
     headers: {
@@ -42,6 +58,9 @@ export const createAddress = async (address) => {
 };
 
 export const updateAddress = async (id, address) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/address/${id}`, {
     method: "PUT",
     headers: {
@@ -59,6 +78,9 @@ export const updateAddress = async (id, address) => {
 };
 
 export const removeAddress = async (id) => {
+  const token = getAuthToken();
+  if (!token) throw new Error("Token no disponible");
+
   const response = await fetch(`${API_URL}/api/address/${id}`, {
     method: "DELETE",
     headers: {

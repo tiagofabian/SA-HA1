@@ -11,7 +11,7 @@ const Cart = () => {
 const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
-    (acc, item) => acc + item.precio * item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
@@ -36,23 +36,18 @@ const navigate = useNavigate();
         {/* Productos */}
         <div className="md:col-span-2 space-y-6">
           {cart.map((item) => (
-            <div
-              key={item.id}
-              className="flex gap-4 border rounded-lg p-4 shadow-sm"
-            >
-             <img
-  src={item.imageSrc}
-  alt={item.nombre}
-  className="w-24 h-24 object-cover rounded"
-/>
+            <div key={item.id_product} className="flex gap-4 border rounded-lg p-4 shadow-sm">
+              {/* Imagen */}
+              <img
+                src={item.imageSrc || "/placeholder.png"} // si no hay imagen
+                alt={item.product_name}
+                className="w-24 h-24 object-cover rounded"
+              />
 
               <div className="flex-1">
-                <h3 className="font-semibold text-lg">
-                  {item.nombre}
-                </h3>
-
+                <h3 className="font-semibold text-lg">{item.product_name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  ${item.precio.toLocaleString("es-CL")}
+                  ${item.price.toLocaleString("es-CL")}
                 </p>
 
                 {/* Cantidad */}
@@ -60,14 +55,12 @@ const navigate = useNavigate();
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => decreaseQuantity(item.id)}
+                    onClick={() => decreaseQuantity(item.id_product)}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
 
-                  <span className="w-8 text-center">
-                    {item.quantity}
-                  </span>
+                  <span className="w-8 text-center">{item.quantity}</span>
 
                   <Button
                     variant="outline"
@@ -83,13 +76,14 @@ const navigate = useNavigate();
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => removeFromCart(item.id)}
+                onClick={() => removeFromCart(item.id_product)}
                 aria-label="Eliminar producto"
               >
                 <Trash2 className="h-5 w-5 text-red-500" />
               </Button>
             </div>
           ))}
+
         </div>
 
         {/* Resumen */}
@@ -104,12 +98,11 @@ const navigate = useNavigate();
           </div>
 
           <Button
-  className="w-full mt-6"
-  onClick={() => navigate("/checkout")}
->
-  Finalizar compra
-</Button>
-  
+            className="w-full mt-6"
+            onClick={() => navigate("/checkout")}
+          >
+            Finalizar compra
+          </Button>
         </div>
       </div>
     </div>

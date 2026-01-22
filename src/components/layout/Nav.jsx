@@ -114,7 +114,7 @@ const Nav = () => {
                   {products.map((p) => (
                     <Link
                       key={p.id_product}
-                      to={`/producto/${p.id_product}`}
+                      to={`/productos/${p.id_product}`}
                       className="block px-3 py-2 hover:bg-accent/10 text-sm"
                       onClick={() => setSearchTerm("")} // limpia input al click
                     >
@@ -153,7 +153,7 @@ const Nav = () => {
                       </div>
 
                       <Link
-                        to="/perfil"
+                        to={`/mi-cuenta/${user.email}`}
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
