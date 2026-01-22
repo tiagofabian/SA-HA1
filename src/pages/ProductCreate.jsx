@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import ProductForm from "@/components/ProductForm";
 import Modal from "@/components/reuse/Modal";
 
+
 // helpers
 import { CATEGORY_RULES } from "@/lib/helpers";
 
@@ -15,6 +16,7 @@ import {
   deleteProduct,
 } from "../services/product.service";
 import { fetchAllCategorys } from "@/services/category.service";
+import { fetchAllCollections } from "@/services/collection.service"; // 👈 NUEVO
 
 const ProductCreate = () => {
   const [productos, setProductos] = useState([]);
@@ -22,6 +24,7 @@ const ProductCreate = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [collections, setCollections] = useState([]); // 👈 NUEVO
 
   /* =========================
      CARGA INICIAL
@@ -36,6 +39,10 @@ const ProductCreate = () => {
         // Cargar categorías
         const categoriesData = await fetchAllCategorys();
         setCategories(categoriesData);
+        // Cargar colecciones
+        const collectionsData = await fetchAllCollections();
+        setCollections(collectionsData); // 👈 NUEVO
+
       } catch (err) {
         toast.error("Error al cargar productos o categorías");
       }
@@ -76,6 +83,7 @@ const ProductCreate = () => {
       price: Number(productData.precio),
       stock: Number(productData.stock),
       id_category: productData.categoria,
+      id_collection: productData.coleccion, // 👈 NUEVO
       imageUrl: productData.imageUrl, //
     };
 
@@ -106,6 +114,7 @@ const ProductCreate = () => {
       description: productData.descripcion,
       price: Number(productData.precio),
       id_category: productData.categoria,
+      id_collection: productData.coleccion, // 👈 NUEVO
       imageUrl: productData.imageUrl, // ← agregamos imageUrl
     };
 
@@ -169,7 +178,7 @@ const ProductCreate = () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">
-           Gestión de Productos
+          Gestión de Productos
         </h1>
         <p className="text-gray-600 mb-6">
           Administra tu catálogo de joyas
@@ -213,6 +222,12 @@ const ProductCreate = () => {
                   Categoría:{" "}
                   {categories.find(cat => cat.id_category === producto.id_category)?.category_name
                     ?? "sin categoría"}
+                </p>
+
+                <p className="text-sm text-gray-500">
+                  Colección:{" "}
+                  {collections.find(c => c.id_collection === producto.id_collection)
+                    ?.collection_name ?? "sin colección"}
                 </p>
 
                 <p className="text-sm">
@@ -264,6 +279,7 @@ const ProductCreate = () => {
         <ProductForm
           initialData={editingProduct}
           categories={categories} // ✅ nueva prop
+          collections={collections} // 👈 NUEVO
           onSubmit={editingProduct ? handleEditProduct : handleProductCreate}
           onCancel={() => {
             setShowForm(false);
