@@ -125,9 +125,19 @@ const ProductCreate = () => {
     try {
       const updated = await editProduct(editingProduct.id_product, payload);
 
-      setProductos((prev) =>
-        prev.map((p) => (p.id_product === editingProduct.id_product ? updated : p))
-      );
+      console.log("UPDATED FROM BACKEND:", updated);// PRUEBA
+
+      if (!updated) {
+        // 👇 fallback: volver a pedir todos
+        const productsData = await fetchAllProducts();
+        setProductos(productsData);
+      } else {
+        setProductos((prev) =>
+          prev.map((p) =>
+            p.id_product === editingProduct.id_product ? updated : p
+          )
+        );
+      } // PRUEBA
 
       toast.success("Producto actualizado");
       setEditingProduct(null);
