@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

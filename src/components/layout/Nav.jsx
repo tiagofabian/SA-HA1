@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "../ui/button";
-import { useCart } from "../../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 
 // services
