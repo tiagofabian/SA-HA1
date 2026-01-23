@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
-import Products from "./Products";
+import Products from "../components/reuse/Products";
 import { fetchAllProducts } from "@/services/product.service";
 
 // ---------- Mocks ----------
