@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { fetchAllProducts } from "@/services/product.service";
-import { fetchAllCategorys } from "@/services/category.service"; // 👈 NUEVO
+import { fetchAllCategories } from "@/services/category.service"; // 👈 NUEVO
 
 
 const ProductDescription = () => {
@@ -20,7 +20,7 @@ const ProductDescription = () => {
         // const products = await fetchAllProducts(); // 👈 NUEVO
         const [products, categoriesData] = await Promise.all([ // 👈 NUEVO
           fetchAllProducts(),
-          fetchAllCategorys(),
+          fetchAllCategories(),
         ]);
         const prod = products.find(
           (p) => p.id_product.toString() === id
