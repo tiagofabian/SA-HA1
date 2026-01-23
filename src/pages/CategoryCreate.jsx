@@ -94,20 +94,10 @@ const CategoryCreate = () => {
     };
 
     try {
-      const updated = await editCategory(editingCategory.category, payload);
+      const updated = await editCategory(editingCategory.id, payload);
 
-      /* setCategories((prev) =>
-        prev.map((c) =>
-          c.category === editingCategory.category ? updated : c
-        )
-      ); */
-
-      setCategories((prev) =>
-        prev.map((c) =>
-          c.category === editingCategory.category
-            ? { ...c, ...updated }
-            : c
-        )
+     setCategories((prev) =>
+        prev.map((c) => (c.id === editingCategory.id ? { ...c, ...updated } : c))
       );
 
 
@@ -128,12 +118,24 @@ const CategoryCreate = () => {
       await deleteCategory(idCategory);
 
       setCategories((prev) =>
-        prev.filter((c) => c.category !== idCategory)
+        prev.filter((c) => c.id !== idCategory)
       );
 
       toast.success("Categoría eliminada");
     } catch (err) {
-      toast.error(err.message || "Error al eliminar categoría");
+      // Detectar error de FK
+      if (
+        err.message &&
+        err.message.includes(
+          "violates foreign key constraint"
+        )
+      ) {
+        toast.error(
+          "No se puede eliminar la categoría: primero elimina o reasigna los productos asociados."
+        );
+      } else {
+        toast.error(err.message || "Error al eliminar categoría");
+      }
     }
   };
 
@@ -191,28 +193,28 @@ const CategoryCreate = () => {
 
         {/* LISTADO */}
         <div className="grid gap-4">
-          {filteredCategories.map((categoria) => (
+          {filteredCategories.map((category) => (
             <div
-              key={categoria.category}
+              key={category.id}
               className="bg-white rounded-xl shadow p-4 flex justify-between"
             >
               <div>
                 <h3 className="font-semibold">
-                  {categoria.name}
+                  {category.name}
                 </h3>
                 <p className="text-sm text-gray-500">
-                  {categoria.description || "Sin descripción"}
+                  {category.description || "Sin descripción"}
                 </p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => {
-                    setEditingCategory(categoria);
+                    setEditingCategory(category);
                     setShowForm(true);
                     setFormData({
-                      name: categoria.name,
-                      description: categoria.description ?? "",
+                      name: category.name,
+                      description: category.description ?? "",
                     });
                   }}
                   className="text-indigo-600 flex items-center"
@@ -223,7 +225,7 @@ const CategoryCreate = () => {
 
                 <button
                   onClick={() =>
-                    handleDeleteCategory(categoria.category)
+                    handleDeleteCategory(category.id)
                   }
                   className="text-red-600 flex items-center"
                 >

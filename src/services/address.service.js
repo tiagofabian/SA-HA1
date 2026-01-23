@@ -10,7 +10,7 @@ import {
 /* =========================
    OBTENER TODAS
 ========================= */
-export const fetchAllAddresss = async () => {
+export const fetchAllAddress = async () => {
   const categories = await getAllAddresss();
 
   // no hay lógica de negocio aquí (sin price)

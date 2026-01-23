@@ -43,22 +43,22 @@ const Products = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
         {currentProducts.map((product) => {
-          const cartItem = cart.find((item) => item.id === product.id_product);
+          const cartItem = cart.find((item) => item.id === product.id);
 
           return (
             <div
-              key={product.id_product}
+              key={product.id}
               className="border rounded-xl shadow p-4 bg-white hover:shadow-lg transition-shadow"
             >
               {/* 🔹 Link alrededor de la imagen y nombre */}
-              <Link to={`/productos/${product.id_product}`}>
+              <Link to={`/productos/${product.id}`}>
                 <img
-                  src={product.imageUrl}
-                  alt={product.product_name}
+                  src={product.imageUrls && product.imageUrls.length > 0 ? product.imageUrls[0] : '/placeholder.png'}
+                  alt={product.name}
                   className="w-full h-64 object-cover rounded-md mb-3"
                 />
                 <h3 className="google-font-text font-medium text-lg line-clamp-1">
-                  {product.product_name}
+                  {product.name}
                 </h3>
               </Link>
 
@@ -68,13 +68,13 @@ const Products = () => {
 
               <div className="mt-4 flex justify-between items-center">
                 <span className="text-xs text-gray-400 badge">
-                  {product.category_name ?? "sin categoría"}
+                  {product.category?.name ?? "sin categoría"}
                 </span>
 
                 {cartItem ? (
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => decreaseQuantity(product.id_product)}
+                      onClick={() => decreaseQuantity(product.id)}
                       className="border border-black px-2 rounded hover:bg-gray-100"
                     >
                       −
@@ -84,7 +84,7 @@ const Products = () => {
 
                     <button
                       onClick={() =>
-                        addToCart({ ...product, imageSrc: product.imageUrl })
+                        addToCart({ ...product, imageSrc: product.imageUrls[0] })
                       }
                       className="border border-black px-2 rounded hover:bg-gray-100"
                     >
