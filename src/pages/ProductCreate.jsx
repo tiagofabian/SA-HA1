@@ -4,10 +4,6 @@ import { toast } from "react-toastify";
 import ProductForm from "@/components/ProductForm";
 import Modal from "@/components/reuse/Modal";
 
-
-// helpers
-import { CATEGORY_RULES } from "@/lib/helpers";
-
 // servicios
 import {
   fetchAllProducts,
@@ -15,83 +11,76 @@ import {
   editProduct,
   deleteProduct,
 } from "../services/product.service";
-import { fetchAllCategorys } from "@/services/category.service";
-import { fetchAllCollections } from "@/services/collection.service"; // 👈 NUEVO
+import { fetchAllCategories } from "@/services/category.service";
+import { fetchAllCollections } from "@/services/collection.service";
 
 const ProductCreate = () => {
   const [productos, setProductos] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [collections, setCollections] = useState([]); // 👈 NUEVO
 
-  /* =========================
-     CARGA INICIAL
-  ========================= */
+  // =========================
+  // CARGA INICIAL
+  // =========================
   useEffect(() => {
-    const loadProductsAndCategories = async () => {
+    const loadData = async () => {
       try {
-        // Cargar productos
         const productsData = await fetchAllProducts();
         setProductos(productsData);
-        console.log("data", productsData)
-        // Cargar categorías
-        const categoriesData = await fetchAllCategorys();
-        setCategories(categoriesData);
-        // Cargar colecciones
-        const collectionsData = await fetchAllCollections();
-        setCollections(collectionsData); // 👈 NUEVO
+        console.log("listproduct", productsData)
 
+        const categoriesData = await fetchAllCategories();
+        setCategories(categoriesData);
+        console.log("listcategorie", categoriesData)
+
+        const collectionsData = await fetchAllCollections();
+        setCollections(collectionsData);
+        console.log("listcollection", collectionsData)
       } catch (err) {
-        toast.error("Error al cargar productos o categorías");
+        toast.error("Error al cargar productos, categorías o colecciones");
       }
     };
 
-    loadProductsAndCategories();
+    loadData();
   }, []);
 
-  /* =========================
-     VALIDACIONES
-  ========================= */
+  // =========================
+  // VALIDACIONES
+  // =========================
   const validateProduct = (product) => {
-    if (!product.nombre?.trim()) return "El nombre es obligatorio";
-    if (!product.descripcion?.trim())
-      return "La descripción es obligatoria";
-    if (!product.categoria) return "La categoría es obligatoria";
-    if (!product.precio || Number(product.precio) <= 0)
-      return "El precio debe ser mayor a 0";
-    if (product.stock == null || Number(product.stock) < 0)
-      return "El stock no puede ser negativo";
+    if (!product.name?.trim()) return "El nombre es obligatorio";
+    if (!product.description?.trim()) return "La descripción es obligatoria";
+    if (!product.categoryId) return "La categoría es obligatoria";
+    if (!product.price || Number(product.price) <= 0) return "El precio debe ser mayor a 0";
+    if (product.stock != null && Number(product.stock) < 0) return "El stock no puede ser negativo";
+    if (!product.images || product.images.length === 0) return "Se requiere al menos una imagen";
 
     return null;
   };
 
-  /* =========================
-   CREAR
-  ========================= */
+  // =========================
+  // CREAR
+  // =========================
   const handleProductCreate = async (productData) => {
     const error = validateProduct(productData);
-    if (error) {
-      toast.error(error);
-      return;
-    }
+    if (error) return toast.error(error);
 
-    const newProducto = {
-      product_name: productData.nombre,
-      description: productData.descripcion,
-      price: Number(productData.precio),
-      stock: Number(productData.stock),
-      id_category: productData.categoria,
-      id_collection: productData.coleccion, // 👈 NUEVO
-      imageUrl: productData.imageUrl, //
+    const newProduct = {
+      name: productData.name,
+      description: productData.description,
+      price: Number(productData.price),
+      stock: productData.stock != null ? Number(productData.stock) : null,
+      categoryId: Number(productData.categoryId),
+      collectionId: productData.collectionId ? Number(productData.collectionId) : null, // campo opcional
+      images: productData.images ?? [], // soporte para múltiples imágenes
     };
 
-    console.log("imagen", productData.imageUrl)
-
     try {
-      const productCreated = await saveProduct(newProducto);
-      setProductos((prev) => [productCreated, ...prev]);
+      const created = await saveProduct(newProduct);
+      setProductos((prev) => [created, ...prev]);
       toast.success("Producto creado correctamente");
       setShowForm(false);
     } catch (err) {
@@ -99,32 +88,25 @@ const ProductCreate = () => {
     }
   };
 
-  /* =========================
-    EDITAR
-  ========================= */
+  // =========================
+  // EDITAR
+  // =========================
   const handleEditProduct = async (productData) => {
     const error = validateProduct(productData);
-    if (error) {
-      toast.error(error);
-      return;
-    }
+    if (error) return toast.error(error);
 
     const payload = {
-      product_name: productData.nombre,
-      description: productData.descripcion,
-      price: Number(productData.precio),
-      id_category: productData.categoria,
-      id_collection: productData.coleccion, // 👈 NUEVO
-      imageUrl: productData.imageUrl, // ← agregamos imageUrl
+      name: productData.name,
+      description: productData.description,
+      price: Number(productData.price),
+      stock: productData.stock != null ? Number(productData.stock) : null,
+      categoryId: Number(productData.categoryId),
+      collectionId: productData.collectionId ? Number(productData.collectionId) : null,
+      images: productData.images ?? [], //  múltiples imágenes
     };
 
-    if (productData.stock !== undefined && productData.stock !== "") {
-      payload.stock = Number(productData.stock);
-    }
-
     try {
-      const updated = await editProduct(editingProduct.id_product, payload);
-
+      const updated = await editProduct(editingProduct.id, payload);
       setProductos((prev) =>
         prev.map((p) => {
           if (p.id_product === editingProduct.id_product) {
@@ -143,7 +125,6 @@ const ProductCreate = () => {
           return p;
         })
       );
-
       toast.success("Producto actualizado");
       setEditingProduct(null);
     } catch (err) {
@@ -151,53 +132,41 @@ const ProductCreate = () => {
     }
   };
 
-  /* =========================
-     ELIMINAR
-  ========================= */
-  const handleDeleteProduct = async (idProduct) => {
+  // =========================
+  // ELIMINAR
+  // =========================
+  const handleDeleteProduct = async (id) => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
 
     try {
-      await deleteProduct(idProduct);
-
-      setProductos((prev) =>
-        prev.filter((p) => p.id_product !== idProduct)
-      );
-
+      await deleteProduct(id);
+      setProductos((prev) => prev.filter((p) => p.id !== id));
       toast.success("Producto eliminado");
     } catch (err) {
       toast.error(err.message || "Error al eliminar producto");
     }
   };
 
-  /* =========================
-     BUSCADOR
-  ========================= */
-  const term = searchTerm.toLowerCase();
-
+  // =========================
+  // BUSCADOR
+  // =========================
   const filteredProducts = productos.filter((p) => {
-    const categoryLabel =
-      CATEGORY_RULES[p.id_category]?.toLowerCase() || "";
-
+    const termLower = searchTerm.toLowerCase();
     return (
-      p.product_name?.toLowerCase().includes(term) ||
-      p.description?.toLowerCase().includes(term) ||
-      categoryLabel.includes(term)
+      p.name.toLowerCase().includes(termLower) ||
+      p.description.toLowerCase().includes(termLower) ||
+      p.category?.name?.toLowerCase().includes(termLower)
     );
   });
 
-  /* =========================
-     RENDER
-  ========================= */
+  // =========================
+  // RENDER
+  // =========================
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">
-          Gestión de Productos
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Administra tu catálogo de joyas
-        </p>
+        <h1 className="text-3xl font-bold mb-2">Gestión de Productos</h1>
+        <p className="text-gray-600 mb-6">Administra tu catálogo de joyas</p>
 
         {/* CONTROLES */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -211,7 +180,6 @@ const ProductCreate = () => {
               className="w-full pl-10 pr-4 py-2 border rounded-lg"
             />
           </div>
-
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-2 bg-[#5e8c77] text-white rounded-lg flex items-center"
@@ -222,64 +190,58 @@ const ProductCreate = () => {
         </div>
 
         {/* LISTADO */}
-        <div className="grid gap-4">
+        <div className="flex flex-col gap-4">
           {filteredProducts.map((producto) => (
             <div
-              key={producto.id_product}
-              className="bg-white rounded-xl shadow p-4 flex justify-between"
+              key={producto.id}
+              className="bg-white rounded-xl shadow py-4 px-6 flex justify-between items-center"
             >
-              <div>
-                <h3 className="font-semibold">
-                  {producto.product_name}
-                </h3>
+              {/* Información del producto + imágenes */}
+              <div className="flex flex-auto gap-8 items-center">
+                {/* Datos textuales (ancho automático) */}
+                <div className="flex-shrink-0 w-auto">
+                  <h3 className="font-semibold">{producto.name}</h3>
+                  <p className="text-sm text-gray-500 capitalize">
+                    Categoría: {producto.category?.name ?? "sin categoría"}
+                  </p>
+                  <p className="text-sm">Descripción: {producto.description}</p>
+                  <p className="font-medium">${producto.price.toLocaleString()}</p>
+                  <p className="text-xs text-gray-400">Stock: {producto.stock}</p>
+                </div>
 
-                <p className="text-sm text-gray-500 capitalize">
-                  Categoría:{" "}
-                  {categories.find(cat => cat.id_category === producto.id_category)?.category_name
-                    ?? "sin categoría"}
-                </p>
-
-                <p className="text-sm text-gray-500">
-                  Colección:{" "}
-                  {collections.find(c => c.id_collection === producto.id_collection)
-                    ?.collection_name ?? "sin colección"}
-                </p>
-
-                <p className="text-sm">
-                  {producto.description}
-                </p>
-
-                <p className="font-medium">
-                  ${producto.price.toLocaleString()}
-                </p>
-
-                <p className="text-xs text-gray-400">
-                  Stock: {producto.stock}
-                </p>
+                {/* Preview de imágenes horizontal */}
+                <div className="flex gap-2 overflow-x-auto flex-shrink-0">
+                  {producto.imageUrls?.map((url, i) => (
+                    <img
+                      key={i}
+                      src={url}
+                      alt={`imagen-${i}`}
+                      className="w-20 h-20 object-cover rounded flex-shrink-0"
+                    />
+                  ))}
+                </div>
               </div>
 
-              <div className="flex gap-3">
+              {/* Botones en fila */}
+              <div className="flex flex-row gap-6 flex-shrink-0 w-[120px] justify-end">
                 <button
                   onClick={() => setEditingProduct(producto)}
-                  className="text-indigo-600 flex items-center"
+                  className="text-indigo-600 flex items-center justify-center w-full"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Editar
+                  <Edit className="h-4 w-4 mr-1" /> Editar
                 </button>
-
                 <button
-                  onClick={() =>
-                    handleDeleteProduct(producto.id_product)
-                  }
-                  className="text-red-600 flex items-center"
+                  onClick={() => handleDeleteProduct(producto.id)}
+                  className="text-red-600 flex items-center justify-center w-full"
                 >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Eliminar
+                  <Trash2 className="h-4 w-4 mr-1" /> Eliminar
                 </button>
               </div>
             </div>
           ))}
         </div>
+
+
       </div>
 
       {/* MODAL */}
@@ -293,8 +255,8 @@ const ProductCreate = () => {
       >
         <ProductForm
           initialData={editingProduct}
-          categories={categories} // ✅ nueva prop
-          collections={collections} // 👈 NUEVO
+          categories={categories}
+          collections={collections}
           onSubmit={editingProduct ? handleEditProduct : handleProductCreate}
           onCancel={() => {
             setShowForm(false);

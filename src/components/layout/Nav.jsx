@@ -153,7 +153,7 @@ const Nav = () => {
                       </div>
 
                       <Link
-                        to={`/mi-cuenta/${user.email}`}
+                        to={`/mi-cuenta/${user.id}`}
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
                         onClick={() => setIsUserMenuOpen(false)}
                       >

@@ -13,7 +13,7 @@ export const getCategoryById = async (id) => {
   return response.json();
 };
 
-export const getAllCategorys = async () => {
+export const getAllCategories = async () => {
   const response = await fetch(`${API_URL}/api/category`, {
     method: "GET",
   });

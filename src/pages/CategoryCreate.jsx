@@ -5,7 +5,7 @@ import Modal from "@/components/reuse/Modal";
 import { capitalizeFirst } from "@lib/helpers"
 
 import {
-  fetchAllCategorys,
+  fetchAllCategories,
   saveCategory,
   editCategory,
   deleteCategory,
@@ -27,7 +27,7 @@ const CategoryCreate = () => {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const data = await fetchAllCategorys();
+        const data = await fetchAllCategories();
         setCategorias(data);
       } catch (err) {
         toast.error("Error al cargar categorías");

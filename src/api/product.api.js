@@ -4,11 +4,15 @@ import { getAuthToken } from "@/lib/helpers";
 
 // Buscar productos por término
 export const searchProducts = async (term) => {
-  const response = await fetch(`${API_URL}/api/product/search?term=${encodeURIComponent(term)}`, {
-    method: "GET",
-  });
+  if (!term?.trim()) return [];
 
-  if (!response.ok) throw new Error("Error al buscar productos");
+  const response = await fetch(
+    `${API_URL}/api/product/search?term=${encodeURIComponent(term)}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Error al buscar productos");
+  }
 
   return response.json();
 };

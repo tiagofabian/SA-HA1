@@ -7,31 +7,29 @@ import {
   removeProduct,
 } from "@/api/product.api";
 
-
 /**
- * Buscar por termino
+ * Buscar productos por término
  */
-
-
 export const fetchProductsByTerm = async (term) => {
   const products = await searchProducts(term);
 
-  // Ejemplo de lógica de negocio: asegurar que price sea número
   return products.map((p) => ({
     ...p,
     price: Number(p.price),
+    imageUrls: p.imageUrls ?? [],
   }));
 };
+
 /**
  * Obtener todos los productos
  */
 export const fetchAllProducts = async () => {
   const products = await getAllProducts();
 
-  // Ejemplo de lógica de negocio
   return products.map((p) => ({
     ...p,
     price: Number(p.price),
+    imageUrls: p.imageUrls ?? [],
   }));
 };
 
@@ -39,40 +37,24 @@ export const fetchAllProducts = async () => {
  * Obtener producto por ID
  */
 export const fetchProductById = async (id) => {
-  if (!id) {
-    throw new Error("El id del producto es obligatorio");
-  }
+  if (!id) throw new Error("El id del producto es obligatorio");
 
-  return await getProductById(id);
+  const product = await getProductById(id);
+  return { ...product, imageUrls: product.imageUrls ?? [] };
 };
 
 /**
  * Crear producto
  */
 export const saveProduct = async (product) => {
-  if (!product) {
-    throw new Error("Los datos del producto son obligatorios");
-  }
-
-  if (!product.product_name?.trim()) {
-    throw new Error("El nombre del producto es obligatorio");
-  }
-
-  if (product.price == null || Number(product.price) <= 0) {
-    throw new Error("El precio debe ser mayor a 0");
-  }
-
-  if (product.stock != null && Number(product.stock) < 0) {
-    throw new Error("El stock no puede ser negativo");
-  }
-
-  // categoría opcional (como dijiste antes)
-  if (product.id_category != null && Number(product.id_category) <= 0) {
-    throw new Error("La categoría no es válida");
-  }
+  if (!product) throw new Error("Los datos del producto son obligatorios");
+  if (!product.name?.trim()) throw new Error("El nombre del producto es obligatorio");
+  if (product.price == null || Number(product.price) <= 0) throw new Error("El precio debe ser mayor a 0");
+  if (product.stock != null && Number(product.stock) < 0) throw new Error("El stock no puede ser negativo");
+  if (!product.categoryId || Number(product.categoryId) <= 0) throw new Error("La categoría es obligatoria");
 
   const payload = {
-    product_name: product.product_name,
+    name: product.name,
     price: Number(product.price),
     stock: product.stock != null ? Number(product.stock) : null,
     description: product.description ?? "",
@@ -81,23 +63,14 @@ export const saveProduct = async (product) => {
     id_category: product.id_category,
   };
 
-  const createdProduct = await createProduct(payload);
-
-  if (!createdProduct) {
-    throw new Error("No se pudo crear el producto");
-  }
-
-  return createdProduct;
+  return await createProduct(payload);
 };
-
 
 /**
  * Actualizar producto
  */
 export const editProduct = async (id, product) => {
-  if (!id) {
-    throw new Error("El id del producto es obligatorio");
-  }
+  if (!id) throw new Error("El id del producto es obligatorio");
 
   if (!product.product_name?.trim()) {
     throw new Error("El nombre del producto es obligatorio");
@@ -127,9 +100,8 @@ export const editProduct = async (id, product) => {
 
   const updatedProduct = await updateProduct(id, payload);
 
-  if (!updatedProduct) {
-    throw new Error("No se pudo actualizar el producto");
-  }
+  const updatedProduct = await updateProduct(id, payload);
+  if (!updatedProduct) throw new Error("No se pudo actualizar el producto");
 
   return updatedProduct;
 };
@@ -139,16 +111,10 @@ export const editProduct = async (id, product) => {
  * Eliminar producto
  */
 export const deleteProduct = async (id) => {
-  if (!id) {
-    throw new Error("El id del producto es obligatorio");
-  }
+  if (!id) throw new Error("El id del producto es obligatorio");
 
   const response = await removeProduct(id);
-
-  // si tu backend devuelve algo, mejor validarlo
-  if (response === false) {
-    throw new Error("No se pudo eliminar el producto");
-  }
+  if (response === false) throw new Error("No se pudo eliminar el producto");
 
   return true;
 };

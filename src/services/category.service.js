@@ -1,5 +1,5 @@
 import {
-  getAllCategorys,
+  getAllCategories,
   getCategoryById,
   createCategory,
   updateCategory,
@@ -9,8 +9,8 @@ import {
 /* =========================
    OBTENER TODAS
 ========================= */
-export const fetchAllCategorys = async () => {
-  const categories = await getAllCategorys();
+export const fetchAllCategories = async () => {
+  const categories = await getAllCategories();
 
   // no hay lógica de negocio aquí (sin price)
   return categories;
