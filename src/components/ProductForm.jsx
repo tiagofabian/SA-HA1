@@ -2,21 +2,19 @@ import React, { useEffect, useState } from "react";
 import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
-const ProductForm = ({
-  initialData = null,
-  categories = [],
-  collections = [],
-  onSubmit,
-  onCancel,
-}) => {
+const ProductForm = ({ initialData = null, categories, collections, onSubmit, onCancel }) => {
   const isEditing = Boolean(initialData);
 
   /* =========================
      STATE
   ========================= */
   const [product, setProduct] = useState({
-    name: "",
-    price: "",
+    nombre: "",
+    precio: "",
+    categoria: 0,
+    coleccion: 0,   // NUEVO
+    descripcion: "",
+    imageUrl: "", // ← aquí usamos imageUrl
     stock: "",
     description: "",
     images: [],         // soporte para múltiples imágenes
@@ -32,8 +30,15 @@ const ProductForm = ({
   useEffect(() => {
     if (initialData) {
       setProduct({
-        name: initialData.name ?? "",
-        price: initialData.price ?? "",
+        nombre: initialData.product_name ?? "",
+        precio: initialData.price ?? "",
+        categoria: initialData.id_category ?? 0,
+        descripcion: initialData.description ?? "",
+        imageUrl: initialData.imageUrl ?? "",
+        coleccion:
+          initialData.id_collection ??
+          initialData.collection?.id_collection ??
+          0,
         stock: initialData.stock ?? "",
         description: initialData.description ?? "",
         images: initialData.imageUrls ?? [],  // múltiples imágenes
@@ -42,6 +47,7 @@ const ProductForm = ({
       });
     }
   }, [initialData]);
+
 
   /* =========================
      MANEJO DE INPUTS
@@ -157,12 +163,11 @@ const ProductForm = ({
           </option>
         ))}
       </select>
-      {errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId}</p>}
 
       {/* Colección */}
       <select
-        name="collectionId"
-        value={product.collectionId}
+        name="coleccion"
+        value={product.coleccion}
         onChange={handleChange}
         className="border p-2 rounded w-full"
       >
