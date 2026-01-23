@@ -12,23 +12,24 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // ➕ Agregar / sumar
+  // ➕ Agregar producto / sumar cantidad
   const addToCart = (product) => {
+    // Normalizamos los nombres y usamos la primera imagen
     const normalizedProduct = {
-      id_product: product.id_product,
-      nombre: product.product_name ?? product.nombre,
-      precio: product.price ?? product.precio,
-      imageSrc: product.imageUrl ?? product.imageSrc,
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      imageSrc: product.imageUrls && product.imageUrls.length > 0 
+        ? product.imageUrls[0] 
+        : "/placeholder.png",
     };
 
     setCart((prev) => {
-      const exists = prev.find(
-        (item) => item.id_product === normalizedProduct.id_product
-      );
+      const exists = prev.find((item) => item.id === normalizedProduct.id);
 
       if (exists) {
         return prev.map((item) =>
-          item.id_product === normalizedProduct.id_product
+          item.id === normalizedProduct.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -38,12 +39,12 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // ➖ Restar
-  const decreaseQuantity = (id_product) => {
+  // ➖ Restar cantidad
+  const decreaseQuantity = (id) => {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.id_product === id_product
+          item.id === id
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
@@ -51,13 +52,12 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // 🗑 Eliminar
-  const removeFromCart = (id_product) => {
-    setCart((prev) =>
-      prev.filter((item) => item.id_product !== id_product)
-    );
+  // 🗑 Eliminar producto del carrito
+  const removeFromCart = (id) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
+  // 🧹 Vaciar carrito
   const clearCart = () => setCart([]);
 
   return (

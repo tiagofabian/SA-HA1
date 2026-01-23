@@ -15,7 +15,7 @@ import { fetchAllCategories } from "@/services/category.service";
 import { fetchAllCollections } from "@/services/collection.service";
 
 const ProductCreate = () => {
-  const [productos, setProductos] = useState([]);
+  const [products, setProductos] = useState([]);
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -29,18 +29,15 @@ const ProductCreate = () => {
     const loadData = async () => {
       try {
         const productsData = await fetchAllProducts();
-        setProductos(productsData);
-        console.log("listproduct", productsData)
+        setProductos(productsData ?? []);
 
         const categoriesData = await fetchAllCategories();
-        setCategories(categoriesData);
-        console.log("listcategorie", categoriesData)
+        setCategories(categoriesData ?? []);
 
         const collectionsData = await fetchAllCollections();
-        setCollections(collectionsData);
-        console.log("listcollection", collectionsData)
+        setCollections(collectionsData ?? []);
       } catch (err) {
-        toast.error("Error al cargar productos, categorías o colecciones");
+        toast.error("Error al cargar products, categorías o colecciones");
       }
     };
 
@@ -62,7 +59,7 @@ const ProductCreate = () => {
   };
 
   // =========================
-  // CREAR
+  // CREAR PRODUCTO
   // =========================
   const handleProductCreate = async (productData) => {
     const error = validateProduct(productData);
@@ -70,12 +67,14 @@ const ProductCreate = () => {
 
     const newProduct = {
       name: productData.name,
-      description: productData.description,
+      description: productData.description ?? "",
       price: Number(productData.price),
       stock: productData.stock != null ? Number(productData.stock) : null,
       categoryId: Number(productData.categoryId),
-      collectionId: productData.collectionId ? Number(productData.collectionId) : null, // campo opcional
-      images: productData.images ?? [], // soporte para múltiples imágenes
+      collections: productData.collectionIds
+        ? productData.collectionIds.map(Number)
+        : [],
+      images: productData.images ?? [],
     };
 
     try {
@@ -84,12 +83,12 @@ const ProductCreate = () => {
       toast.success("Producto creado correctamente");
       setShowForm(false);
     } catch (err) {
-      toast.error(err.message || "Error al crear producto");
+      toast.error(err.message || "Error al crear product");
     }
   };
 
   // =========================
-  // EDITAR
+  // EDITAR PRODUCTO
   // =========================
   const handleEditProduct = async (productData) => {
     const error = validateProduct(productData);
@@ -97,64 +96,56 @@ const ProductCreate = () => {
 
     const payload = {
       name: productData.name,
-      description: productData.description,
+      description: productData.description ?? "",
       price: Number(productData.price),
       stock: productData.stock != null ? Number(productData.stock) : null,
       categoryId: Number(productData.categoryId),
-      collectionId: productData.collectionId ? Number(productData.collectionId) : null,
-      images: productData.images ?? [], //  múltiples imágenes
+      collections: productData.collectionIds
+        ? productData.collectionIds.map(Number)
+        : [],
+      images: productData.images ?? [],
     };
 
     try {
       const updated = await editProduct(editingProduct.id, payload);
+
       setProductos((prev) =>
-        prev.map((p) => {
-          if (p.id_product === editingProduct.id_product) {
-            return {
-              ...p,
-              ...updated,
-              product_name: payload.product_name,
-              description: payload.description,
-              price: payload.price,
-              stock: payload.stock,
-              id_category: payload.id_category,
-              id_collection: payload.id_collection,
-              imageUrl: payload.imageUrl,
-            };
-          }
-          return p;
-        })
+        prev.map((p) =>
+          p.id === editingProduct.id ? { ...p, ...updated } : p
+        )
       );
+
       toast.success("Producto actualizado");
       setEditingProduct(null);
+      setShowForm(false);
     } catch (err) {
-      toast.error(err.message || "Error al actualizar producto");
+      toast.error(err.message || "Error al actualizar product");
     }
   };
 
   // =========================
-  // ELIMINAR
+  // ELIMINAR PRODUCTO
   // =========================
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
+    if (!window.confirm("¿Estás seguro de eliminar este product?")) return;
 
     try {
       await deleteProduct(id);
       setProductos((prev) => prev.filter((p) => p.id !== id));
       toast.success("Producto eliminado");
     } catch (err) {
-      toast.error(err.message || "Error al eliminar producto");
+      toast.error(err.message || "Error al eliminar product");
     }
   };
 
   // =========================
-  // BUSCADOR
+  // FILTRO DE BÚSQUEDA
   // =========================
-  const filteredProducts = productos.filter((p) => {
+  const filteredProducts = products.filter((p) => {
     const termLower = searchTerm.toLowerCase();
     return (
-      p.name.toLowerCase().includes(termLower) ||
-      p.description.toLowerCase().includes(termLower) ||
+      p.name?.toLowerCase().includes(termLower) ||
+      p.description?.toLowerCase().includes(termLower) ||
       p.category?.name?.toLowerCase().includes(termLower)
     );
   });
@@ -191,27 +182,24 @@ const ProductCreate = () => {
 
         {/* LISTADO */}
         <div className="flex flex-col gap-4">
-          {filteredProducts.map((producto) => (
+          {filteredProducts.map((product) => (
             <div
-              key={producto.id}
+              key={product.id}
               className="bg-white rounded-xl shadow py-4 px-6 flex justify-between items-center"
             >
-              {/* Información del producto + imágenes */}
               <div className="flex flex-auto gap-8 items-center">
-                {/* Datos textuales (ancho automático) */}
                 <div className="flex-shrink-0 w-auto">
-                  <h3 className="font-semibold">{producto.name}</h3>
+                  <h3 className="font-semibold">{product.name ?? ""}</h3>
                   <p className="text-sm text-gray-500 capitalize">
-                    Categoría: {producto.category?.name ?? "sin categoría"}
+                    Categoría: {product.category?.name ?? "sin categoría"}
                   </p>
-                  <p className="text-sm">Descripción: {producto.description}</p>
-                  <p className="font-medium">${producto.price.toLocaleString()}</p>
-                  <p className="text-xs text-gray-400">Stock: {producto.stock}</p>
+                  <p className="text-sm">Descripción: {product.description ?? ""}</p>
+                  <p className="font-medium">${product.price?.toLocaleString() ?? 0}</p>
+                  <p className="text-xs text-gray-400">Stock: {product.stock ?? 0}</p>
                 </div>
 
-                {/* Preview de imágenes horizontal */}
                 <div className="flex gap-2 overflow-x-auto flex-shrink-0">
-                  {producto.imageUrls?.map((url, i) => (
+                  {product.imageUrls?.map((url, i) => (
                     <img
                       key={i}
                       src={url}
@@ -222,16 +210,18 @@ const ProductCreate = () => {
                 </div>
               </div>
 
-              {/* Botones en fila */}
               <div className="flex flex-row gap-6 flex-shrink-0 w-[120px] justify-end">
                 <button
-                  onClick={() => setEditingProduct(producto)}
+                  onClick={() => {
+                    setEditingProduct(product);
+                    setShowForm(true);
+                  }}
                   className="text-indigo-600 flex items-center justify-center w-full"
                 >
                   <Edit className="h-4 w-4 mr-1" /> Editar
                 </button>
                 <button
-                  onClick={() => handleDeleteProduct(producto.id)}
+                  onClick={() => handleDeleteProduct(product.id)}
                   className="text-red-600 flex items-center justify-center w-full"
                 >
                   <Trash2 className="h-4 w-4 mr-1" /> Eliminar
@@ -240,8 +230,6 @@ const ProductCreate = () => {
             </div>
           ))}
         </div>
-
-
       </div>
 
       {/* MODAL */}
@@ -251,7 +239,7 @@ const ProductCreate = () => {
           setShowForm(false);
           setEditingProduct(null);
         }}
-        title={editingProduct ? "Editar producto" : "Nuevo producto"}
+        title={editingProduct ? "Editar product" : "Nuevo product"}
       >
         <ProductForm
           initialData={editingProduct}

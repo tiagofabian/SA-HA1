@@ -2,24 +2,20 @@ import React, { useEffect, useState } from "react";
 import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
-const ProductForm = ({ initialData = null, categories, collections, onSubmit, onCancel }) => {
+const ProductForm = ({ initialData = null, categories = [], collections = [], onSubmit, onCancel }) => {
   const isEditing = Boolean(initialData);
 
   /* =========================
      STATE
   ========================= */
   const [product, setProduct] = useState({
-    nombre: "",
-    precio: "",
-    categoria: 0,
-    coleccion: 0,   // NUEVO
-    descripcion: "",
-    imageUrl: "", // ← aquí usamos imageUrl
+    name: "",
+    price: "",
     stock: "",
     description: "",
-    images: [],         // soporte para múltiples imágenes
-    categoryId: 0,      // categoría
-    collectionId: 0,    // colección
+    categoryId: 0,
+    collectionIds: [],   // ahora soporta múltiples colecciones
+    images: [],          // soporte para múltiples imágenes
   });
 
   const [errors, setErrors] = useState({});
@@ -30,20 +26,13 @@ const ProductForm = ({ initialData = null, categories, collections, onSubmit, on
   useEffect(() => {
     if (initialData) {
       setProduct({
-        nombre: initialData.product_name ?? "",
-        precio: initialData.price ?? "",
-        categoria: initialData.id_category ?? 0,
-        descripcion: initialData.description ?? "",
-        imageUrl: initialData.imageUrl ?? "",
-        coleccion:
-          initialData.id_collection ??
-          initialData.collection?.id_collection ??
-          0,
-        stock: initialData.stock ?? "",
+        name: initialData.name ?? initialData.product_name ?? "",
+        price: initialData.price ?? 0,
+        stock: initialData.stock ?? 0,
         description: initialData.description ?? "",
-        images: initialData.imageUrls ?? [],  // múltiples imágenes
         categoryId: initialData.category?.id ?? 0,
-        collectionId: initialData.collection?.id ?? 0,
+        collectionIds: initialData.collections?.map(c => c.id) ?? [],
+        images: initialData.imageUrls ?? [],
       });
     }
   }, [initialData]);
@@ -95,9 +84,7 @@ const ProductForm = ({ initialData = null, categories, collections, onSubmit, on
     if (!product.description.trim()) newErrors.description = "La descripción es obligatoria";
     if (!product.price || Number(product.price) <= 0) newErrors.price = "El precio debe ser mayor a 0";
     if (product.stock !== "" && Number(product.stock) < 0) newErrors.stock = "El stock no puede ser negativo";
-
     if (!product.categoryId) newErrors.categoryId = "La categoría es obligatoria";
-    if (!product.collectionId) newErrors.collectionId = "La colección es obligatoria";
 
     if (!product.images || product.images.length === 0) newErrors.images = "Se requiere al menos una imagen";
     if (product.images.length > 3) newErrors.images = "No se pueden subir más de 3 imágenes";
@@ -165,19 +152,27 @@ const ProductForm = ({ initialData = null, categories, collections, onSubmit, on
       </select>
 
       {/* Colección */}
-      <select
-        name="coleccion"
-        value={product.coleccion}
-        onChange={handleChange}
-        className="border p-2 rounded w-full"
-      >
-        <option value={0}>Selecciona una colección</option>
-        {collections.map((col) => (
-          <option key={col.id} value={col.id}>
+      <div className="flex flex-wrap gap-2">
+        {collections.map(col => (
+          <label key={col.id} className="flex items-center gap-1">
+            <input
+              type="checkbox"
+              value={col.id}
+              checked={product.collectionIds.includes(col.id)}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setProduct(prev => ({
+                  ...prev,
+                  collectionIds: prev.collectionIds.includes(val)
+                    ? prev.collectionIds.filter(id => id !== val)
+                    : [...prev.collectionIds, val]
+                }));
+              }}
+            />
             {col.name}
-          </option>
+          </label>
         ))}
-      </select>
+      </div>
       {errors.collectionId && <p className="text-red-500 text-sm">{errors.collectionId}</p>}
 
       {/* Descripción */}
@@ -187,35 +182,54 @@ const ProductForm = ({ initialData = null, categories, collections, onSubmit, on
         onChange={handleChange}
         rows={3}
         placeholder="Descripción del producto"
-        className="border p-2 rounded w-full"
+        className="border p-2 rounded w-full resize-none overflow-auto"
       />
       {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
 
-      {/* Imagenes */}
-      <FileUploaderRegular
-        pubkey={import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY}
-        multiple={true}
-        imgOnly
-        onFileUploadSuccess={handleAddImage}
-      />
-      <p className="text-gray-500 text-sm">{product.images.length} / 3 imágenes</p>
-      {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
+      {/* Contenedor principal de imágenes */}
+      <div className="border border-gray-200 rounded-lg p-4 mt-6 bg-white">
+        <h3 className="font-medium mb-2">Imágenes del producto</h3>
 
-      {/* Preview de imágenes */}
-      <div className="flex flex-wrap gap-2 mt-2">
-        {product.images.map((url, i) => (
-          <div key={i} className="relative">
-            <img src={url} alt={`preview-${i}`} className="w-24 h-24 object-cover rounded" />
-            <button
-              type="button"
-              onClick={() => handleRemoveImage(i)}
-              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-            >
-              ×
-            </button>
+        {/* Contenedor flex para botón y previews */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Botón de subida */}
+          <div className="flex-shrink-0 w-[7.5rem]">
+            <FileUploaderRegular
+              pubkey={import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY}
+              multiple={true}
+              imgOnly
+              onFileUploadSuccess={handleAddImage}
+              className="bg-[#4a7c9b] hover:bg-[#5f95b3] text-[#fff] px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-center"
+            />
+            <p className="text-gray-500 text-sm mt-1 text-center">
+              {product.images.length} / 3 imágenes
+            </p>
+            {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
           </div>
-        ))}
+
+          {/* Previews horizontales */}
+          <div className="flex gap-2 overflow-x-auto flex-1">
+            {product.images.map((url, i) => (
+              <div key={i} className="relative flex-shrink-0">
+                <img
+                  src={url}
+                  alt={`preview-${i}`}
+                  className="w-24 h-24 object-cover rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(i)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+
 
       {/* Acciones */}
       <div className="flex justify-end gap-3">

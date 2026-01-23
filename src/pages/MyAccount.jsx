@@ -36,7 +36,8 @@ const MyAccount = () => {
 
         if (customerData.id) {
           const addressData = await fetchAddressByIdCustomer(customerData.id);
-          setAddress(addressData || null);
+          setAddress(addressData);
+          console.log("aquiiiiiiii".addressData)
           setAddressForm({
             address: addressData?.address || "",
             city: addressData?.city || "",
