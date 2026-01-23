@@ -2,46 +2,80 @@ import React, { useEffect, useState } from "react";
 import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
-const ProductForm = ({ initialData = null, categories,collections, onSubmit, onCancel }) => {
+const ProductForm = ({
+  initialData = null,
+  categories = [],
+  collections = [],
+  onSubmit,
+  onCancel,
+}) => {
   const isEditing = Boolean(initialData);
 
+  /* =========================
+     STATE
+  ========================= */
   const [product, setProduct] = useState({
-    nombre: "",
-    precio: "",
-    categoria: 0,
-    coleccion: 0,   // 👈 NUEVO
-    descripcion: "",
-    imageUrl: "", // ← aquí usamos imageUrl
+    name: "",
+    price: "",
     stock: "",
+    description: "",
+    images: [],         // soporte para múltiples imágenes
+    categoryId: 0,      // categoría
+    collectionId: 0,    // colección
   });
+
   const [errors, setErrors] = useState({});
 
   /* =========================
-     CARGA INICIAL
+     CARGA INICIAL (EDITAR)
   ========================= */
   useEffect(() => {
     if (initialData) {
       setProduct({
-        nombre: initialData.product_name ?? "",
-        precio: initialData.price ?? "",
-        categoria: initialData.id_category ?? 0,
-        descripcion: initialData.description ?? "",
-        imageUrl: initialData.imageUrl ?? "", // ← adaptado
-        coleccion: initialData.id_collection ?? 0, // 👈 NUEVO
+        name: initialData.name ?? "",
+        price: initialData.price ?? "",
         stock: initialData.stock ?? "",
+        description: initialData.description ?? "",
+        images: initialData.imageUrls ?? [],  // múltiples imágenes
+        categoryId: initialData.category?.id ?? 0,
+        collectionId: initialData.collection?.id ?? 0,
       });
     }
   }, [initialData]);
 
   /* =========================
-     CAMBIOS DE INPUT
+     MANEJO DE INPUTS
   ========================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduct((prev) => ({
       ...prev,
-      [name]: name === "categoria" || name === "coleccion" ? Number(value) : value,
-    }));  // 👈 NUEVO
+      [name]: name === "categoryId" || name === "collectionId" ? Number(value) : value,
+    }));
+  };
+
+  /* =========================
+     AGREGAR IMÁGENES (máx 3)
+  ========================= */
+  const handleAddImage = (file) => {
+    if (product.images.length >= 3) {
+      alert("Solo se permiten hasta 3 imágenes por producto");
+      return;
+    }
+    setProduct((prev) => ({
+      ...prev,
+      images: [...prev.images, file.cdnUrl],
+    }));
+  };
+
+  /* =========================
+     REMOVER IMAGEN
+  ========================= */
+  const handleRemoveImage = (index) => {
+    setProduct((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
   };
 
   /* =========================
@@ -49,15 +83,18 @@ const ProductForm = ({ initialData = null, categories,collections, onSubmit, onC
   ========================= */
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const newErrors = {};
 
-    if (!product.nombre.trim()) newErrors.nombre = "Nombre requerido";
-    if (!product.descripcion.trim()) newErrors.descripcion = "Descripción requerida";
-    if (!product.precio || Number(product.precio) <= 0) newErrors.precio = "Precio válido requerido";
+    if (!product.name.trim()) newErrors.name = "El nombre es obligatorio";
+    if (!product.description.trim()) newErrors.description = "La descripción es obligatoria";
+    if (!product.price || Number(product.price) <= 0) newErrors.price = "El precio debe ser mayor a 0";
     if (product.stock !== "" && Number(product.stock) < 0) newErrors.stock = "El stock no puede ser negativo";
-    if (!product.imageUrl.trim()) newErrors.imageUrl = "Imagen requerida"; // validación de imageUrl
-    if (!product.coleccion || Number(product.coleccion) <= 0) newErrors.coleccion = "Colección requerida"; // 👈 NUEVO
+
+    if (!product.categoryId) newErrors.categoryId = "La categoría es obligatoria";
+    if (!product.collectionId) newErrors.collectionId = "La colección es obligatoria";
+
+    if (!product.images || product.images.length === 0) newErrors.images = "Se requiere al menos una imagen";
+    if (product.images.length > 3) newErrors.images = "No se pueden subir más de 3 imágenes";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -68,29 +105,32 @@ const ProductForm = ({ initialData = null, categories,collections, onSubmit, onC
     onSubmit(product);
   };
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Nombre */}
       <input
         type="text"
-        name="nombre"
-        value={product.nombre}
+        name="name"
+        value={product.name}
         onChange={handleChange}
-        placeholder="Nombre"
+        placeholder="Nombre del producto"
         className="border p-2 rounded w-full"
       />
-      {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre}</p>}
+      {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
 
       {/* Precio */}
       <input
         type="number"
-        name="precio"
-        value={product.precio}
+        name="price"
+        value={product.price}
         onChange={handleChange}
         placeholder="Precio"
         className="border p-2 rounded w-full"
       />
-      {errors.precio && <p className="text-red-500 text-sm">{errors.precio}</p>}
+      {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
 
       {/* Stock */}
       <input
@@ -103,75 +143,79 @@ const ProductForm = ({ initialData = null, categories,collections, onSubmit, onC
       />
       {errors.stock && <p className="text-red-500 text-sm">{errors.stock}</p>}
 
-      {/* Categoría */} 
+      {/* Categoría */}
       <select
-        name="categoria"
-        value={product.categoria}
+        name="categoryId"
+        value={product.categoryId}
         onChange={handleChange}
         className="border p-2 rounded w-full"
       >
         <option value={0}>Selecciona una categoría</option>
-        {categories?.map((cat) => (
-          <option key={cat.id_category} value={cat.id_category}>
-            {cat.category_name}
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>
+            {cat.category_name ?? cat.name}
           </option>
         ))}
       </select>
-      
-      {/* Colección */} 
+      {errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId}</p>}
+
+      {/* Colección */}
       <select
-        name="coleccion"
-        value={product.coleccion} 
+        name="collectionId"
+        value={product.collectionId}
         onChange={handleChange}
         className="border p-2 rounded w-full"
       >
         <option value={0}>Selecciona una colección</option>
-        {collections?.map((col) => (
-          <option key={col.id_collection} value={col.id_collection}>
+        {collections.map((col) => (
+          <option key={col.id} value={col.id}>
             {col.collection_name}
           </option>
         ))}
       </select>
-
-
+      {errors.collectionId && <p className="text-red-500 text-sm">{errors.collectionId}</p>}
 
       {/* Descripción */}
       <textarea
-        name="descripcion"
-        value={product.descripcion}
+        name="description"
+        value={product.description}
         onChange={handleChange}
         rows={3}
+        placeholder="Descripción del producto"
         className="border p-2 rounded w-full"
       />
-      {errors.descripcion && <p className="text-red-500 text-sm">{errors.descripcion}</p>}
+      {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
 
-      {/* Imagen */}
+      {/* Imagenes */}
       <FileUploaderRegular
         pubkey={import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY}
         multiple={true}
         imgOnly
-        onFileUploadSuccess={(file) =>
-          setProduct((prev) => ({
-            ...prev,
-            imageUrl: file.cdnUrl, // ← guardamos el URL en imageUrl
-          }))
-        }
+        onFileUploadSuccess={handleAddImage}
       />
+      <p className="text-gray-500 text-sm">{product.images.length} / 3 imágenes</p>
+      {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
 
-      {product.imageUrl && (
-        <img
-          src={product.imageUrl}
-          alt="preview"
-          className="w-32 h-32 object-cover rounded"
-        />
-      )}
-      {errors.imageUrl && <p className="text-red-500 text-sm">{errors.imageUrl}</p>}
+      {/* Preview de imágenes */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {product.images.map((url, i) => (
+          <div key={i} className="relative">
+            <img src={url} alt={`preview-${i}`} className="w-24 h-24 object-cover rounded" />
+            <button
+              type="button"
+              onClick={() => handleRemoveImage(i)}
+              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
 
+      {/* Acciones */}
       <div className="flex justify-end gap-3">
-        <button type="button" onClick={onCancel}>
-          Cancelar
-        </button>
-        <button type="submit">
+        <button type="button" onClick={onCancel} className="px-3 py-1 border rounded">Cancelar</button>
+        <button type="submit" className="px-3 py-1 bg-[#5e8c77] text-white rounded">
           {isEditing ? "Guardar cambios" : "Crear producto"}
         </button>
       </div>

@@ -1,89 +1,88 @@
 import {
-    getAllCollections,
-    getCollectionById,
-    createCollection,
-    updateCollection,
-    removeCollection,
+  getAllCollections,
+  getCollectionById,
+  createCollection,
+  updateCollection,
+  removeCollection,
 } from "@/api/collection.api";
 
 /* =========================
    OBTENER TODAS
 ========================= */
 export const fetchAllCollections = async () => {
-    const categories = await getAllCollections();
-
-    // no hay lógica de negocio aquí (sin price)
-    return categories;
+  return await getAllCollections();
 };
 
 /* =========================
    OBTENER POR ID
 ========================= */
 export const fetchCollectionById = async (id) => {
-    if (!id) {
-        throw new Error("El id de la categoría es obligatorio");
-    }
+  if (!id) {
+    throw new Error("El id de la colección es obligatorio");
+  }
 
-    return await getCollectionById(id);
+  return await getCollectionById(id);
 };
 
 /* =========================
    CREAR
 ========================= */
 export const saveCollection = async (collection) => {
-    if (!collection) {
-        throw new Error("Los datos de la categoría son obligatorios");
-    }
+  if (!collection) {
+    throw new Error("Los datos de la colección son obligatorios");
+  }
 
-    if (!collection.collection_name?.trim()) {
-        throw new Error("El nombre de la categoría es obligatorio");
-    }
+  if (!collection.collection_name?.trim()) {
+    throw new Error("El nombre de la colección es obligatorio");
+  }
 
-    const payload = {
-        collection_name: collection.collection_name,
-        description: collection.description ?? "",
-    };
+  const payload = {
+    collection_name: collection.collection_name.trim(),
+    description: collection.description?.trim() ?? "",
+  };
 
-    const createdCollection = await createCollection(payload);
+  const created = await createCollection(payload);
 
-    if (!createdCollection) {
-        throw new Error("No se pudo crear la categoría");
-    }
+  if (!created) {
+    throw new Error("No se pudo crear la colección");
+  }
 
-    return createdCollection;
+  return created;
 };
 
 /* =========================
-   EDITAR
+   ACTUALIZAR
 ========================= */
 export const editCollection = async (id, collection) => {
-    if (!id) {
-        throw new Error("El id de la categoría es obligatorio");
-    }
+  if (!id) {
+    throw new Error("El id de la colección es obligatorio");
+  }
+  if (!collection || !collection.collection_name?.trim()) {
+    throw new Error("El nombre de la colección es obligatorio");
+  }
 
-    const payload = {
-        collection_name: collection.collection_name,
-        description: collection.description ?? "",
-    };
+  const payload = {
+    collection_name: collection.collection_name.trim(),
+    description: collection.description?.trim() ?? "",
+  };
 
-    const updatedCollection = await updateCollection(id, payload);
+  const updated = await updateCollection(id, payload);
 
-    if (!updatedCollection) {
-        throw new Error("No se pudo actualizar la categoría");
-    }
+  if (!updated) {
+    throw new Error("No se pudo actualizar la colección");
+  }
 
-    return updatedCollection;
+  return updated;
 };
 
 /* =========================
    ELIMINAR
 ========================= */
 export const deleteCollection = async (id) => {
-    if (!id) {
-        throw new Error("El id de la categoría es obligatorio");
-    }
+  if (!id) {
+    throw new Error("El id de la colección es obligatorio");
+  }
 
-    await removeCollection(id);
-
-    return true;
+  await removeCollection(id);
+  return true;
 };
