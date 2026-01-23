@@ -12,12 +12,12 @@ import {
 } from "@/services/category.service";
 
 const CategoryCreate = () => {
-  const [categorias, setCategorias] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
-    category_name: "",
+    name: "",
     description: "",
   });
 
@@ -28,7 +28,7 @@ const CategoryCreate = () => {
     const loadCategories = async () => {
       try {
         const data = await fetchAllCategories();
-        setCategorias(data);
+        setCategories(data);
       } catch (err) {
         toast.error("Error al cargar categorías");
       }
@@ -41,7 +41,7 @@ const CategoryCreate = () => {
      VALIDACIÓN
   ========================= */
   const validateCategory = () => {
-    if (!formData.category_name.trim()) {
+    if (!formData.name.trim()) {
       return "El nombre es obligatorio";
     }
     return null;
@@ -58,18 +58,18 @@ const CategoryCreate = () => {
     }
 
     // Normalizar el nombre de la categoría
-    const normalizedCategoryName = capitalizeFirst(formData.category_name);
+    const normalizedCategoryName = capitalizeFirst(formData.name);
 
     const payload = {
       ...formData,
-      category_name: normalizedCategoryName,
+      name: normalizedCategoryName,
     };
 
     try {
       const created = await saveCategory(payload);
 
       // Actualizar estado de categorías
-      setCategorias((prev) => [created, ...prev]);
+      setCategories((prev) => [created, ...prev]);
 
       toast.success("Categoría creada correctamente");
       resetForm();
@@ -90,21 +90,21 @@ const CategoryCreate = () => {
 
     const payload = {
       ...formData,
-      category_name: capitalizeFirst(formData.category_name),
+      name: capitalizeFirst(formData.name),
     };
 
     try {
-      const updated = await editCategory(editingCategory.id_category, payload);
+      const updated = await editCategory(editingCategory.category, payload);
 
-      /* setCategorias((prev) =>
+      /* setCategories((prev) =>
         prev.map((c) =>
-          c.id_category === editingCategory.id_category ? updated : c
+          c.category === editingCategory.category ? updated : c
         )
       ); */
 
-      setCategorias((prev) =>
+      setCategories((prev) =>
         prev.map((c) =>
-          c.id_category === editingCategory.id_category
+          c.category === editingCategory.category
             ? { ...c, ...updated }
             : c
         )
@@ -127,8 +127,8 @@ const CategoryCreate = () => {
     try {
       await deleteCategory(idCategory);
 
-      setCategorias((prev) =>
-        prev.filter((c) => c.id_category !== idCategory)
+      setCategories((prev) =>
+        prev.filter((c) => c.category !== idCategory)
       );
 
       toast.success("Categoría eliminada");
@@ -138,7 +138,7 @@ const CategoryCreate = () => {
   };
 
   const resetForm = () => {
-    setFormData({ category_name: "", description: "" });
+    setFormData({ name: "", description: "" });
     setEditingCategory(null);
     setShowForm(false);
   };
@@ -148,9 +148,9 @@ const CategoryCreate = () => {
   ========================= */
   const term = searchTerm.toLowerCase();
 
-  const filteredCategories = categorias.filter(
+  const filteredCategories = categories.filter(
     (c) =>
-      c.category_name.toLowerCase().includes(term) ||
+      c.name.toLowerCase().includes(term) ||
       (c.description ?? "").toLowerCase().includes(term)
   );
 
@@ -193,12 +193,12 @@ const CategoryCreate = () => {
         <div className="grid gap-4">
           {filteredCategories.map((categoria) => (
             <div
-              key={categoria.id_category}
+              key={categoria.category}
               className="bg-white rounded-xl shadow p-4 flex justify-between"
             >
               <div>
                 <h3 className="font-semibold">
-                  {categoria.category_name}
+                  {categoria.name}
                 </h3>
                 <p className="text-sm text-gray-500">
                   {categoria.description || "Sin descripción"}
@@ -211,7 +211,7 @@ const CategoryCreate = () => {
                     setEditingCategory(categoria);
                     setShowForm(true);
                     setFormData({
-                      category_name: categoria.category_name,
+                      name: categoria.name,
                       description: categoria.description ?? "",
                     });
                   }}
@@ -223,7 +223,7 @@ const CategoryCreate = () => {
 
                 <button
                   onClick={() =>
-                    handleDeleteCategory(categoria.id_category)
+                    handleDeleteCategory(categoria.category)
                   }
                   className="text-red-600 flex items-center"
                 >
@@ -248,11 +248,11 @@ const CategoryCreate = () => {
           <input
             type="text"
             placeholder="Nombre de la categoría"
-            value={formData.category_name}
+            value={formData.name}
             onChange={(e) =>
               setFormData({
                 ...formData,
-                category_name: e.target.value,
+                name: e.target.value,
               })
             }
             className="w-full border rounded-lg px-3 py-2"

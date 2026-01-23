@@ -17,7 +17,7 @@ const CollectionCreate = () => {
   const [editingCollection, setEditingCollection] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
-    collection_name: "",
+    name: "",
     description: "",
   });
 
@@ -41,7 +41,7 @@ const CollectionCreate = () => {
      VALIDACIÓN
   ========================= */
   const validateCollection = () => {
-    if (!formData.collection_name.trim()) {
+    if (!formData.name.trim()) {
       return "El nombre es obligatorio";
     }
     return null;
@@ -58,11 +58,11 @@ const CollectionCreate = () => {
     }
 
     // Normalizar el nombre de la colección
-    const normalizedCollectionName = capitalizeFirst(formData.collection_name);
+    const normalizedCollectionName = capitalizeFirst(formData.name);
 
     const payload = {
       ...formData,
-      collection_name: normalizedCollectionName,
+      name: normalizedCollectionName,
     };
 
     try {
@@ -90,21 +90,22 @@ const CollectionCreate = () => {
 
     const payload = {
       ...formData,
-      collection_name: capitalizeFirst(formData.collection_name),
+      name: capitalizeFirst(formData.name),
     };
 
     try {
-      const updated = await editCollection(editingCollection.id_collection, payload);
+      const updated = await editCollection(editingCollection.id, payload);
+      console.log("aquiiii",editingCollection.id);
 
       /* setColecciones((prev) =>
         prev.map((c) =>
-          c.id_collection === editingCollection.id_collection ? updated : c
+          c.id === editingCollection.id ? updated : c
         )
       ); */
 
       setColecciones((prev) =>
         prev.map((c) =>
-          c.id_collection === editingCollection.id_collection
+          c.id === editingCollection.id
             ? { ...c, ...updated }
             : c
         )
@@ -128,7 +129,7 @@ const CollectionCreate = () => {
       await deleteCollection(idCollection);
 
       setColecciones((prev) =>
-        prev.filter((c) => c.id_collection !== idCollection)
+        prev.filter((c) => c.id !== idCollection)
       );
 
       toast.success("Colección eliminada");
@@ -138,7 +139,7 @@ const CollectionCreate = () => {
   };
 
   const resetForm = () => {
-    setFormData({ collection_name: "", description: "" });
+    setFormData({ name: "", description: "" });
     setEditingCollection(null);
     setShowForm(false);
   };
@@ -150,7 +151,7 @@ const CollectionCreate = () => {
 
   const filteredCategories = colecciones.filter(
     (c) =>
-      c.collection_name.toLowerCase().includes(term) ||
+      c.name.toLowerCase().includes(term) ||
       (c.description ?? "").toLowerCase().includes(term)
   );
 
@@ -191,27 +192,27 @@ const CollectionCreate = () => {
 
         {/* LISTADO */}
         <div className="grid gap-4">
-          {filteredCategories.map((categoria) => (
+          {filteredCategories.map((collection) => (
             <div
-              key={categoria.id_collection}
+              key={collection.id}
               className="bg-white rounded-xl shadow p-4 flex justify-between"
             >
               <div>
                 <h3 className="font-semibold">
-                  {categoria.collection_name}
+                  {collection.name}
                 </h3>
                 <p className="text-sm text-gray-500">
-                  {categoria.description || "Sin descripción"}
+                  {collection.description || "Sin descripción"}
                 </p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => {
-                    setEditingCollection(categoria);
+                    setEditingCollection(collection);
                     setFormData({
-                      collection_name: categoria.collection_name,
-                      description: categoria.description ?? "",
+                      name: collection.name,
+                      description: collection.description ?? "",
                     });
                   }}
                   className="text-indigo-600 flex items-center"
@@ -222,7 +223,7 @@ const CollectionCreate = () => {
 
                 <button
                   onClick={() =>
-                    handleDeleteCollection(categoria.id_collection)
+                    handleDeleteCollection(collection.id)
                   }
                   className="text-red-600 flex items-center"
                 >
@@ -247,11 +248,11 @@ const CollectionCreate = () => {
           <input
             type="text"
             placeholder="Nombre de la colección"
-            value={formData.collection_name}
+            value={formData.name}
             onChange={(e) =>
               setFormData({
                 ...formData,
-                collection_name: e.target.value,
+                name: e.target.value,
               })
             }
             className="w-full border rounded-lg px-3 py-2"
