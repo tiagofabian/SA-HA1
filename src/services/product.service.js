@@ -53,6 +53,13 @@ export const saveProduct = async (product) => {
   if (product.stock != null && Number(product.stock) < 0) throw new Error("El stock no puede ser negativo");
   if (!product.categoryId || Number(product.categoryId) <= 0) throw new Error("La categoría es obligatoria");
 
+  // Construir collections de manera consistente
+  const collections = Array.isArray(product.collections)
+    ? product.collections.map(c =>
+        typeof c === "number" ? { id: c } : { id: c.id }
+      )
+    : [];
+
   const payload = {
     name: product.name,
     price: Number(product.price),
@@ -60,7 +67,7 @@ export const saveProduct = async (product) => {
     description: product.description ?? "",
     images: product.images ?? [],
     categoryId: Number(product.categoryId),
-    collections: product.collections ?? [],
+    collections,
   };
 
   return await createProduct(payload);

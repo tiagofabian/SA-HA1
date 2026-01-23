@@ -32,17 +32,16 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
         stock: initialData.stock ?? 0,
         description: initialData.description ?? "",
         categoryId: initialData.category?.id ?? 0,
-        // SOLO colecciones existentes
         collectionIds: initialData.collections?.length
           ? initialData.collections.map(c => ({ id: c.id, name: c.name }))
           : [],
-        images: initialData.imageUrls ?? [],
+        images: initialData.images ?? [],
       });
     } else {
-      // Nuevo producto: array vacío
       setProduct(prev => ({
         ...prev,
         collectionIds: [],
+        images: [],
       }));
     }
   }, [initialData]);
@@ -59,6 +58,9 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
 
       if (name === "categoryId") {
         newValue = Number(value); // convertir a número
+      }
+      if (name === "price" || name === "stock") {
+        newValue = value === "" ? "" : Number(value);
       }
 
       return { ...prev, [name]: newValue };
@@ -101,9 +103,7 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
     if (!product.description.trim()) newErrors.description = "La descripción es obligatoria";
     if (!product.price || Number(product.price) <= 0) newErrors.price = "El precio debe ser mayor a 0";
     if (product.stock !== "" && Number(product.stock) < 0) newErrors.stock = "El stock no puede ser negativo";
-    if (!product.categoryId) newErrors.categoryId = "La categoría es obligatoria";
-
-    if (!product.images || product.images.length === 0) newErrors.images = "Se requiere al menos una imagen";
+    if (!product.categoryId || product.categoryId === 0) newErrors.categoryId = "La categoría es obligatoria";
     if (product.images.length > 3) newErrors.images = "No se pueden subir más de 3 imágenes";
 
     if (Object.keys(newErrors).length > 0) {
@@ -113,14 +113,18 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
 
     setErrors({});
 
-    // Preparar payload correcto
     const payload = {
-      ...product,
-      categoryId: Number(product.categoryId), // categoría como número
-      collections: product.collectionIds.map(c => ({ id: c.id })), // solo id
+      name: product.name,
+      description: product.description ?? "",
+      price: Number(product.price),
+      stock: product.stock !== "" ? Number(product.stock) : null,
+      categoryId: Number(product.categoryId),
+      collections: product.collectionIds?.length
+        ? product.collectionIds.map(c => ({ id: c.id }))
+        : [],
+      images: product.images ?? [],
     };
 
-    console.log("payload listo para enviar:", payload);
     onSubmit(payload);
   };
 

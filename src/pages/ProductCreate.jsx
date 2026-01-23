@@ -36,6 +36,8 @@ const ProductCreate = () => {
 
         const collectionsData = await fetchAllCollections();
         setCollections(collectionsData ?? []);
+
+        
       } catch (err) {
         toast.error("Error al cargar products, categorías o colecciones");
       }
@@ -65,20 +67,25 @@ const ProductCreate = () => {
     const error = validateProduct(productData);
     if (error) return toast.error(error);
 
-    const newProduct = {
+    // Payload adaptado a tu DTO ProductRequest
+    const payload = {
       name: productData.name,
       description: productData.description ?? "",
       price: Number(productData.price),
       stock: productData.stock != null ? Number(productData.stock) : null,
       categoryId: Number(productData.categoryId),
-      collections: productData.collectionIds
-        ? productData.collectionIds.map(Number)
+      collections: Array.isArray(productData.collectionIds)
+        ? productData.collectionIds.map(c =>
+            typeof c === "number" ? { id: c } : { id: c.id }
+          )
         : [],
       images: productData.images ?? [],
     };
 
+    console.log("dataProduct listo para enviar:", payload);
+
     try {
-      const created = await saveProduct(newProduct);
+      const created = await saveProduct(payload);
       setProductos((prev) => [created, ...prev]);
       toast.success("Producto creado correctamente");
       setShowForm(false);
@@ -86,6 +93,7 @@ const ProductCreate = () => {
       toast.error(err.message || "Error al crear product");
     }
   };
+
 
   // =========================
   // EDITAR PRODUCTO
@@ -126,8 +134,6 @@ const ProductCreate = () => {
   };
 
 
-
-
   // =========================
   // ELIMINAR PRODUCTO
   // =========================
@@ -154,6 +160,7 @@ const ProductCreate = () => {
       p.category?.name?.toLowerCase().includes(termLower)
     );
   });
+
 
   // =========================
   // RENDER
