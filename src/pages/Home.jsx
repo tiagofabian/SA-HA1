@@ -6,8 +6,7 @@ import Benefits from '../components/Benefits'
 import Carousel from "@/components/Carousel";
 import CollectionsAlternate from "@/components/CollectionsAlternate";
 import FeaturedCollection from "@/components/FeaturedCollection"; // Importar nuevo componente
-import { fetchAllProductCollections } from '@/services/collection-product.service';
-import { fetchProductById } from '@/services/product.service';
+import { fetchAllProducts } from '@/services/product.service';
 
 const Home = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -15,34 +14,23 @@ const Home = () => {
   useEffect(() => {
     const loadCollectionProducts = async () => {
       try {
-        // 1. Obtener todas las relaciones product-collection
-        const productCollections = await fetchAllProductCollections();
-        console.log('Todas las relaciones:', productCollections);
+        // 1. Obtener todos los productos
+        const allProducts = await fetchAllProducts();
+        console.log('Todos los productos:', allProducts);
         
-        // 2. Filtrar por collectionId = 3
-        const collectionProductIds = productCollections
-          .filter(pc => pc.collectionId === 3)
-          .map(pc => pc.productId);
-        console.log('Product IDs para colección 3:', collectionProductIds);
+        // 2. Mapear al formato que espera el Carousel
+        const products = allProducts
+          .map(product => ({
+            id: product.id,
+            title: product.nombre || product.title,
+            price: `$${product.precio || product.price}`,
+            image: product.imageUrls?.[0]
+          }));
         
-        // 3. Obtener los datos completos de cada producto
-        const products = await Promise.all(
-          collectionProductIds.map(async (productId) => {
-            const product = await fetchProductById(productId);
-            console.log('Producto completo:', product); // LOG para ver estructura
-            return {
-              id: product.id,
-              title: product.nombre || product.title,
-              price: `$${product.precio || product.price}`,
-              image: product.imageUrls?.[0]
-            };
-          })
-        );
-        
-        console.log('Productos obtenidos:', products);
+        console.log('Productos para mostrar:', products);
         setFilteredProducts(products);
       } catch (error) {
-        console.error('Error al cargar los productos de la colección:', error);
+        console.error('Error al cargar los productos:', error);
         setFilteredProducts([]);
       }
     };
