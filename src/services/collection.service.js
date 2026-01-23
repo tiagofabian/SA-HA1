@@ -32,12 +32,12 @@ export const saveCollection = async (collection) => {
     throw new Error("Los datos de la colección son obligatorios");
   }
 
-  if (!collection.collection_name?.trim()) {
+  if (!collection.name?.trim()) {
     throw new Error("El nombre de la colección es obligatorio");
   }
 
   const payload = {
-    collection_name: collection.collection_name.trim(),
+    name: collection.name.trim(),
     description: collection.description?.trim() ?? "",
   };
 
@@ -57,12 +57,12 @@ export const editCollection = async (id, collection) => {
   if (!id) {
     throw new Error("El id de la colección es obligatorio");
   }
-  if (!collection || !collection.collection_name?.trim()) {
+  if (!collection || !collection.name?.trim()) {
     throw new Error("El nombre de la colección es obligatorio");
   }
 
   const payload = {
-    collection_name: collection.collection_name.trim(),
+    name: collection.name.trim(),
     description: collection.description?.trim() ?? "",
   };
 

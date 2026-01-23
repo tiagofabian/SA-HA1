@@ -35,12 +35,12 @@ export const saveCategory = async (category) => {
     throw new Error("Los datos de la categoría son obligatorios");
   }
 
-  if (!category.category_name?.trim()) {
+  if (!category.name?.trim()) {
     throw new Error("El nombre de la categoría es obligatorio");
   }
 
   const payload = {
-    category_name: category.category_name,
+    name: category.name,
     description: category.description ?? "",
   };
 
@@ -62,7 +62,7 @@ export const editCategory = async (id, category) => {
   }
 
   const payload = {
-    category_name: category.category_name,
+    name: category.name,
     description: category.description ?? "",
   };
 
