@@ -34,14 +34,13 @@ export const saveCategory = async (category) => {
   if (!category) {
     throw new Error("Los datos de la categoría son obligatorios");
   }
-
-  if (!category.category_name?.trim()) {
+  if (!category.name) {
     throw new Error("El nombre de la categoría es obligatorio");
   }
 
   const payload = {
-    category_name: category.category_name,
-    description: category.description ?? "",
+    name: category.name.trim(),
+    description: category.description.trim() ?? "",
   };
 
   const createdCategory = await createCategory(payload);
@@ -60,10 +59,13 @@ export const editCategory = async (id, category) => {
   if (!id) {
     throw new Error("El id de la categoría es obligatorio");
   }
+  if (!category || !category.name) {
+    throw new Error("El nombre de la colección es obligatorio");
+  }
 
   const payload = {
-    category_name: category.category_name,
-    description: category.description ?? "",
+    name: category.name.trim(),
+    description: category.description.trim() ?? "",
   };
 
   const updatedCategory = await updateCategory(id, payload);
