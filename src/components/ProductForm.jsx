@@ -9,7 +9,7 @@ const ProductForm = ({ initialData = null, categories, collections, onSubmit, on
     nombre: "",
     precio: "",
     categoria: 0,
-    coleccion: 0,   // 👈 NUEVO
+    coleccion: 0,   // NUEVO
     descripcion: "",
     imageUrl: "", // ← aquí usamos imageUrl
     stock: "",
