@@ -98,8 +98,7 @@ export const editProduct = async (id, product) => {
     id_category: product.id_category,
   };
 
-  const updatedProduct = await updateProduct(id, payload);
-
+  
   const updatedProduct = await updateProduct(id, payload);
   if (!updatedProduct) throw new Error("No se pudo actualizar el producto");
 
