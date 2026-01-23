@@ -96,11 +96,20 @@ const CategoryCreate = () => {
     try {
       const updated = await editCategory(editingCategory.id_category, payload);
 
-      setCategorias((prev) =>
+      /* setCategorias((prev) =>
         prev.map((c) =>
           c.id_category === editingCategory.id_category ? updated : c
         )
+      ); */
+
+      setCategorias((prev) =>
+        prev.map((c) =>
+          c.id_category === editingCategory.id_category
+            ? { ...c, ...updated }
+            : c
+        )
       );
+
 
       toast.success("Categoría actualizada");
       resetForm();
@@ -200,6 +209,7 @@ const CategoryCreate = () => {
                 <button
                   onClick={() => {
                     setEditingCategory(categoria);
+                    setShowForm(true);
                     setFormData({
                       category_name: categoria.category_name,
                       description: categoria.description ?? "",

@@ -96,11 +96,20 @@ const CollectionCreate = () => {
     try {
       const updated = await editCollection(editingCollection.id_collection, payload);
 
-      setColecciones((prev) =>
+      /* setColecciones((prev) =>
         prev.map((c) =>
           c.id_collection === editingCollection.id_collection ? updated : c
         )
+      ); */
+
+      setColecciones((prev) =>
+        prev.map((c) =>
+          c.id_collection === editingCollection.id_collection
+            ? { ...c, ...updated }
+            : c
+        )
       );
+
 
       toast.success("Colección actualizada");
       resetForm();

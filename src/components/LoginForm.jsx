@@ -20,6 +20,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+ 
     if (!formData.email || !formData.password) {
       toast.error("Por favor completa todos los campos");
       return;
@@ -52,6 +53,7 @@ const LoginForm = () => {
   const handleGoogleLogin = () => {
     toast.info("Login con Google (pendiente de integración)");
   };
+
 
   return (
     <section className="bg-background py-20">
@@ -118,11 +120,14 @@ const LoginForm = () => {
                 {/* Button */}
                 <Button
                   type="submit"
-                  className="google-font-text !font-medium w-full bg-accent text-accent-foreground hover:bg-accent/90 flex gap-2"
+                  aria-label="Ingresar"
+                  className="mx-auto w-full max-w-xs flex items-center justify-center gap-2 py-6 text-base"
                 >
-                  <LogIn className="h-4 w-4" />
+                  <LogIn className="h-5 w-5" />
                   Ingresar
                 </Button>
+
+
               </form>
 
               {/* Divider */}

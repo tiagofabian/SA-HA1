@@ -8,18 +8,19 @@ const Cart = () => {
   const { cart, removeFromCart, addToCart, decreaseQuantity } =
     useCart();
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + Number(item.precio || 0) * item.quantity,
     0
   );
+
 
   if (cart.length === 0) {
     return (
       <div className="container mx-auto px-6 py-20 text-center">
         <h2 className="text-2xl font-semibold mb-4">
-          Tu carrito está vacío 
+          Tu carrito está vacío
         </h2>
         <Link to="/catalogo">
           <Button>Ir al catálogo</Button>
@@ -47,7 +48,7 @@ const navigate = useNavigate();
               <div className="flex-1">
                 <h3 className="font-semibold text-lg">{item.product_name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  ${item.price.toLocaleString("es-CL")}
+                  ${Number(item.precio || 0).toLocaleString("es-CL")}
                 </p>
 
                 {/* Cantidad */}
