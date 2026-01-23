@@ -99,12 +99,14 @@ const ProductCreate = () => {
       description: productData.description ?? "",
       price: Number(productData.price),
       stock: productData.stock != null ? Number(productData.stock) : null,
-      categoryId: Number(productData.categoryId),
-      collections: productData.collectionIds
-        ? productData.collectionIds.map(Number)
+      categoryId: Number(productData.categoryId),  // categoría como número
+      collections: productData.collectionIds?.length
+        ? productData.collectionIds.map(c => ({ id: c.id })) // SOLO id
         : [],
       images: productData.images ?? [],
     };
+
+    console.log("dataProduct listo para enviar:", payload);
 
     try {
       const updated = await editProduct(editingProduct.id, payload);
@@ -122,6 +124,9 @@ const ProductCreate = () => {
       toast.error(err.message || "Error al actualizar product");
     }
   };
+
+
+
 
   // =========================
   // ELIMINAR PRODUCTO
