@@ -40,7 +40,8 @@ export const saveCategory = async (category) => {
 
   const payload = {
     name: category.name.trim(),
-    description: category.description.trim() ?? "",
+    description: category.description?.trim() ?? "",
+    image: category.image?.trim() ?? "", // ← nuevo campo
   };
 
   const createdCategory = await createCategory(payload);
@@ -60,12 +61,13 @@ export const editCategory = async (id, category) => {
     throw new Error("El id de la categoría es obligatorio");
   }
   if (!category || !category.name) {
-    throw new Error("El nombre de la colección es obligatorio");
+    throw new Error("El nombre de la categoría es obligatorio");
   }
 
   const payload = {
     name: category.name.trim(),
-    description: category.description.trim() ?? "",
+    description: category.description?.trim() ?? "",
+    image: category.image?.trim() ?? "", // ← nuevo campo
   };
 
   const updatedCategory = await updateCategory(id, payload);
@@ -76,6 +78,7 @@ export const editCategory = async (id, category) => {
 
   return updatedCategory;
 };
+
 
 /* =========================
    ELIMINAR
