@@ -153,7 +153,7 @@ const ProductForm = ({
         <option value={0}>Selecciona una categoría</option>
         {categories.map((cat) => (
           <option key={cat.id} value={cat.id}>
-            {cat.category_name ?? cat.name}
+            {cat.name}
           </option>
         ))}
       </select>
@@ -169,7 +169,7 @@ const ProductForm = ({
         <option value={0}>Selecciona una colección</option>
         {collections.map((col) => (
           <option key={col.id} value={col.id}>
-            {col.collection_name}
+            {col.name}
           </option>
         ))}
       </select>
