@@ -4,6 +4,7 @@ import "@uploadcare/react-uploader/core.css";
 
 const ProductForm = ({ initialData = null, categories = [], collections = [], onSubmit, onCancel }) => {
   const isEditing = Boolean(initialData);
+  const [newTag, setNewTag] = useState(""); // valor temporal del input
 
   /* =========================
      STATE
@@ -31,9 +32,18 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
         stock: initialData.stock ?? 0,
         description: initialData.description ?? "",
         categoryId: initialData.category?.id ?? 0,
-        collectionIds: initialData.collections?.map(c => c.id) ?? [],
+        // SOLO colecciones existentes
+        collectionIds: initialData.collections?.length
+          ? initialData.collections.map(c => ({ id: c.id, name: c.name }))
+          : [],
         images: initialData.imageUrls ?? [],
       });
+    } else {
+      // Nuevo producto: array vacío
+      setProduct(prev => ({
+        ...prev,
+        collectionIds: [],
+      }));
     }
   }, [initialData]);
 
@@ -43,11 +53,18 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
   ========================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prev) => ({
-      ...prev,
-      [name]: name === "categoryId" || name === "collectionId" ? Number(value) : value,
-    }));
+
+    setProduct((prev) => {
+      let newValue = value;
+
+      if (name === "categoryId") {
+        newValue = Number(value); // convertir a número
+      }
+
+      return { ...prev, [name]: newValue };
+    });
   };
+
 
   /* =========================
      AGREGAR IMÁGENES (máx 3)
@@ -95,8 +112,19 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
     }
 
     setErrors({});
-    onSubmit(product);
+
+    // Preparar payload correcto
+    const payload = {
+      ...product,
+      categoryId: Number(product.categoryId), // categoría como número
+      collections: product.collectionIds.map(c => ({ id: c.id })), // solo id
+    };
+
+    console.log("payload listo para enviar:", payload);
+    onSubmit(payload);
   };
+
+
 
   /* =========================
      RENDER
@@ -151,29 +179,61 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
         ))}
       </select>
 
-      {/* Colección */}
-      <div className="flex flex-wrap gap-2">
-        {collections.map(col => (
-          <label key={col.id} className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              value={col.id}
-              checked={product.collectionIds.includes(col.id)}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                setProduct(prev => ({
-                  ...prev,
-                  collectionIds: prev.collectionIds.includes(val)
-                    ? prev.collectionIds.filter(id => id !== val)
-                    : [...prev.collectionIds, val]
-                }));
-              }}
-            />
-            {col.name}
-          </label>
-        ))}
+      {/* Colecciones */}
+      <div className="flex flex-col">
+        <label className="mb-1 text-sm font-medium text-gray-700">Colecciones</label>
+
+        <select
+          name="collectionIds"
+          value="" // siempre vacío para permitir "click" sin seleccionar previamente
+          onChange={(e) => {
+            const selectedId = Number(e.target.value);
+            if (!selectedId) return;
+
+            const col = collections.find(c => c.id === selectedId);
+            if (!col) return;
+
+            // Evitar duplicados
+            if (product.collectionIds.some(c => c.id === col.id)) return;
+
+            setProduct(prev => ({
+              ...prev,
+              collectionIds: [...prev.collectionIds, { id: col.id, name: col.name }]
+            }));
+
+            e.target.value = ""; // reset del select para permitir agregar otro
+          }}
+          className="border p-2 rounded w-full bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#5e8c77] focus:border-[#5e8c77]"
+        >
+          <option value="">Selecciona una colección</option>
+          {collections.map(col => (
+            <option key={col.id} value={col.id}>{col.name}</option>
+          ))}
+        </select>
+
+        {/* Tags visuales */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          {product.collectionIds
+            .filter(col => col.id) // <-- evita tags vacíos
+            .map((col, i) => (
+              <div key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
+                <span>{col.name}</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setProduct(prev => ({
+                      ...prev,
+                      collectionIds: prev.collectionIds.filter((_, idx) => idx !== i)
+                    }))
+                  }
+                  className="text-red-500 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+          ))}
+        </div>
       </div>
-      {errors.collectionId && <p className="text-red-500 text-sm">{errors.collectionId}</p>}
 
       {/* Descripción */}
       <textarea
@@ -198,6 +258,7 @@ const ProductForm = ({ initialData = null, categories = [], collections = [], on
               pubkey={import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY}
               multiple={true}
               imgOnly
+              // theme="light"
               onFileUploadSuccess={handleAddImage}
               className="bg-[#4a7c9b] hover:bg-[#5f95b3] text-[#fff] px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-center"
             />
