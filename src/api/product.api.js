@@ -29,6 +29,44 @@ export const getProductById = async (id) => {
   return response.json();
 };
 
+// obtener productos por categoria slug
+export const getProductsByCategorySlug = async (slug) => {
+  const response = await fetch(
+    `${API_URL}/api/product/category/${slug}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Error al obtener productos por categoría (${response.status})`
+    );
+  }
+
+  return response.json();
+};
+
+// obtener productos por coleccion slug
+export const getProductsByCollectionSlug = async (slug) => {
+  const response = await fetch(
+    `${API_URL}/api/product/collection/${slug}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Error al obtener productos por colección (${response.status})`
+    );
+  }
+
+  return response.json();
+};
+
+
+
 export const getAllProducts = async () => {
   const response = await fetch(`${API_URL}/api/product`, {
     method: "GET",

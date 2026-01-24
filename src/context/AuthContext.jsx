@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   login as loginService,
   register as registerService,
+  update as updateUserService, // si quieres usar aquí también
 } from "@/services/auth.service";
 import { toast } from "react-toastify";
 
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const login = async ({ email, password }) => {
     try {
       const data = await loginService({ email, password });
-      // data = { name, email, rol, token }
+      // data = { id, name, email, rol, token }
 
       sessionStorage.setItem("auth_user", JSON.stringify(data));
       setUser(data);
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (newUser) => {
     try {
       const data = await registerService(newUser);
-      // data = { name, email, rol, token }
+      // data = { id, name, email, rol, token }
 
       sessionStorage.setItem("auth_user", JSON.stringify(data));
       setUser(data);
@@ -52,7 +53,14 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     sessionStorage.removeItem("auth_user");
     setUser(null);
-    toast.info("Usuario deslogueado")
+    toast.info("Usuario deslogueado");
+  };
+
+  //  ACTUALIZAR USUARIO EN CONTEXTO
+  const updateUserContext = (updatedUser) => {
+    // updatedUser = { id, name, email, rol, token }
+    sessionStorage.setItem("auth_user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
   };
 
   return (
@@ -63,6 +71,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        updateUserContext, // <-- nuevo método
       }}
     >
       {children}

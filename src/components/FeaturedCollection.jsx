@@ -1,27 +1,44 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import sakuraCollectionIMG from "@/assets/images/sakura-collection.png"
+import { useEffect, useState } from "react";
+import sakuraCollectionIMG from "@/assets/images/sakura-collection.png";
+import { fetchProductsByCollectionSlug } from "@/services/product.service";
+import { Link } from "react-router-dom";
 
 const FeaturedCollection = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const remainingUnits = 42; // Puedes hacer esto dinámico
+  const [remainingUnits, setRemainingUnits] = useState(42); // fallback visual
+
+  useEffect(() => {
+    const loadSakuraCollection = async () => {
+      try {
+        const products = await fetchProductsByCollectionSlug("sakura");
+
+        console.log("aquiii", products)
+
+        // 👇 solo esto se vuelve dinámico
+        setRemainingUnits(products.length);
+      } catch (err) {
+        console.error("Error cargando colección Sakura", err);
+      }
+    };
+    
+    loadSakuraCollection();
+  }, []);
 
   return (
     <section className="py-20 overflow-hidden">
       <div className="container mx-auto px-6 md:px-12">
         <div className="bg-gradient-to-br from-[#304131] to-[#4f7e6b] rounded-3xl overflow-hidden shadow-2xl">
           <div className="flex flex-col lg:flex-row items-stretch">
-            {/* Imagen (60% ancho en desktop) */}
+            {/* Imagen (ESTÁTICA) */}
             <div className="lg:w-3/5 relative overflow-hidden">
               <img
                 src={sakuraCollectionIMG}
                 alt="Sakura Collection"
                 className="w-full h-full min-h-[500px] object-cover transform transition-transform duration-700 hover:scale-105"
               />
-              {/* Overlay sutil */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent lg:from-black/5" />
 
-              {/* Badge en imagen */}
               <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
                 <span className="google-font-text font-bold text-[#304131] text-sm">
                   COLECCIÓN EXCLUSIVA
@@ -29,10 +46,9 @@ const FeaturedCollection = () => {
               </div>
             </div>
 
-            {/* Texto y CTA (40% ancho en desktop) */}
+            {/* Texto (ESTÁTICO) */}
             <div className="lg:w-2/5 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
               <div className="space-y-8">
-                {/* Título */}
                 <div>
                   <span className="google-font-text inline-block text-white/80 text-sm font-semibold tracking-wider uppercase mb-3">
                     Edición Limitada
@@ -45,7 +61,6 @@ const FeaturedCollection = () => {
                   </h5>
                 </div>
 
-                {/* Descripción */}
                 <div className="space-y-4">
                   <p className="google-font-text text-white/90 text-lg leading-relaxed">
                     Inspirada en la fugaz belleza de los cerezos en flor. Cada
@@ -59,7 +74,7 @@ const FeaturedCollection = () => {
                   </p>
                 </div>
 
-                {/* Información de unidades */}
+                {/* 🔹 SOLO ESTA PARTE ES DINÁMICA */}
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                   <div className="flex items-center justify-between mb-2">
                     <span className="google-font-text text-white/80 text-sm">
@@ -77,41 +92,24 @@ const FeaturedCollection = () => {
                   </div>
                 </div>
 
-                {/* Botones CTA */}
+                {/* CTA (ESTÁTICO) */}
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Button
+                    asChild
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                     className="bg-white text-[#304131] hover:bg-white/90 font-semibold py-6 text-lg flex-1 group relative overflow-hidden"
                   >
-                    <span className="google-font-text flex items-center justify-center gap-2">
-                      Ver Colección
-                      <svg
-                        className="w-5 h-5 transition-transform group-hover:translate-x-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        />
-                      </svg>
-                    </span>
-
-                    {/* Tooltip de unidades al hover */}
-                    {isHovered && (
-                      <div className="google-font-text absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white text-[#304131] px-4 py-2 rounded-lg shadow-lg text-sm whitespace-nowrap animate-fade-in-up">
-                        Solo {remainingUnits} unidades restantes
-                        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rotate-45" />
-                      </div>
-                    )}
+                    <Link
+                      to="/products/collection/sakura"
+                      className="google-font-text font-bold text-[#304131] text-sm"
+                    >
+                      Ver colección
+                    </Link>
                   </Button>
                 </div>
 
-                {/* Features adicionales */}
+                {/* Features (ESTÁTICAS) */}
                 <div className="grid grid-cols-2 gap-4 pt-6">
                   <div className="text-center">
                     <div className="google-font-text text-white text-[1.3rem] font-bold">24K</div>
@@ -130,6 +128,7 @@ const FeaturedCollection = () => {
                     <div className="google-font-text text-white/70 text-sm">Envío Gratis</div>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
