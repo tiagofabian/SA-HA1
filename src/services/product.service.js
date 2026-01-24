@@ -5,6 +5,8 @@ import {
   createProduct,
   updateProduct,
   removeProduct,
+  getProductsByCategorySlug,
+  getProductsByCollectionSlug,
 } from "@/api/product.api";
 
 /**
@@ -30,6 +32,32 @@ export const fetchAllProducts = async () => {
     ...p,
     price: Number(p.price),
     imageUrls: p.imageUrls ?? [],
+  }));
+};
+
+// 🔹 Productos por categoría (slug)
+export const fetchProductsByCategorySlug = async (slug) => {
+  if (!slug) throw new Error("El slug de la categoría es obligatorio");
+
+  const products = await getProductsByCategorySlug(slug);
+
+  return products.map((p) => ({
+    ...p,
+    imageUrls: p.imageUrls ?? [],
+    collections: p.collections ?? [],
+  }));
+};
+
+// 🔹 Productos por colección (slug)
+export const fetchProductsByCollectionSlug = async (slug) => {
+  if (!slug) throw new Error("El slug de la colección es obligatorio");
+
+  const products = await getProductsByCollectionSlug(slug);
+
+  return products.map((p) => ({
+    ...p,
+    imageUrls: p.imageUrls ?? [],
+    collections: p.collections ?? [],
   }));
 };
 

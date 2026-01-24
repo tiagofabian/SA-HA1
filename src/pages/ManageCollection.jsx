@@ -13,7 +13,7 @@ import {
   deleteCollection,
 } from "@/services/collection.service";
 
-const CollectionCreate = () => {
+const ManageCollection = () => {
   const [colecciones, setColecciones] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
@@ -144,7 +144,7 @@ const CollectionCreate = () => {
   ========================= */
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl">
         <h1 className="text-3xl font-bold mb-2">📂 Gestión de Colecciones</h1>
         <p className="text-gray-600 mb-6">Administra las colecciones de tus productos</p>
 
@@ -284,4 +284,4 @@ const CollectionCreate = () => {
   );
 };
 
-export default CollectionCreate;
+export default ManageCollection;

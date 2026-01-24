@@ -60,19 +60,17 @@ const Register = () => {
         toast.error(message || "Error al registrar el usuario");
         return;
       }
-      console.log("sadasdasdasd", registeredUser.id)
-      // 2️⃣ Crear dirección solo si hay al menos un campo completado
-      if (formData.address || formData.city || formData.region || formData.postalCode) {
-        const payload = {
-          address: formData.address || "",
-          city: formData.city || "",
-          region: formData.region || "",
-          zip_code: formData.postalCode ? Number(formData.postalCode) : null,
-          id_customer: registeredUser.id,
-        };
 
-        await saveAddress(payload);
-      }
+      // 2️⃣ Crear dirección siempre, aunque no haya data
+      const payload = {
+        address: formData.address || "",
+        city: formData.city || "",
+        region: formData.region || "",
+        zip_code: formData.postalCode ? Number(formData.postalCode) : 0,
+        id_customer: registeredUser.id,
+      };
+
+      await saveAddress(payload);
 
       toast.success(`¡Registro exitoso! Bienvenido/a ${registeredUser.name || registeredUser.email}`);
 

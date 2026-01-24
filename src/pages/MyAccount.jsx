@@ -19,6 +19,14 @@ const MyAccount = () => {
 
   const { user } = useAuth();
 
+  // Función para mostrar valor o "Sin rellenar"
+  const displayOrDefault = (value) => {
+    if (value === null || value === undefined || value === "" || value === 0) {
+      return "Sin rellenar";
+    }
+    return value;
+  };
+
   useEffect(() => {
     if (!user?.email) return;
 
@@ -37,7 +45,6 @@ const MyAccount = () => {
         if (customerData.id) {
           const addressData = await fetchAddressByIdCustomer(customerData.id);
           setAddress(addressData);
-          console.log("aquiiiiiiii".addressData)
           setAddressForm({
             address: addressData?.address || "",
             city: addressData?.city || "",
@@ -121,18 +128,21 @@ const MyAccount = () => {
               name="nombre"
               value={customerForm.nombre}
               onChange={handleCustomerChange}
+              placeholder="Nombre completo"
               className="w-full border px-2 py-1 rounded"
             />
             <input
               name="correo"
               value={customerForm.correo}
               onChange={handleCustomerChange}
+              placeholder="Correo electrónico"
               className="w-full border px-2 py-1 rounded"
             />
             <input
               name="telefono"
               value={customerForm.telefono}
               onChange={handleCustomerChange}
+              placeholder="Teléfono"
               className="w-full border px-2 py-1 rounded"
             />
             <button
@@ -150,9 +160,9 @@ const MyAccount = () => {
           </div>
         ) : (
           <>
-            <div><span className="font-semibold">Nombre:</span> {customer.nombre}</div>
-            <div><span className="font-semibold">Correo:</span> {customer.correo}</div>
-            <div><span className="font-semibold">Teléfono:</span> {customer.telefono}</div>
+            <div><span className="font-semibold">Nombre:</span> {displayOrDefault(customer.nombre)}</div>
+            <div><span className="font-semibold">Correo:</span> {displayOrDefault(customer.correo)}</div>
+            <div><span className="font-semibold">Teléfono:</span> {displayOrDefault(customer.telefono)}</div>
             <button
               className="mt-2 bg-blue-500 text-white px-4 py-1 rounded"
               onClick={() => setEditingCustomer(true)}
@@ -174,24 +184,28 @@ const MyAccount = () => {
               name="address"
               value={addressForm.address}
               onChange={handleAddressChange}
+              placeholder="Dirección"
               className="w-full border px-2 py-1 rounded"
             />
             <input
               name="city"
               value={addressForm.city}
               onChange={handleAddressChange}
+              placeholder="Ciudad"
               className="w-full border px-2 py-1 rounded"
             />
             <input
               name="region"
               value={addressForm.region}
               onChange={handleAddressChange}
+              placeholder="Región"
               className="w-full border px-2 py-1 rounded"
             />
             <input
               name="zip_code"
               value={addressForm.zip_code}
               onChange={handleAddressChange}
+              placeholder="Código Postal"
               className="w-full border px-2 py-1 rounded"
             />
             <button
@@ -209,10 +223,10 @@ const MyAccount = () => {
           </div>
         ) : (
           <>
-            <div><span className="font-semibold">Dirección:</span> {address?.address}</div>
-            <div><span className="font-semibold">Ciudad:</span> {address?.city}</div>
-            <div><span className="font-semibold">Región:</span> {address?.region}</div>
-            <div><span className="font-semibold">Código Postal:</span> {address?.zip_code}</div>
+            <div><span className="font-semibold">Dirección:</span> {displayOrDefault(address?.address)}</div>
+            <div><span className="font-semibold">Ciudad:</span> {displayOrDefault(address?.city)}</div>
+            <div><span className="font-semibold">Región:</span> {displayOrDefault(address?.region)}</div>
+            <div><span className="font-semibold">Código Postal:</span> {displayOrDefault(address?.zip_code)}</div>
             <button
               className="mt-2 bg-blue-500 text-white px-4 py-1 rounded"
               onClick={() => setEditingAddress(true)}
