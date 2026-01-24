@@ -3,7 +3,7 @@ import {
   getProductCollectionByIds,
   createProductCollection,
   removeProductCollection,
-} from "@/api/productCollection.api";
+} from "@/api/collection-product.api";
 
 /* =========================
    LISTAR TODAS
