@@ -1,62 +1,100 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Package, Truck, Home, ShoppingBag } from "lucide-react";
+import { CheckCircle, Package, Truck, Home, ShoppingBag, Calendar, MapPin, CreditCard } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const OrderConfirmation = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { user } = useAuth();
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Datos simulados del pedido
+    // Obtener datos del pedido del estado de navegación o calcularlos
     useEffect(() => {
-        // Simulamos la carga de datos del pedido
+        // Simulamos una pequeña carga
         setTimeout(() => {
-            setOrderDetails({
-                orderId: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-                date: new Date().toLocaleDateString("es-CL", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                }),
-                estimatedDelivery: new Date(
-                    Date.now() + 5 * 24 * 60 * 60 * 1000,
-                ).toLocaleDateString("es-CL", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                }),
-                shippingAddress: {
-                    name: "Juan Pérez",
-                    street: "Calle Principal 123",
-                    city: "Santiago",
-                    region: "Metropolitana",
-                    zipCode: "1234567",
-                },
-                paymentMethod: "Tarjeta de crédito",
-                items: [
-                    {
-                        id: 1,
-                        name: "Anillo Dragon Ball",
-                        price: 19990,
-                        quantity: 1,
-                        image: "/api/placeholder/64/64",
-                    },
-                    {
-                        id: 2,
-                        name: "Collar Sailor Moon",
-                        price: 24990,
-                        quantity: 2,
-                        image: "/api/placeholder/64/64",
-                    },
-                ],
-                subtotal: 69970,
-                shipping: 0,
-                total: 69970,
-            });
-            setLoading(false);
-        }, 1500);
-    }, []);
+            try {
+                // Intentar obtener datos del checkout
+                const orderData = location.state?.orderData;
+
+                if (orderData && orderData.items) {
+                    // Usar datos pasados desde Checkout
+                    setOrderDetails({
+                        ...orderData,
+                        orderId: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                        date: new Date().toLocaleDateString('es-CL', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+                            .toLocaleDateString('es-CL', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }),
+                        customerName: user?.name || "Cliente",
+                        customerEmail: user?.email || "",
+                        shippingAddress: orderData.shippingAddress || {
+                            name: user?.name || "Cliente",
+                            street: "Calle Principal 123",
+                            city: "Santiago",
+                            region: "Metropolitana",
+                            zipCode: "1234567"
+                        },
+                        paymentMethod: orderData.paymentMethod || "Tarjeta de crédito"
+                    });
+                } else {
+                    // Si no hay datos del checkout, mostrar datos básicos
+                    setOrderDetails({
+                        orderId: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                        date: new Date().toLocaleDateString('es-CL', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+                            .toLocaleDateString('es-CL', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }),
+                        customerName: user?.name || "Cliente",
+                        customerEmail: user?.email || "",
+                        shippingAddress: {
+                            name: user?.name || "Cliente",
+                            street: "Calle Principal 123",
+                            city: "Santiago",
+                            region: "Metropolitana",
+                            zipCode: "1234567"
+                        },
+                        paymentMethod: "Tarjeta de crédito",
+                        items: [],
+                        subtotal: 0,
+                        shipping: 0,
+                        total: 0,
+                        message: "No se encontraron detalles del pedido. Esto puede ser una vista de ejemplo."
+                    });
+                }
+            } catch (error) {
+                console.error("Error procesando datos del pedido:", error);
+                setOrderDetails({
+                    orderId: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                    date: new Date().toLocaleDateString('es-CL'),
+                    error: true,
+                    message: "Hubo un error al cargar los detalles del pedido."
+                });
+            } finally {
+                setLoading(false);
+            }
+        }, 1000);
+    }, [location.state, user]);
 
     if (loading) {
         return (
@@ -69,6 +107,30 @@ const OrderConfirmation = () => {
                     <p className="text-gray-600">
                         Estamos procesando los detalles de tu pedido...
                     </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!orderDetails) {
+        return (
+            <div className="max-w-4xl mx-auto my-16 px-4 sm:px-6 lg:px-8 text-center">
+                <div className="bg-white rounded-2xl shadow-lg p-12">
+                    <div className="w-24 h-24 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-6">
+                        <Package className="h-12 w-12 text-yellow-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                        No se encontró el pedido
+                    </h2>
+                    <p className="text-gray-600 mb-8">
+                        {orderDetails?.message || "No hay información disponible para este pedido."}
+                    </p>
+                    <Link to="/catalogo">
+                        <Button className="px-8 py-3 text-lg">
+                            <ShoppingBag className="mr-2 h-5 w-5" />
+                            Ir al catálogo
+                        </Button>
+                    </Link>
                 </div>
             </div>
         );
@@ -88,7 +150,10 @@ const OrderConfirmation = () => {
                         ¡Pedido Confirmado!
                     </h1>
                     <p className="text-gray-600 text-lg mb-2">
-                        Gracias por tu compra. Tu pedido ha sido procesado exitosamente.
+                        Gracias por tu compra, <span className="font-semibold">{orderDetails.customerName}</span>.
+                    </p>
+                    <p className="text-gray-500 mb-4">
+                        Hemos enviado los detalles a: {orderDetails.customerEmail || user?.email}
                     </p>
                     <div className="inline-flex items-center px-4 py-2 bg-gray-100 rounded-full">
                         <span className="font-mono font-bold text-gray-900">
@@ -130,33 +195,26 @@ const OrderConfirmation = () => {
                                 <Truck className="h-6 w-6 text-gray-400" />
                             </div>
                             <span className="font-medium text-sm">En camino</span>
-                            <p className="text-xs text-gray-500 mt-1">
-                                ~{orderDetails.estimatedDelivery}
-                            </p>
+                            <p className="text-xs text-gray-500 mt-1">~{orderDetails.estimatedDelivery}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Detalles del pedido en grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                    {/* Información de envío */}
+                    {/* Información del cliente */}
                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
                         <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center">
-                            <Truck className="mr-2 h-5 w-5" />
+                            <MapPin className="mr-2 h-5 w-5" />
                             Información de envío
                         </h3>
                         <div className="space-y-2">
                             <p className="font-medium">{orderDetails.shippingAddress.name}</p>
+                            <p className="text-gray-600">{orderDetails.shippingAddress.street}</p>
                             <p className="text-gray-600">
-                                {orderDetails.shippingAddress.street}
+                                {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.region}
                             </p>
-                            <p className="text-gray-600">
-                                {orderDetails.shippingAddress.city},{" "}
-                                {orderDetails.shippingAddress.region}
-                            </p>
-                            <p className="text-gray-600">
-                                Código postal: {orderDetails.shippingAddress.zipCode}
-                            </p>
+                            <p className="text-gray-600">Código postal: {orderDetails.shippingAddress.zipCode}</p>
                             <div className="pt-3 mt-3 border-t border-gray-200">
                                 <p className="text-sm font-medium text-gray-900">
                                     Fecha estimada de entrega:
@@ -168,70 +226,108 @@ const OrderConfirmation = () => {
                         </div>
                     </div>
 
-                    {/* Información de pago */}
+                    {/* Información de pago y fecha */}
                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                        <h3 className="font-bold text-lg text-gray-900 mb-4">
-                            Información de pago
+                        <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center">
+                            <CreditCard className="mr-2 h-5 w-5" />
+                            Información del pedido
                         </h3>
-                        <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Método de pago:</span>
-                                <span className="font-medium">
-                                    {orderDetails.paymentMethod}
-                                </span>
+                        <div className="space-y-3">
+                            <div className="flex items-center">
+                                <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                                <div>
+                                    <p className="text-sm text-gray-600">Fecha del pedido</p>
+                                    <p className="font-medium">{orderDetails.date}</p>
+                                </div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Fecha del pedido:</span>
-                                <span className="font-medium">{orderDetails.date}</span>
+
+                            <div className="flex items-center">
+                                <CreditCard className="h-4 w-4 text-gray-400 mr-2" />
+                                <div>
+                                    <p className="text-sm text-gray-600">Método de pago</p>
+                                    <p className="font-medium">{orderDetails.paymentMethod}</p>
+                                </div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Número de pedido:</span>
-                                <span className="font-medium font-mono">
-                                    #{orderDetails.orderId}
-                                </span>
+
+                            <div>
+                                <p className="text-sm text-gray-600">Número de pedido</p>
+                                <p className="font-medium font-mono">#{orderDetails.orderId}</p>
                             </div>
+
                             <div className="pt-3 mt-3 border-t border-gray-200">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-lg font-bold text-gray-900">
-                                        Total pagado:
-                                    </span>
+                                    <span className="text-lg font-bold text-gray-900">Total pagado:</span>
                                     <span className="text-2xl font-bold text-gray-900">
-                                        ${orderDetails.total.toLocaleString("es-CL")}
+                                        ${orderDetails.total?.toLocaleString("es-CL") || "0"}
                                     </span>
                                 </div>
+                                {orderDetails.subtotal > 0 && (
+                                    <p className="text-sm text-gray-500 text-right">
+                                        Envío: {orderDetails.shipping === 0 ? 'Gratis' : `$${orderDetails.shipping?.toLocaleString("es-CL")}`}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Resumen de productos */}
-                <div className="mb-10">
-                    <h3 className="font-bold text-lg text-gray-900 mb-6">
-                        Resumen de productos
-                    </h3>
-                    <div className="space-y-4">
-                        {orderDetails.items.map((item) => (
-                            <div
-                                key={item.id}
-                                className="flex items-center p-4 border border-gray-200 rounded-lg"
-                            >
-                                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                                    <Package className="h-8 w-8 text-gray-400" />
+                {orderDetails.items && orderDetails.items.length > 0 && (
+                    <div className="mb-10">
+                        <h3 className="font-bold text-lg text-gray-900 mb-6">
+                            Resumen de productos ({orderDetails.items.length})
+                        </h3>
+                        <div className="space-y-4">
+                            {orderDetails.items.map((item, index) => (
+                                <div key={item.id || index} className="flex items-center p-4 border border-gray-200 rounded-lg">
+                                    <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden mr-4">
+                                        <img
+                                            src={item.imageSrc || item.imageUrls?.[0] || "/placeholder.png"}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-medium text-gray-900">{item.name}</h4>
+                                        <p className="text-sm text-gray-500">
+                                            Cantidad: {item.quantity} × ${(item.price || 0).toLocaleString("es-CL")}
+                                        </p>
+                                        {item.description && (
+                                            <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                                                {item.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="font-bold text-lg">
+                                        ${((item.price || 0) * (item.quantity || 1)).toLocaleString("es-CL")}
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="font-medium text-gray-900">{item.name}</h4>
-                                    <p className="text-sm text-gray-500">
-                                        Cantidad: {item.quantity} × $
-                                        {item.price.toLocaleString("es-CL")}
-                                    </p>
+                            ))}
+
+                            {/* Totales */}
+                            {orderDetails.subtotal > 0 && (
+                                <div className="pt-4 border-t border-gray-200">
+                                    <div className="flex justify-between mb-2">
+                                        <span className="text-gray-600">Subtotal</span>
+                                        <span>${orderDetails.subtotal?.toLocaleString("es-CL")}</span>
+                                    </div>
+                                    <div className="flex justify-between mb-2">
+                                        <span className="text-gray-600">Envío</span>
+                                        <span className={orderDetails.shipping === 0 ? 'text-green-600' : ''}>
+                                            {orderDetails.shipping === 0 ? 'Gratis' : `$${orderDetails.shipping?.toLocaleString("es-CL")}`}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                                        <span className="text-lg font-bold text-gray-900">Total</span>
+                                        <span className="text-xl font-bold text-gray-900">
+                                            ${orderDetails.total?.toLocaleString("es-CL")}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="font-bold text-lg">
-                                    ${(item.price * item.quantity).toLocaleString("es-CL")}
-                                </div>
-                            </div>
-                        ))}
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Botones de acción */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -253,11 +349,13 @@ const OrderConfirmation = () => {
                 {/* Información adicional */}
                 <div className="mt-10 pt-8 border-t border-gray-200">
                     <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                        <h4 className="font-bold text-blue-900 mb-2">📧 ¿Qué sigue?</h4>
+                        <h4 className="font-bold text-blue-900 mb-2">
+                            📧 ¿Qué sigue?
+                        </h4>
                         <p className="text-blue-800 text-sm">
-                            Te hemos enviado un correo electrónico con todos los detalles de
-                            tu pedido y el número de seguimiento. Puedes rastrear tu pedido en
-                            cualquier momento desde la sección "Mis Pedidos" de tu cuenta.
+                            Te hemos enviado un correo electrónico con todos los detalles de tu pedido
+                            y el número de seguimiento. Puedes rastrear tu pedido en cualquier momento
+                            usando el número <span className="font-mono font-bold">#{orderDetails.orderId}</span>.
                         </p>
                     </div>
 
@@ -265,15 +363,11 @@ const OrderConfirmation = () => {
                         <div className="text-center p-4">
                             <div className="text-2xl mb-2">📦</div>
                             <p className="text-sm font-medium text-gray-900">Envío rápido</p>
-                            <p className="text-xs text-gray-600">
-                                Entrega en 3-5 días hábiles
-                            </p>
+                            <p className="text-xs text-gray-600">Entrega en 3-5 días hábiles</p>
                         </div>
                         <div className="text-center p-4">
                             <div className="text-2xl mb-2">🔄</div>
-                            <p className="text-sm font-medium text-gray-900">
-                                Devolución fácil
-                            </p>
+                            <p className="text-sm font-medium text-gray-900">Devolución fácil</p>
                             <p className="text-xs text-gray-600">30 días para devoluciones</p>
                         </div>
                         <div className="text-center p-4">
