@@ -79,7 +79,7 @@ const Nav = () => {
             <img
               src="/hoseki.png"
               alt="hoseki"
-              className="w-36 h-36 object-contain"
+              className="h-fit w-36 object-contain"
             />
           </Link>
 
@@ -152,6 +152,7 @@ const Nav = () => {
                         <span className="text-sm font-medium">Mi cuenta</span>
                       </div>
 
+                      {/* Mi perfil */}
                       <Link
                         to={`/mi-cuenta/${user.id}`}
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
@@ -160,6 +161,18 @@ const Nav = () => {
                         <UserCircle className="h-4 w-4" /> Mi perfil
                       </Link>
 
+                      {/* Panel Admin: solo si es ADMIN */}
+                      {user.rol === "ADMIN" && (
+                        <Link
+                          to="/admin"
+                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <User className="h-4 w-4" /> Panel Admin
+                        </Link>
+                      )}
+
+                      {/* Cerrar sesión */}
                       <button
                         onClick={() => {
                           setIsUserMenuOpen(false);

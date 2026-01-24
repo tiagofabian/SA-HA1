@@ -5,6 +5,8 @@ import {
   createProduct,
   updateProduct,
   removeProduct,
+  getProductsByCategorySlug,
+  getProductsByCollectionSlug,
 } from "@/api/product.api";
 
 /**
@@ -33,6 +35,32 @@ export const fetchAllProducts = async () => {
   }));
 };
 
+// 🔹 Productos por categoría (slug)
+export const fetchProductsByCategorySlug = async (slug) => {
+  if (!slug) throw new Error("El slug de la categoría es obligatorio");
+
+  const products = await getProductsByCategorySlug(slug);
+
+  return products.map((p) => ({
+    ...p,
+    imageUrls: p.imageUrls ?? [],
+    collections: p.collections ?? [],
+  }));
+};
+
+// 🔹 Productos por colección (slug)
+export const fetchProductsByCollectionSlug = async (slug) => {
+  if (!slug) throw new Error("El slug de la colección es obligatorio");
+
+  const products = await getProductsByCollectionSlug(slug);
+
+  return products.map((p) => ({
+    ...p,
+    imageUrls: p.imageUrls ?? [],
+    collections: p.collections ?? [],
+  }));
+};
+
 /**
  * Obtener producto por ID
  */
@@ -53,6 +81,13 @@ export const saveProduct = async (product) => {
   if (product.stock != null && Number(product.stock) < 0) throw new Error("El stock no puede ser negativo");
   if (!product.categoryId || Number(product.categoryId) <= 0) throw new Error("La categoría es obligatoria");
 
+  // Construir collections de manera consistente
+  const collections = Array.isArray(product.collections)
+    ? product.collections.map(c =>
+        typeof c === "number" ? { id: c } : { id: c.id }
+      )
+    : [];
+
   const payload = {
     name: product.name,
     price: Number(product.price),
@@ -60,7 +95,7 @@ export const saveProduct = async (product) => {
     description: product.description ?? "",
     images: product.images ?? [],
     categoryId: Number(product.categoryId),
-    collections: product.collections ?? [],
+    collections,
   };
 
   return await createProduct(payload);

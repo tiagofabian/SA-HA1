@@ -37,7 +37,8 @@ export const saveCollection = async (collection) => {
 
   const payload = {
     name: collection.name.trim(),
-    description: collection.description.trim() ?? "",
+    description: collection.description?.trim() ?? "",
+    image: collection.image?.trim() ?? "", // ← nuevo campo
   };
 
   const created = await createCollection(payload);
@@ -63,6 +64,7 @@ export const editCollection = async (id, collection) => {
   const payload = {
     name: collection.name.trim(),
     description: collection.description?.trim() ?? "",
+    image: collection.image?.trim() ?? "", // ← nuevo campo
   };
 
   const updated = await updateCollection(id, payload);
