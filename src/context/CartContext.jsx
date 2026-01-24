@@ -12,15 +12,15 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // ➕ Agregar producto / sumar cantidad
   const addToCart = (product) => {
-    // Normalizamos los nombres y usamos la primera imagen
+    // Normalizamos y tomamos SOLO la primera imagen
     const normalizedProduct = {
       id: product.id,
       name: product.name,
       price: product.price,
+      // GUARDA SOLO LA PRIMERA IMAGEN
       imageSrc: product.imageUrls && product.imageUrls.length > 0 
-        ? product.imageUrls[0] 
+        ? product.imageUrls[0]  // ← PRIMERA IMAGEN
         : "/placeholder.png",
     };
 
@@ -39,7 +39,6 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // ➖ Restar cantidad
   const decreaseQuantity = (id) => {
     setCart((prev) =>
       prev
@@ -52,12 +51,10 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // 🗑 Eliminar producto del carrito
   const removeFromCart = (id) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // 🧹 Vaciar carrito
   const clearCart = () => setCart([]);
 
   return (
