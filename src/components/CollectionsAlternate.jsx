@@ -80,7 +80,7 @@ const CollectionsAlternate = ({
                   asChild
                 >
                   <Link
-                    to={`/products/collection/${collection.slug}`}
+                    to={`/productos/collection/${collection.slug}`}
                     className="flex items-center gap-2"
                   >
                     Explorar Colección

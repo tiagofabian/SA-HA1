@@ -16,14 +16,14 @@ export const fetchAllCollections = async () => {
 };
 
 /* =========================
-   OBTENER COLECCIONES SIN PRODUCTOS POR SLUG
+   OBTENER SIN PRODUCTOS POR SLUG
 ========================= */
 export const fetchCollectionsBySlug = async (slugs) => {
   return await getCollectionsBySlug(slugs);
 };
 
 /* =========================
-   OBTENER COLECCIONES CON SUS PRODUCTOS POR SLUG
+   OBTENER CON PRODUCTOS POR SLUG
 ========================= */
 export const fetchCollectionsWithProductsBySlug = async (slugs) => {
   return await getCollectionsWithProductsBySlug(slugs);

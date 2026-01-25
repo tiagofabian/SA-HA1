@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { capitalizeFirst } from "@/lib/helpers"
+import { getBGColorTag } from "@/lib/helpers"
 
 import ManageProductForm from "@/components/ManageProductForm";
 import Modal from "@/components/reuse/Modal";
@@ -12,7 +13,7 @@ import {
   saveProduct,
   editProduct,
   deleteProduct,
-} from "../services/product.service";
+} from "../../services/product.service";
 import { fetchAllCategories } from "@/services/category.service";
 import { fetchAllCollections } from "@/services/collection.service";
 
@@ -124,8 +125,8 @@ const ManageProduct = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 lg:px-16 px-8 py-4">
+      <div className="w-full">
         <h1 className="text-3xl font-bold mb-2">Gestión de Productos</h1>
         <p className="text-gray-600 mb-6">Administra tu catálogo de joyas</p>
 
@@ -175,8 +176,7 @@ const ManageProduct = () => {
                       {product.collections.map((col) => (
                         <span
                           key={col.id}
-                          className="mr-2 inline-block rounded-md bg-yellow-400 text-white text-xs px-2 py-0.5 font-semibold"
-                          style={{ backgroundColor: "#F7D976" }} // amarillo mostaza mate más claro
+                          className={`${getBGColorTag(col.slug)} mr-2 inline-block rounded-md text-white text-xs px-2 py-0.5 font-semibold`}
                         >
                           {col.name}
                         </span>

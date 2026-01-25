@@ -16,10 +16,10 @@ const CheckoutEmptyState = () => {
                 <p className="text-gray-600 mb-8">
                     Agrega productos al carrito para proceder con el pago.
                 </p>
-                <Link to="/catalogo">
+                <Link to="/cateroria">
                     <Button className="px-8 py-3 text-lg">
                         <ArrowLeft className="mr-2 h-5 w-5" />
-                        Volver al catálogo
+                        Volver a la categoría
                     </Button>
                 </Link>
             </div>

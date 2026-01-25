@@ -14,10 +14,15 @@ import Home from "./pages/Home";
 import Contact from "./pages/Contact";
 import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
-import Catalog from "./pages/Catalog";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./pages/Cart";
+import Categories from "./pages/Categories";
+import RingsCategory from "./pages/categories/RingsCategory"
+import EarringsCategory from "./pages/categories/EarringsCategory";
+import BraceletsCategory from "./pages/categories/BraceletsCategory";
+import NecklacesCategory from "./pages/categories/NecklacesCategory";
+
 
 // Páginas protegidas (requieren login)
 import Checkout from "./pages/Checkout";
@@ -27,11 +32,11 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 
 // Páginas de admin
 import AdminPanel from "./pages/AdminPanel";
-import ManageUser from "./pages/ManageUser";
-import ManageProduct from "./pages/ManageProduct";
-import ManageCategory from "./pages/ManageCategory";
-import ManageCollection from "./pages/ManageCollection";
-import ManageContact from "./pages/ManageContact";
+import ManageUser from "./pages/admin/ManageUser";
+import ManageProduct from "./pages/admin/ManageProduct";
+import ManageCategory from "./pages/admin/ManageCategory";
+import ManageCollection from "./pages/admin/ManageCollection";
+import ManageContact from "./pages/admin/ManageContact";
 
 // Components
 import Products from "./components/reuse/Products";
@@ -67,14 +72,20 @@ const App = () => {
           <Routes>
             {/* ========== RUTAS PÚBLICAS ========== */}
             <Route path="/" element={<Home />} />
-            <Route path="/catalogo" element={<Catalog />} />
+            <Route path="/categoria" element={<Categories />}>
+              <Route path="anillos" index element={<RingsCategory/>} />
+              <Route path="aros" element={<EarringsCategory/>} />
+              <Route path="pulseras" element={<BraceletsCategory/>} />
+              <Route path="collares" element={<NecklacesCategory/>} />
+            </Route>
             <Route path="/nosotros" element={<AboutUs />} />
             <Route path="/contacto" element={<Contact />} />
-            <Route path="/products/:name/:slug" element={<Products />} />
+            <Route path="/productos/:name/:slug" element={<Products />} />
             <Route path="/producto/:id" element={<ProductDescription />} />
             <Route path="/iniciar-sesion" element={<Login />} />
             <Route path="/registro" element={<Register />} />
             <Route path="/carrito" element={<Cart />} />
+
             
             {/* ========== RUTAS PROTEGIDAS (requieren login) ========== */}
             <Route element={<ProtectedLayout />}>
