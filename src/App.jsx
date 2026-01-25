@@ -21,6 +21,7 @@ import ManageCollection from "./pages/ManageCollection";
 import MyAccount from "./pages/MyAccount";
 import AdminPanel from "./pages/AdminPanel";
 import ManageUser from "./pages/ManageUser";
+import SearchResults from "./pages/SearchResults";
 
 
 const App = () => {
@@ -30,39 +31,42 @@ const App = () => {
     }
   }, [])
   return (
-    <Fragment>
+    <div className="app-container min-h-screen flex flex-col">
       <Nav />
       <ToastContainer />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/catalogo" element={<Catalog />} />
-        <Route path="/nosotros" element={<AboutUs />} />
-        <Route path="/contacto" element={<Contact />} />
-        <Route path="/products/:name/:slug" element={<Products />} />
-        <Route path="/producto/:id" element={<ProductDescription />} />
-        <Route path="/admin" element={<AdminPanel />}>
-          <Route path="gestion-usuario" element={<ManageUser />} />
-          <Route path="gestion-producto" element={<ManageProduct />} />
-          <Route path="gestion-categoria" element={<ManageCategory />} />
-          <Route path="gestion-coleccion" element={<ManageCollection />} />
-        </Route>
-        <Route path="/iniciar-sesion" element={<Login />} />
-        <Route path="/registro" element={<Register />} />
-        <Route path="/mi-cuenta/:email" element={<MyAccount />} />
-        <Route path="/carrito" element={<Cart />} />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search/:term" element={<SearchResults />} />
+          <Route path="/catalogo" element={<Catalog />} />
+          <Route path="/nosotros" element={<AboutUs />} />
+          <Route path="/contacto" element={<Contact />} />
+          <Route path="/products/:name/:slug" element={<Products />} />
+          <Route path="/producto/:id" element={<ProductDescription />} />
+          <Route path="/admin/" element={<AdminPanel />}>
+            <Route path="gestion-usuario" element={<ManageUser />} />
+            <Route path="gestion-producto" element={<ManageProduct />} />
+            <Route path="gestion-categoria" element={<ManageCategory />} />
+            <Route path="gestion-coleccion" element={<ManageCollection />} />
+          </Route>
+          <Route path="/iniciar-sesion" element={<Login />} />
+          <Route path="/registro" element={<Register />} />
+          <Route path="/mi-cuenta/:email" element={<MyAccount />} />
+          <Route path="/carrito" element={<Cart />} />
 
-        <Route path="/checkout" element={
-          <ProtectedRoute>
-            <Checkout />
-          </ProtectedRoute>
-        }/>
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }/>
 
 
-        {/* Ruta para páginas no encontradas */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Ruta para páginas no encontradas */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
       <Footer />
-    </Fragment>
+    </div>
   )
 };
 

@@ -51,12 +51,12 @@ const Products = ({
         // 🏷️ Título dinámico
         if (data.length > 0) {
           if (isCategory) {
-            setDynamicTitle(`Categoría: ${data[0].category?.name ?? ""}`);
+            setDynamicTitle(`Categoría ${data[0].category?.name ?? ""}`);
           }
 
           if (isCollection) {
             setDynamicTitle(
-              `Colección: ${data[0].collections?.[0]?.name ?? ""}`
+              `Colección ${data[0].collections?.[0]?.name ?? ""}`
             );
           }
         } else {
@@ -107,8 +107,8 @@ const Products = ({
   }
 
   return (
-    <div className="container-products p-5">
-      <h1 className="text-3xl font-bold text-center mb-8">
+    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto gap-28 flex flex-col">
+      <h1 className="text-3xl font-bold text-center">
         {dynamicTitle || title}
       </h1>
 
@@ -118,7 +118,7 @@ const Products = ({
         </p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
         {currentProducts.map((product) => {
           const cartItem = cart.find(
             (item) => item.id_product === product.id
@@ -132,9 +132,7 @@ const Products = ({
           return (
             <div
               key={product.id}
-              className={`border rounded-xl shadow p-4 bg-white transition-opacity duration-300 ${
-                imagesReady ? "opacity-100" : "opacity-50"
-              }`}
+              className="border rounded-xl shadow p-4 bg-white transition-opacity duration-300 max-w-[300px] w-full mx-auto"
             >
               <Link to={`/producto/${product.id}`}>
                 <img
@@ -167,9 +165,7 @@ const Products = ({
                       −
                     </button>
 
-                    <span className="font-medium">
-                      {cartItem.quantity}
-                    </span>
+                    <span className="font-medium">{cartItem.quantity}</span>
 
                     <button
                       onClick={() =>
@@ -196,7 +192,7 @@ const Products = ({
         })}
       </div>
 
-      {/* 📚 Paginación */}
+      {/* Paginación */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-8">
           <button

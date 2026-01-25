@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import sakuraCollectionIMG from "@/assets/images/sakura-collection.png";
-import { fetchProductsByCollectionSlug } from "@/services/product.service";
+import { fetchCollectionsWithProductsBySlug } from "@/services/collection.service";
 import { Link } from "react-router-dom";
 
 const FeaturedCollection = () => {
@@ -11,19 +11,22 @@ const FeaturedCollection = () => {
   useEffect(() => {
     const loadSakuraCollection = async () => {
       try {
-        const products = await fetchProductsByCollectionSlug("sakura");
+        const allowedSlugs = ["sakura"];
+        const data = await fetchCollectionsWithProductsBySlug(allowedSlugs);
 
-        console.log("aquiii", products)
+        // defensivo
+        const productsCount =
+          data?.[0]?.products?.length ?? 0;
 
-        // 👇 solo esto se vuelve dinámico
-        setRemainingUnits(products.length);
+        setRemainingUnits(productsCount);
       } catch (err) {
         console.error("Error cargando colección Sakura", err);
       }
     };
-    
+
     loadSakuraCollection();
   }, []);
+
 
   return (
     <section className="py-20 overflow-hidden">
@@ -101,7 +104,7 @@ const FeaturedCollection = () => {
                     className="bg-white text-[#304131] hover:bg-white/90 font-semibold py-6 text-lg flex-1 group relative overflow-hidden"
                   >
                     <Link
-                      to="/products/collection/sakura"
+                      to={`/products/collection/sakura`}
                       className="google-font-text font-bold text-[#304131] text-sm"
                     >
                       Ver colección

@@ -1,5 +1,7 @@
 import {
   getAllCollections,
+  getCollectionsWithProductsBySlug,
+  getCollectionsBySlug,
   getCollectionById,
   createCollection,
   updateCollection,
@@ -11,6 +13,20 @@ import {
 ========================= */
 export const fetchAllCollections = async () => {
   return await getAllCollections();
+};
+
+/* =========================
+   OBTENER COLECCIONES SIN PRODUCTOS POR SLUG
+========================= */
+export const fetchCollectionsBySlug = async (slugs) => {
+  return await getCollectionsBySlug(slugs);
+};
+
+/* =========================
+   OBTENER COLECCIONES CON SUS PRODUCTOS POR SLUG
+========================= */
+export const fetchCollectionsWithProductsBySlug = async (slugs) => {
+  return await getCollectionsWithProductsBySlug(slugs);
 };
 
 /* =========================

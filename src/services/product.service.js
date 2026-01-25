@@ -13,10 +13,11 @@ import {
  * Buscar productos por término
  */
 export const fetchProductsByTerm = async (term) => {
-  const products = await searchProducts(term);
+  const products = await searchProducts(term.trim());
 
   return products.map((p) => ({
-    ...p,
+    id: p.id,          // nombre exacto del DTO
+    name: p.name,      // nombre exacto del DTO
     price: Number(p.price),
     imageUrls: p.imageUrls ?? [],
   }));

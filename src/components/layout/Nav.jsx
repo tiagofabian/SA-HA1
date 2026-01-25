@@ -19,7 +19,7 @@ import { useAuth } from "@/context/AuthContext";
 // services
 import { fetchProductsByTerm } from "@/services/product.service";
 
-let searchTimeout; // para debounce
+let searchTimeout; // debounce
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -39,7 +39,7 @@ const Nav = () => {
   };
 
   // =========================
-  // Búsqueda de productos
+  // Búsqueda de productos con debounce
   // =========================
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -47,7 +47,6 @@ const Nav = () => {
       return;
     }
 
-    // Debounce: esperar 500ms antes de hacer la petición
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
       try {
@@ -59,7 +58,6 @@ const Nav = () => {
       }
     }, 500);
 
-    // Limpiar timeout al desmontar
     return () => clearTimeout(searchTimeout);
   }, [searchTerm]);
 
@@ -69,6 +67,14 @@ const Nav = () => {
     { name: "Nosotros", href: "/nosotros" },
     { name: "Contacto", href: "/contacto" },
   ];
+
+  // Maneja el submit del buscador
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    navigate(`/search/${encodeURIComponent(searchTerm.trim())}`);
+    setProducts([]); // limpiar dropdown
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur shadow-sm">
@@ -100,25 +106,39 @@ const Nav = () => {
           <div className="hidden items-center gap-4 md:flex">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar productos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 pr-2 py-1 border rounded w-64 focus:outline-none focus:ring-1 focus:ring-accent"
-              />
+              <form onSubmit={handleSearchSubmit}>
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar productos..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 pr-2 py-1 border rounded w-64 focus:outline-none focus:ring-1 focus:ring-accent"
+                />
+              </form>
+
               {/* Dropdown de resultados */}
               {products.length > 0 && (
                 <div className="absolute top-full mt-1 w-full bg-white border rounded shadow-lg max-h-64 overflow-y-auto z-50">
                   {products.map((p) => (
                     <Link
-                      key={p.id_product}
-                      to={`/productos/${p.id_product}`}
-                      className="block px-3 py-2 hover:bg-accent/10 text-sm"
-                      onClick={() => setSearchTerm("")} // limpia input al click
+                      key={p.id}
+                      to={`/producto/${p.id}`}
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-accent/10 text-sm"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setProducts([]);
+                      }}
                     >
-                      {p.product_name}
+                      <img
+                        src={p.imageUrls[0] ?? "/placeholder.png"}
+                        alt={p.name}
+                        className="h-8 w-8 object-cover rounded"
+                      />
+                      <div className="flex flex-col">
+                        <span>{p.name}</span>
+                        <span className="text-xs text-gray-500">${p.price.toLocaleString()}</span>
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -134,9 +154,7 @@ const Nav = () => {
                 aria-label="Usuario"
               >
                 <User className="h-5 w-5" />
-                {user && (
-                  <span className="text-sm font-medium">{user.name}</span>
-                )}
+                {user && <span className="text-sm font-medium">{user.name}</span>}
               </Button>
 
               {isUserMenuOpen && (
@@ -152,7 +170,6 @@ const Nav = () => {
                         <span className="text-sm font-medium">Mi cuenta</span>
                       </div>
 
-                      {/* Mi perfil */}
                       <Link
                         to={`/mi-cuenta/${user.id}`}
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/10"
@@ -161,7 +178,6 @@ const Nav = () => {
                         <UserCircle className="h-4 w-4" /> Mi perfil
                       </Link>
 
-                      {/* Panel Admin: solo si es ADMIN */}
                       {user.rol === "ADMIN" && (
                         <Link
                           to="/admin"
@@ -172,7 +188,6 @@ const Nav = () => {
                         </Link>
                       )}
 
-                      {/* Cerrar sesión */}
                       <button
                         onClick={() => {
                           setIsUserMenuOpen(false);
