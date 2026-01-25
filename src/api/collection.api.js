@@ -25,6 +25,62 @@ export const getAllCollections = async () => {
   return response.json();
 };
 
+export const getCollectionsBySlug = async (slugs) => {
+  const query = slugs
+    .map((s) => `slugs=${encodeURIComponent(s)}`)
+    .join("&");
+
+  const response = await fetch(
+    `${API_URL}/api/collection/filtered-without-product?${query}`,
+    { method: "GET" }
+  );
+
+  if (!response.ok) {
+    throw new Error("Error al listar las colecciones sin productos");
+  }
+
+  const data = await response.json();
+
+  // No hay productos → retorno directo
+  return data.map((collection) => ({
+    id: collection.id,
+    name: collection.name,
+    description: collection.description,
+    slug: collection.slug,
+    image: collection.image,
+  }));
+};
+
+
+export const getCollectionsWithProductsBySlug = async (slugs) => {
+  const query = slugs
+    .map((s) => `slugs=${encodeURIComponent(s)}`)
+    .join("&");
+
+  const response = await fetch(
+    `${API_URL}/api/collection/filtered-with-product?${query}`,
+    { method: "GET" }
+  );
+
+  if (!response.ok) {
+    throw new Error("Error al listar las colecciones con productos");
+  }
+
+  const data = await response.json();
+
+  return data.map((collection) => ({
+    ...collection,
+    products: collection.products.map((p) => ({
+      ...p,
+      price: Number(p.price),
+      imageUrls: p.imageUrls ?? [],
+      category: p.category ?? null,
+      collections: p.collections ?? [],
+    })),
+  }));
+};
+
+
 export const createCollection = async (collection) => {
   const token = getAuthToken();
   if (!token) throw new Error("Token no disponible");
