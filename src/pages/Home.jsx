@@ -16,18 +16,16 @@ const Home = () => {
       try {
         // 1. Obtener todos los productos
         const allProducts = await fetchAllProducts();
-        console.log('Todos los productos:', allProducts);
         
         // 2. Mapear al formato que espera el Carousel
         const products = allProducts
           .map(product => ({
             id: product.id,
-            title: product.nombre || product.title,
-            price: `$${product.precio || product.price}`,
-            image: product.imageUrls?.[0]
+            title: product.name || product.nombre || "Producto sin nombre",
+            price: typeof product.price === 'string' ? product.price : `$${product.price}`,
+            image: product.image || product.imageUrls?.[0]
           }));
         
-        console.log('Productos para mostrar:', products);
         setFilteredProducts(products);
       } catch (error) {
         console.error('Error al cargar los productos:', error);

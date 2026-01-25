@@ -40,9 +40,11 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
                 {slide.map((product) => (
                   <div key={product.id} className="border rounded-xl shadow p-4 bg-white hover:shadow-lg transition-shadow">
                     <img
-                      src={product.image}
+                      src={product.image || 'https://www.reisender.com.ar/images/product-placeholder.png'}
                       alt={product.title}
-                      className="w-full h-64 object-cover rounded-md" /* Ajusté altura para 4 columnas */
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 
+                        'https://www.reisender.com.ar/images/product-placeholder.png';}}
+                      className="w-full h-64 object-cover rounded-md"
                     />
                     <h3 className="google-font-text mt-3 !font-[500] text-lg line-clamp-1">{product.title}</h3>
                     <p className="google-font-text text-gray-500 font-medium">{product.price}</p>

@@ -1,75 +1,170 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import { Button } from "../components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+
+// Componentes de checkout
+import CheckoutSteps from "@/components/checkout/CheckoutSteps";
+import CheckoutAddressForm from "@/components/checkout/CheckoutAddressForm";
+import CheckoutPaymentForm from "@/components/checkout/CheckoutPaymentForm";
+import CheckoutSummaryStep from "@/components/checkout/CheckoutSummaryStep";
+import CheckoutSidebar from "@/components/checkout/CheckoutSidebar";
+import CheckoutNavigation from "@/components/checkout/CheckoutNavigation";
+import CheckoutEmptyState from "@/components/checkout/CheckoutEmptyState";
 
 const Checkout = () => {
   const { cart, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    shippingAddress: {
+      name: user?.name || "",
+      phone: "",
+      street: "",
+      city: "",
+      region: "",
+      zipCode: "",
+      instructions: ""
+    },
+    payment: {
+      method: "Tarjeta",
+      cardName: "",
+      cardNumber: "",
+      expiry: "",
+      cvv: ""
+    }
+  });
 
-  const [showModal, setShowModal] = useState(false);
-
-  const total = cart.reduce(
-    (acc, item) => acc + item.precio * item.quantity,
+  // Cálculos
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + Number(item.price || 0) * item.quantity,
     0
   );
+  const shippingCost = totalPrice > 50000 ? 0 : 5000;
+  const finalTotal = totalPrice + shippingCost;
 
-  const handlePayment = () => {
-    setShowModal(true);
+  // Estado carrito vacío
+  if (cart.length === 0) {
+    return <CheckoutEmptyState />;
+  }
+
+  // Handlers
+  const handleFormDataChange = (updates) => {
+    setFormData(prev => ({ ...prev, ...updates }));
   };
 
-  const handleConfirm = () => {
-    clearCart();
-    setShowModal(false);
-    navigate("/");
+  const handleSubmitOrder = () => {
+    // Validaciones
+    if (step === 1) {
+      const { name, phone, street, city, region, zipCode } = formData.shippingAddress;
+      if (!name || !phone || !street || !city || !region || !zipCode) {
+        alert("Por favor completa todos los campos obligatorios de dirección");
+        return;
+      }
+    }
+    
+    if (step === 2 && formData.payment.method === "Tarjeta") {
+      const { cardName, cardNumber, expiry, cvv } = formData.payment;
+      if (!cardName || !cardNumber || !expiry || !cvv) {
+        alert("Por favor completa todos los campos de la tarjeta");
+        return;
+      }
+    }
+    
+    setLoading(true);
+    
+    setTimeout(() => {
+      setLoading(false);
+      
+      const orderData = {
+        items: cart,
+        subtotal: totalPrice,
+        shipping: shippingCost,
+        total: finalTotal,
+        shippingAddress: {
+          ...formData.shippingAddress,
+          name: formData.shippingAddress.name || user?.name || "Cliente"
+        },
+        paymentMethod: formData.payment.method,
+        customerName: user?.name || formData.shippingAddress.name,
+        customerEmail: user?.email || "",
+        date: new Date().toLocaleDateString('es-CL', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      };
+      
+      clearCart();
+      
+      navigate("/order-confirmation", { 
+        state: { 
+          orderData: orderData
+        }
+      });
+    }, 3000);
   };
 
   return (
-    <>
-      <div className="container mx-auto px-6 py-20 max-w-lg">
-        <h1 className="text-3xl font-bold mb-6">
-          Pasarela de pago
-        </h1>
+    <div className="max-w-7xl mx-auto my-8 md:my-16 px-4 sm:px-6 lg:px-8">
+      {/* Pasos */}
+      <CheckoutSteps step={step} />
 
-        <div className="border rounded-lg p-6 shadow-sm bg-white space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Estás a punto de realizar un pago simulado.
-          </p>
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Formulario principal */}
+        <div className="lg:w-2/3">
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            {step === 1 && (
+              <CheckoutAddressForm 
+                formData={formData}
+                onFormDataChange={handleFormDataChange}
+              />
+            )}
 
-          <div className="flex justify-between text-lg font-medium">
-            <span>Total a pagar</span>
-            <span>
-              ${total.toLocaleString("es-CL")}
-            </span>
+            {step === 2 && (
+              <CheckoutPaymentForm 
+                formData={formData}
+                onFormDataChange={handleFormDataChange}
+              />
+            )}
+
+            {step === 3 && (
+              <CheckoutSummaryStep 
+                cart={cart}
+                formData={formData}
+                finalTotal={finalTotal}
+                shippingCost={shippingCost}
+              />
+            )}
+
+            {/* Navegación */}
+            <CheckoutNavigation 
+              step={step}
+              onStepChange={setStep}
+              loading={loading}
+              onConfirmOrder={handleSubmitOrder}
+            />
           </div>
-
-          <Button className="w-full mt-4" onClick={handlePayment}>
-            Confirmar pago
-          </Button>
         </div>
+
+        {/* Sidebar (solo en pasos 1 y 2) */}
+        {step < 3 && (
+          <div className="lg:w-1/3">
+            <CheckoutSidebar 
+              cart={cart}
+              totalPrice={totalPrice}
+              shippingCost={shippingCost}
+              finalTotal={finalTotal}
+            />
+          </div>
+        )}
       </div>
-
-      {/*  MODAL */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg">
-            <h2 className="text-xl font-semibold mb-3">
-              Pago realizado
-            </h2>
-
-            <p className="text-sm text-gray-600 mb-6">
-               Tu pago fue procesado correctamente.
-              <br />
-              Gracias por tu compra.
-            </p>
-
-            <Button className="w-full" onClick={handleConfirm}>
-              Aceptar
-            </Button>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 
