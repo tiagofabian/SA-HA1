@@ -23,3 +23,23 @@ export const capitalizeFirst = (value = "") =>
     .trim()
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase());
+
+
+export const getBGColorTag = (slug) => {
+  switch (slug) {
+    case "sakura":
+      return "bg-pink-200"; // 
+
+    case "anime":
+      return "bg-indigo-200"; // 
+
+    case "videojuegos":
+      return "bg-violet-200"; // 
+
+    case "cultura_japonesa":
+      return "bg-red-200"; // 
+
+    default:
+      return "bg-gray-300"; //
+  }
+};

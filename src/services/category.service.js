@@ -1,5 +1,6 @@
 import {
   getAllCategories,
+  getCategoriesWithProductsBySlug,
   getCategoryById,
   createCategory,
   updateCategory,
@@ -26,6 +27,14 @@ export const fetchCategoryById = async (id) => {
 
   return await getCategoryById(id);
 };
+
+/* =========================
+   OBTENER CATEGORÍAS CON PRODUCTOS POR SLUG
+========================= */
+export const fetchCategoriesWithProductsBySlug = async (slugs) => {
+  return await getCategoriesWithProductsBySlug(slugs);
+};
+
 
 /* =========================
    CREAR

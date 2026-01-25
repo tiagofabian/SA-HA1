@@ -125,10 +125,10 @@ const OrderConfirmation = () => {
                     <p className="text-gray-600 mb-8">
                         {orderDetails?.message || "No hay información disponible para este pedido."}
                     </p>
-                    <Link to="/catalogo">
+                    <Link to="/categoría">
                         <Button className="px-8 py-3 text-lg">
                             <ShoppingBag className="mr-2 h-5 w-5" />
-                            Ir al catálogo
+                            Ir a las categorías
                         </Button>
                     </Link>
                 </div>
@@ -331,7 +331,7 @@ const OrderConfirmation = () => {
 
                 {/* Botones de acción */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link to="/catalogo" className="sm:flex-1">
+                    <Link to="/categoria" className="sm:flex-1">
                         <Button className="w-full py-3 text-lg" variant="outline">
                             <ShoppingBag className="mr-2 h-5 w-5" />
                             Seguir comprando

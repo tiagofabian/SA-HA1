@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import sakuraCollectionIMG from "@/assets/images/sakura-collection.png";
+import sakuraCollectionIMG from "@/assets/images/sakura-collection-2.jpeg";
 import { fetchCollectionsWithProductsBySlug } from "@/services/collection.service";
 import { Link } from "react-router-dom";
 
@@ -104,7 +104,7 @@ const FeaturedCollection = () => {
                     className="bg-white text-[#304131] hover:bg-white/90 font-semibold py-6 text-lg flex-1 group relative overflow-hidden"
                   >
                     <Link
-                      to={`/products/collection/sakura`}
+                      to={`/productos/collection/sakura`}
                       className="google-font-text font-bold text-[#304131] text-sm"
                     >
                       Ver colección

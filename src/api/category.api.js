@@ -25,6 +25,32 @@ export const getAllCategories = async () => {
   return response.json();
 };
 
+export const getCategoriesWithProductsBySlug = async (slugs) => {
+  const query = slugs.map((s) => `slugs=${encodeURIComponent(s)}`).join("&");
+  const url = `${API_URL}/api/category/filtered-with-products?${query}`;
+
+  const response = await fetch(url, { method: "GET" });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Error al listar las categorías con productos: ${text}`);
+  }
+
+  const data = await response.json();
+
+  return data.map((category) => ({
+    ...category,
+    products: (category.products ?? []).map((p) => ({
+      ...p,
+      price: Number(p.price),
+      imageUrls: p.imageUrls ?? [],
+      category: p.category ?? null,
+      collections: p.collections ?? [],
+    })),
+  }));
+};
+
+
 export const createCategory = async (category) => {
   const token = getAuthToken();
   if (!token) throw new Error("Token no disponible");

@@ -30,10 +30,10 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#catalogo"
+                  href="#categorias"
                   className="google-font-text text-[0.85rem] text-primary-foreground/80 transition-colors hover:text-primary-foreground"
                 >
-                  Catálogo
+                  Categoría
                 </a>
               </li>
               <li>

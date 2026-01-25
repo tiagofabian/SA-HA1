@@ -54,7 +54,7 @@ const ManageContact = () => {
     };
 
     return (
-        <div className="p-6">
+        <div className="lg:px-16 px-8 py-4">
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Gestión de Contactos</h1>
                 <p className="text-gray-600 mt-2">
@@ -62,7 +62,7 @@ const ManageContact = () => {
                 </p>
             </div>
 
-            <Card className="border-none shadow-md">
+            <Card className="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold">Mensajes de Contacto</CardTitle>
                 </CardHeader>
