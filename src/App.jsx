@@ -22,6 +22,7 @@ import ManageCollection from "./pages/ManageCollection";
 import MyAccount from "./pages/MyAccount";
 import AdminPanel from "./pages/AdminPanel";
 import ManageUser from "./pages/ManageUser";
+import ManageContact from "./pages/ManageContact";
 import OrderConfirmation from "./pages/OrderConfirmation"; // Asegúrate de tener este import
 
 // Importar los providers
@@ -90,6 +91,7 @@ const App = () => {
               <Route path="gestion-producto" element={<ManageProduct />} />
               <Route path="gestion-categoria" element={<ManageCategory />} />
               <Route path="gestion-coleccion" element={<ManageCollection />} />
+              <Route path="gestion-contacto" element={<ManageContact />} /> {/* ← Nuevo */}
             </Route>
             
             {/* Rutas públicas */}

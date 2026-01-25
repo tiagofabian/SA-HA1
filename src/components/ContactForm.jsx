@@ -5,7 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { create } from "@/services/contact.service"; // Asegúrate que la ruta sea correcta
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -14,20 +15,43 @@ const ContactForm = () => {
     phone: "",
     message: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación
     if (!formData.name || !formData.email || !formData.message) {
       toast.error("Por favor completa todos los campos requeridos");
       return;
     }
 
-    toast.success("¡Mensaje enviado con éxito! Te contactaremos pronto.", {
-      description: "Gracias por tu interés en nuestras joyas",
-    });
+    // Validación de email básica
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Por favor ingresa un email válido");
+      return;
+    }
 
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setIsLoading(true);
+
+    try {
+      // Enviar al backend
+      await create(formData);
+
+      toast.success("¡Mensaje enviado con éxito! Te contactaremos pronto.", {
+        description: "Gracias por tu interés en nuestras joyas",
+      });
+
+      // Limpiar formulario
+      setFormData({ name: "", email: "", phone: "", message: "" });
+
+    } catch (error) {
+      console.error("Error al enviar contacto:", error);
+      toast.error(error.message || "Error al enviar el mensaje. Intenta nuevamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -47,7 +71,7 @@ const ContactForm = () => {
         </div>
 
         <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-2">
-          {/* Contact Info */}
+          {/* Contact Info (se mantiene igual) */}
           <div className="space-y-6 animate-fade-in-up">
             <Card className="border-none shadow-md">
               <CardHeader>
@@ -115,6 +139,7 @@ const ContactForm = () => {
                     placeholder="Tu nombre completo"
                     className="google-font-text"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -129,9 +154,9 @@ const ContactForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="tu@email.com"
-                    pattern="^[^\s@]+@[^\s@]+.[^\s@]+$"
                     className="google-font-text"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -144,8 +169,8 @@ const ContactForm = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="+56912345678"
-                    pattern="^+?\d{8,15}$"
                     className="google-font-text"
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -162,14 +187,23 @@ const ContactForm = () => {
                     rows={4}
                     className="google-font-text"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
                 <Button
                   type="submit"
                   className="google-font-text !font-medium w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  disabled={isLoading}
                 >
-                  Enviar Mensaje
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    "Enviar Mensaje"
+                  )}
                 </Button>
               </form>
             </CardContent>

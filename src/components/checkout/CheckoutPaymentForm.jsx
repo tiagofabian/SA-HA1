@@ -20,6 +20,13 @@ const CheckoutPaymentForm = ({ formData, onFormDataChange }) => {
         });
     };
 
+    // Métodos de pago disponibles (sin efectivo)
+    const paymentMethods = [
+        { icon: '💳', name: 'Tarjeta' },
+        { icon: '📱', name: 'Webpay' },
+        { icon: '🏦', name: 'Transferencia' }
+    ];
+
     return (
         <div>
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
@@ -28,19 +35,19 @@ const CheckoutPaymentForm = ({ formData, onFormDataChange }) => {
             </h2>
 
             <div className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    {['💳 Tarjeta', '📱 Webpay', '🏦 Transferencia', '💰 Efectivo'].map((method, index) => (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    {paymentMethods.map((method, index) => (
                         <button
                             key={index}
                             type="button"
-                            onClick={() => handlePaymentMethodChange(method.split(' ')[1])}
-                            className={`p-4 border-2 rounded-xl transition-all text-center ${formData.payment.method === method.split(' ')[1]
+                            onClick={() => handlePaymentMethodChange(method.name)}
+                            className={`p-4 border-2 rounded-xl transition-all text-center ${formData.payment.method === method.name
                                     ? 'border-gray-900 bg-gray-50'
                                     : 'border-gray-200 hover:border-gray-900'
                                 }`}
                         >
-                            <div className="text-2xl mb-2">{method.split(' ')[0]}</div>
-                            <div className="text-sm font-medium">{method.split(' ')[1]}</div>
+                            <div className="text-2xl mb-2">{method.icon}</div>
+                            <div className="text-sm font-medium">{method.name}</div>
                         </button>
                     ))}
                 </div>
@@ -121,11 +128,20 @@ const CheckoutPaymentForm = ({ formData, onFormDataChange }) => {
                     </div>
                 )}
 
-                {formData.payment.method === "Efectivo" && (
-                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                        <p className="text-yellow-800">
-                            Pago en efectivo al momento de la entrega. El repartidor aceptará únicamente el monto exacto.
+                {formData.payment.method === "Webpay" && (
+                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <p className="text-green-800">
+                            Serás redirigido a Webpay para completar el pago de forma segura.
                         </p>
+                        <div className="mt-2 space-y-1">
+                            <p><strong>Ventajas de Webpay:</strong></p>
+                            <ul className="list-disc list-inside text-green-700 text-sm">
+                                <li>Pago 100% seguro y encriptado</li>
+                                <li>Compatible con todas las tarjetas</li>
+                                <li>Confirmación instantánea</li>
+                                <li>Soporte 24/7</li>
+                            </ul>
+                        </div>
                     </div>
                 )}
             </div>
