@@ -113,7 +113,7 @@ return (
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => decreaseQuantity(item.id)}
+                          onClick={() => decreaseQuantity(item.cartProductId || item.id)}
                           className="h-9 w-9 rounded-full"
                         >
                           <Minus className="h-4 w-4" />
@@ -137,7 +137,7 @@ return (
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.cartProductId || item.id)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />

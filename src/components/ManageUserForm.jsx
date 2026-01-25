@@ -64,16 +64,36 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
         />
       </div>
 
-      {/* Email */}
+      {/* Email - Solo lectura cuando se edita */}
       <div className="flex flex-col gap-1">
         <label className="font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          name="email"
-          value={user.email}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-        />
+        {isEditing ? (
+          // Cuando se está editando, mostrar como campo de solo lectura
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              value={user.email}
+              readOnly
+              className="border p-2 rounded w-full bg-gray-100 text-gray-600 cursor-not-allowed"
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                No editable
+              </span>
+            </div>
+          </div>
+        ) : (
+          // Cuando se está creando nuevo usuario, campo normal***************************
+          <input
+            type="email"
+            name="email"
+            value={user.email}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        )}
       </div>
 
       {/* Rol */}
@@ -95,14 +115,12 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
         <label className="font-medium text-gray-700">Activo</label>
         <div
           onClick={handleToggleActive}
-          className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-            user.active ? "bg-green-500" : "bg-gray-300"
-          }`}
+          className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${user.active ? "bg-green-500" : "bg-gray-300"
+            }`}
         >
           <div
-            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-              user.active ? "translate-x-6" : "translate-x-0"
-            }`}
+            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${user.active ? "translate-x-6" : "translate-x-0"
+              }`}
           />
         </div>
       </div>
