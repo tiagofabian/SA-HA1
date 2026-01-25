@@ -31,10 +31,10 @@ const Cart = () => {
             Explora nuestro catálogo y encuentra joyas únicas.
           </p>
         </div>
-        <Link to="/catalogo">
+        <Link to="/categoria">
           <Button className="px-8 py-3 text-lg text-white bg-gradient-to-r mt-10 from-gray-900 to-black hover:from-gray-800 hover:to-gray-900">
             <ArrowLeft className="mr-2 h-5 w-5" />
-            Explorar catálogo
+            Explorar categoría
           </Button>
         </Link>
       </div>
@@ -152,7 +152,7 @@ return (
 
           {/* Botón continuar comprando */}
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <Link to="/catalogo">
+            <Link to="/categoria">
               <Button variant="outline" className="w-full sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Seguir comprando

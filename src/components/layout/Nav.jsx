@@ -56,14 +56,14 @@ const Nav = () => {
         console.error("Error buscando productos:", err);
         setProducts([]);
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(searchTimeout);
   }, [searchTerm]);
 
   const navLinks = [
     { name: "Inicio", href: "/" },
-    { name: "Catálogo", href: "/catalogo" },
+    { name: "Categorías", href: "/categoria" },
     { name: "Nosotros", href: "/nosotros" },
     { name: "Contacto", href: "/contacto" },
   ];

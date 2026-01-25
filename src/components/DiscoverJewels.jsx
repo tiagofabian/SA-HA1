@@ -16,7 +16,7 @@ const DiscoverJewels = () => {
             size="lg"
             className="google-font-text btn-green-arcadia bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all"
           >
-            <a href="/catalogo">Ver Colección Completa</a>
+            <a href="/categoria">Ver Categorías</a>
           </Button>
           {/* <Button
             size="lg"

@@ -1,6 +1,7 @@
 import heroSlider1 from "@/assets/backgrounds/hero-slider-1.jpg";
 import heroSlider2 from "@/assets/backgrounds/hero-slider-2.jpg";
 import heroSlider3 from "@/assets/backgrounds/hero-slider-3.jpg";
+import hector from "@/assets/images/hector.png";
 
 export const slides = [
   {

@@ -1,9 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Descubre nuestras piezas más exclusivas" }) => {
   const [current, setCurrent] = useState(0);
-
-  // CAMBIAR: De 3 a 4 productos por slide
+  const navigate = useNavigate();
   const productsPerSlide = 4;
   
   // Crear slides dinámicamente basado en productsPerSlide
@@ -18,6 +18,15 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
 
   const prevSlide = () => {
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  // Función para manejar el click en el producto
+  const handleProductClick = (e, product) => {
+    // Usa el ID del producto para navegar a la página de descripción
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Producto clickeado:", product);
+    navigate(`/producto/${product.id}`);
   };
 
   return (
@@ -38,7 +47,7 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
               {/* CAMBIAR: grid-cols-4 en lugar de grid-cols-3 */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
                 {slide.map((product) => (
-                  <div key={product.id} className="border rounded-xl shadow p-4 bg-white hover:shadow-lg transition-shadow">
+                  <div key={product.id} onClick={(e) => handleProductClick(e, product)} className="border rounded-xl shadow p-4 bg-white hover:shadow-lg transition-shadow cursor-pointer group">
                     <img
                       src={product.image || 'https://www.reisender.com.ar/images/product-placeholder.png'}
                       alt={product.title}
