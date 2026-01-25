@@ -1,39 +1,21 @@
 import React, { useState } from "react";
-import { NavLink, Outlet, Navigate } from "react-router-dom"; // ← Agregar Navigate
-import { Users, Box, Layers, Grid, Menu, ChevronLeft, ChevronRight, Mail } from "lucide-react"; // ← Agregar Mail
-import { useAuth } from "@/context/AuthContext"; // ← Importar useAuth
+import { NavLink, Outlet } from "react-router-dom";
+import { Users, Box, Layers, Grid, Menu, ChevronLeft, ChevronRight, Mail } from "lucide-react";
 
 const AdminPanel = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const { isAuthenticated, user, loading } = useAuth(); // ← Obtener auth state
-  
-  // Verificar si es admin
-  const isAdmin = user?.rol === "ADMIN";
-  
-  // Si no está autenticado o no es admin, redirigir
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated || !isAdmin) {
-    return <Navigate to="/iniciar-sesion" replace />;
-  }
 
   const menuItems = [
     { name: "Usuarios", path: "/admin/gestion-usuario", icon: Users },
     { name: "Productos", path: "/admin/gestion-producto", icon: Box },
     { name: "Categorías", path: "/admin/gestion-categoria", icon: Layers },
     { name: "Colecciones", path: "/admin/gestion-coleccion", icon: Grid },
-    { name: "Contactos", path: "/admin/gestion-contacto", icon: Mail }, // ← Agregado
+    { name: "Contactos", path: "/admin/gestion-contacto", icon: Mail },
   ];
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* SIDEBAR (igual que antes) */}
+      {/* SIDEBAR */}
       <aside className={`${isOpen ? "w-64" : "w-16"} bg-white shadow-md flex flex-col transition-all duration-300`}>
         {/* HEADER / TOGGLE */}
         <div className="flex items-center justify-between p-4 border-b">
@@ -73,4 +55,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel; 
+export default AdminPanel;

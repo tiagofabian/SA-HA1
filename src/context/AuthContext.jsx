@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   login as loginService,
   register as registerService,
-  update as updateUserService, // si quieres usar aquí también
+  update as updateUserService,
 } from "@/services/auth.service";
 import { toast } from "react-toastify";
 
@@ -10,55 +10,60 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ← Iniciar en true
 
-  //  Cargar usuario desde sessionStorage al iniciar la app
+  // Cargar usuario desde sessionStorage al iniciar la app
   useEffect(() => {
-    const raw = sessionStorage.getItem("auth_user");
-    if (raw) {
-      setUser(JSON.parse(raw));
-    }
+    const loadUserFromStorage = () => {
+      try {
+        const raw = sessionStorage.getItem("auth_user");
+        if (raw) {
+          setUser(JSON.parse(raw));
+        }
+      } catch (error) {
+        console.error("Error al cargar usuario de sessionStorage:", error);
+        sessionStorage.removeItem("auth_user"); // Limpiar dato corrupto
+      } finally {
+        setLoading(false); // ← INDICAR QUE YA TERMINÓ DE CARGAR
+      }
+    };
+
+    loadUserFromStorage();
   }, []);
 
-  //  LOGIN
+  // LOGIN
   const login = async ({ email, password }) => {
     try {
       const data = await loginService({ email, password });
-      // data = { id, name, email, rol, token }
-
       sessionStorage.setItem("auth_user", JSON.stringify(data));
       setUser(data);
-
       return { ok: true, user: data };
     } catch (err) {
       return { ok: false, message: err.message };
     }
   };
 
-  //  REGISTER
+  // REGISTER
   const register = async (newUser) => {
     try {
       const data = await registerService(newUser);
-      // data = { id, name, email, rol, token }
-
       sessionStorage.setItem("auth_user", JSON.stringify(data));
       setUser(data);
-
       return { ok: true, user: data };
     } catch (err) {
       return { ok: false, message: err.message };
     }
   };
 
-  //  LOGOUT
+  // LOGOUT
   const logout = () => {
     sessionStorage.removeItem("auth_user");
     setUser(null);
     toast.info("Usuario deslogueado");
   };
 
-  //  ACTUALIZAR USUARIO EN CONTEXTO
+  // ACTUALIZAR USUARIO EN CONTEXTO
   const updateUserContext = (updatedUser) => {
-    // updatedUser = { id, name, email, rol, token }
     sessionStorage.setItem("auth_user", JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
@@ -68,10 +73,11 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         isAuthenticated: !!user,
+        loading, // ← EXPORTAR loading
         login,
         register,
         logout,
-        updateUserContext, // <-- nuevo método
+        updateUserContext,
       }}
     >
       {children}
@@ -79,7 +85,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// 🪝 Hook para consumir el contexto
+// Hook para consumir el contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

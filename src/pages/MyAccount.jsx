@@ -38,8 +38,8 @@ const MyAccount = () => {
         setCustomer(customerData);
         setCustomerForm({
           nombre: customerData.nombre,
-          correo: customerData.correo,
-          telefono: customerData.telefono,
+          correo: customerData.email,
+          telefono: customerData.phone,
         });
 
         if (customerData.id) {
@@ -161,8 +161,8 @@ const MyAccount = () => {
         ) : (
           <>
             <div><span className="font-semibold">Nombre:</span> {displayOrDefault(customer.nombre)}</div>
-            <div><span className="font-semibold">Correo:</span> {displayOrDefault(customer.correo)}</div>
-            <div><span className="font-semibold">Teléfono:</span> {displayOrDefault(customer.telefono)}</div>
+            <div><span className="font-semibold">Correo:</span> {displayOrDefault(customer.email)}</div>
+            <div><span className="font-semibold">Teléfono:</span> {displayOrDefault(customer.phone)}</div>
             <button
               className="mt-2 bg-blue-500 text-white px-4 py-1 rounded"
               onClick={() => setEditingCustomer(true)}

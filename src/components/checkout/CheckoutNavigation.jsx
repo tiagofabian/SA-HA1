@@ -24,7 +24,7 @@ const CheckoutNavigation = ({ step, onStepChange, loading, onConfirmOrder }) => 
                     {step === 3 ? 'Volver a pago' : 'Volver a dirección'}
                 </Button>
             ) : (
-                <Link to="/cart">
+                <Link to="/carrito">
                     <Button variant="outline">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Volver al carrito
