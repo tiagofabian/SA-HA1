@@ -13,10 +13,13 @@ import {
 export const fetchAllCustomers = async () => {
   const customers = await getAllCustomers();
 
-  // Ejemplo de lógica de negocio
-  return customers.map((p) => ({
-    ...p,
-    price: Number(p.price),
+  // Mapear campos del backend (español) a frontend (inglés)
+  return customers.map((customer) => ({
+    id: customer.id,
+    name: customer.nombre,      // "nombre" → "name"
+    email: customer.email,     // "correo" → "email"
+    phone: customer.phone,   // "telefono" → "phone"
+    rol: customer.rol || "USUARIO", // Si no viene rol, por defecto USUARIO
   }));
 };
 
