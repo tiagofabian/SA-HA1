@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, Loader2 } from "lucide-react";
+import { Search, Edit } from "lucide-react";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import Modal from "@/components/reuse/Modal";
 import ManageUserForm from "@/components/ManageUserForm";
 
 // Importar servicios
-import { fetchAllCustomers, deleteCustomer } from "@/services/customer.service";
+import { fetchAllCustomers } from "@/services/customer.service";
 
 const ManageUser = () => {
   const { user: authUser } = useAuth();
@@ -15,7 +15,6 @@ const ManageUser = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [deletingId, setDeletingId] = useState(null);
 
   // Cargar todos los usuarios del backend
   useEffect(() => {
@@ -35,23 +34,6 @@ const ManageUser = () => {
     loadUsers();
   }, []);
 
-  // Manejar eliminación de usuario
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este usuario?")) return;
-    
-    setDeletingId(id);
-    try {
-      await deleteCustomer(id);
-      setUsers(prev => prev.filter(user => user.id !== id));
-      toast.success("Usuario eliminado correctamente");
-    } catch (err) {
-      console.error("Error al eliminar usuario:", err);
-      toast.error(err.message || "Error al eliminar usuario");
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
   const filteredUsers = users.filter((u) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -67,9 +49,9 @@ const ManageUser = () => {
         <h1 className="text-3xl font-bold mb-2">Gestión de Usuarios</h1>
         <p className="text-gray-600 mb-6">Visualiza y administra la información de usuarios</p>
 
-        {/* CONTROLES */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
+        {/* CONTROLES - Solo buscador */}
+        <div className="mb-6">
+          <div className="relative max-w-md">
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <input
               type="text"
@@ -79,22 +61,12 @@ const ManageUser = () => {
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5e8c77]"
             />
           </div>
-          <button
-            onClick={() => {
-              setEditingUser(null);
-              setShowForm(true);
-            }}
-            className="px-4 py-2 bg-[#5e8c77] text-white rounded-lg flex items-center justify-center hover:bg-[#4a7060] transition-colors"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Usuario
-          </button>
         </div>
 
         {/* ESTADO DE CARGA */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-[#5e8c77]" />
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5e8c77]"></div>
             <span className="ml-3 text-gray-600">Cargando usuarios...</span>
           </div>
         ) : filteredUsers.length === 0 ? (
@@ -131,29 +103,16 @@ const ManageUser = () => {
                   </p>
                 </div>
 
-                {/* BOTONES DE ACCIÓN */}
+                {/* BOTONES DE ACCIÓN - Solo Editar */}
                 <div className="flex gap-2 mt-4 md:mt-0">
                   <button
                     onClick={() => {
                       setEditingUser(user);
                       setShowForm(true);
                     }}
-                    className="px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors flex items-center"
+                    className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors flex items-center"
                   >
-                    <Edit className="h-4 w-4 mr-1" /> Editar
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(user.id)}
-                    disabled={deletingId === user.id || user.id === authUser?.id}
-                    className="px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={user.id === authUser?.id ? "No puedes eliminar tu propio usuario" : ""}
-                  >
-                    {deletingId === user.id ? (
-                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-4 w-4 mr-1" />
-                    )}
-                    Eliminar
+                    <Edit className="h-4 w-4 mr-2" /> Editar
                   </button>
                 </div>
               </div>
@@ -162,14 +121,14 @@ const ManageUser = () => {
         )}
       </div>
 
-      {/* MODAL PARA CREAR/EDITAR USUARIO */}
+      {/* MODAL PARA EDITAR USUARIO (solo edición) */}
       <Modal
         isOpen={showForm}
         onClose={() => {
           setShowForm(false);
           setEditingUser(null);
         }}
-        title={editingUser ? "Editar Usuario" : "Nuevo Usuario"}
+        title="Editar Usuario"
       >
         <ManageUserForm
           initialData={editingUser}
@@ -178,16 +137,10 @@ const ManageUser = () => {
             setEditingUser(null);
           }}
           onSuccess={(updatedUser) => {
-            // Actualizar la lista después de crear/editar
-            if (editingUser) {
-              // Editar usuario existente
-              setUsers(prev => prev.map(u => 
-                u.id === editingUser.id ? updatedUser : u
-              ));
-            } else {
-              // Agregar nuevo usuario
-              setUsers(prev => [updatedUser, ...prev]);
-            }
+            // Actualizar la lista después de editar
+            setUsers(prev => prev.map(u => 
+              u.id === editingUser.id ? updatedUser : u
+            ));
             setShowForm(false);
             setEditingUser(null);
           }}
