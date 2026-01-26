@@ -77,8 +77,15 @@ const ManageProductForm = ({
   // IMÁGENES
   // =========================
   const handleAddImage = (file) => {
-    if (product.images.length >= 3)
-      return alert("Solo se permiten hasta 3 imágenes por producto");
+    if (!file?.cdnUrl) {
+      alert("Error al subir la imagen");
+      return;
+    }
+
+    if (product.images.length >= 3) {
+      alert("Solo se permiten hasta 3 imágenes por producto");
+      return;
+    }
 
     setProduct((prev) => ({
       ...prev,
@@ -99,12 +106,22 @@ const ManageProductForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!product.name?.trim()) return alert("El nombre es obligatorio");
+    if (!product.price || Number(product.price) <= 0) return alert("El precio debe ser mayor a 0");
+    if (!product.categoryId) return alert("La categoría es obligatoria");
+    if (!product.images || product.images.length === 0) return alert("Se requiere al menos una imagen");
+
     const payload = {
       ...product,
+      images: product.images, // Mantiene el orden para el backend
       collections: selectedCollections?.map((c) => ({ id: c.id })) ?? [],
     };
 
-    onSubmit(payload);
+    try {
+      onSubmit(payload);
+    } catch (err) {
+      alert("Error al guardar el producto: " + err.message);
+    }
   };
 
   // =========================
@@ -175,10 +192,7 @@ const ManageProductForm = ({
 
           if (selectedCollections.some((c) => c.id === col.id)) return;
 
-          setSelectedCollections([
-            ...selectedCollections,
-            { id: col.id, name: col.name },
-          ]);
+          setSelectedCollections([...selectedCollections, { id: col.id, name: col.name }]);
           e.target.value = "";
         }}
         className="border p-2 rounded w-full"
@@ -205,9 +219,7 @@ const ManageProductForm = ({
             <button
               type="button"
               onClick={() =>
-                setSelectedCollections(
-                  selectedCollections.filter((_, idx) => idx !== i)
-                )
+                setSelectedCollections(selectedCollections.filter((_, idx) => idx !== i))
               }
               className="text-red-500 font-bold"
             >

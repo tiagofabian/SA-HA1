@@ -1,22 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useOutletContext, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 
-const EarringsCategory = ({ itemsPerPage = 8 }) => {
-  const { categoryData } = useOutletContext(); // productos filtrados por la categoría
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loadedImages, setLoadedImages] = useState(0);
-  const [imagesReady, setImagesReady] = useState(false);
-
+const EarringsCategory = ({ itemsPerPage = 20 }) => {
+  const { categoryData } = useOutletContext();
   const { cart, addToCart, decreaseQuantity } = useCart();
 
   const products = categoryData ?? [];
-
-  // 🖼️ Control de carga de imágenes
-  useEffect(() => {
-    if (products.length === 0) return;
-    if (loadedImages >= products.length) setImagesReady(true);
-  }, [loadedImages, products.length]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // 📄 Paginación
   const indexOfLast = currentPage * itemsPerPage;
@@ -34,13 +25,6 @@ const EarringsCategory = ({ itemsPerPage = 8 }) => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto flex flex-col gap-8">
-
-      {!imagesReady && (
-        <p className="text-center text-gray-400 mb-6">
-          Cargando imágenes…
-        </p>
-      )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {currentProducts.map((product) => {
           const cartItem = cart.find(
@@ -55,16 +39,15 @@ const EarringsCategory = ({ itemsPerPage = 8 }) => {
           return (
             <div
               key={product.id}
-              className="border rounded-xl shadow p-4 bg-white transition-opacity duration-300 max-w-[300px] w-full mx-auto"
+              className="border rounded-xl shadow p-4 bg-white max-w-[300px] w-full mx-auto"
             >
               <Link to={`/producto/${product.id}`}>
                 <img
                   src={mainImage}
                   alt={product.name}
                   className="w-full h-64 object-cover rounded-md mb-3"
-                  onLoad={() => setLoadedImages((prev) => prev + 1)}
-                  onError={() => setLoadedImages((prev) => prev + 1)}
                 />
+
                 <h3 className="google-font-text font-medium text-lg line-clamp-1 mb-1">
                   {product.name}
                 </h3>
@@ -88,7 +71,9 @@ const EarringsCategory = ({ itemsPerPage = 8 }) => {
                       −
                     </button>
 
-                    <span className="font-medium">{cartItem.quantity}</span>
+                    <span className="font-medium">
+                      {cartItem.quantity}
+                    </span>
 
                     <button
                       onClick={() =>
@@ -115,7 +100,7 @@ const EarringsCategory = ({ itemsPerPage = 8 }) => {
         })}
       </div>
 
-      {/* Paginación */}
+      {/* 📄 Paginación */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-8">
           <button
@@ -154,4 +139,3 @@ const EarringsCategory = ({ itemsPerPage = 8 }) => {
 };
 
 export default EarringsCategory;
-

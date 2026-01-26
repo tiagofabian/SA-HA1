@@ -10,7 +10,7 @@ import {
 
 const Products = ({
   title = "Nuestros Productos",
-  itemsPerPage = 8,
+  itemsPerPage = 20,
 }) => {
   const { slug } = useParams();
   const location = useLocation();
@@ -20,11 +20,7 @@ const Products = ({
 
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
   const [loadingData, setLoadingData] = useState(true);
-  const [loadedImages, setLoadedImages] = useState(0);
-  const [imagesReady, setImagesReady] = useState(false);
-
   const [dynamicTitle, setDynamicTitle] = useState("");
 
   const { cart, addToCart, decreaseQuantity } = useCart();
@@ -34,8 +30,6 @@ const Products = ({
     const fetchProducts = async () => {
       try {
         setLoadingData(true);
-        setImagesReady(false);
-        setLoadedImages(0);
 
         let data = [];
 
@@ -50,15 +44,8 @@ const Products = ({
 
         // 🏷️ Título dinámico
         if (data.length > 0) {
-          if (isCategory) {
-            setDynamicTitle(`Categoría ${data[0].category?.name ?? ""}`);
-          }
-
-          if (isCollection) {
-            setDynamicTitle(
-              `Colección ${data[0].collections?.[0]?.name ?? ""}`
-            );
-          }
+          if (isCategory) setDynamicTitle(`Categoría ${data[0].category?.name ?? ""}`);
+          if (isCollection) setDynamicTitle(`Colección ${data[0].collections?.[0]?.name ?? ""}`);
         } else {
           setDynamicTitle(title);
         }
@@ -73,15 +60,6 @@ const Products = ({
 
     fetchProducts();
   }, [slug, isCategory, isCollection, title]);
-
-  // 🖼️ Control de carga de imágenes
-  useEffect(() => {
-    if (products.length === 0) return;
-
-    if (loadedImages >= products.length) {
-      setImagesReady(true);
-    }
-  }, [loadedImages, products.length]);
 
   // 📄 Paginación
   const indexOfLast = currentPage * itemsPerPage;
@@ -112,22 +90,10 @@ const Products = ({
         {dynamicTitle || title}
       </h1>
 
-      {!imagesReady && (
-        <p className="text-center text-gray-400 mb-6">
-          Cargando imágenes…
-        </p>
-      )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
         {currentProducts.map((product) => {
-          const cartItem = cart.find(
-            (item) => item.id_product === product.id
-          );
-
-          const mainImage =
-            product.imageUrls?.length > 0
-              ? product.imageUrls[0]
-              : "/placeholder.png";
+          const cartItem = cart.find(item => item.id_product === product.id);
+          const mainImage = product.imageUrls?.[0] ?? "/placeholder.png";
 
           return (
             <div
@@ -139,8 +105,6 @@ const Products = ({
                   src={mainImage}
                   alt={product.name}
                   className="w-full h-64 object-cover rounded-md mb-3"
-                  onLoad={() => setLoadedImages((prev) => prev + 1)}
-                  onError={() => setLoadedImages((prev) => prev + 1)}
                 />
                 <h3 className="google-font-text font-medium text-lg line-clamp-1">
                   {product.name}
@@ -196,9 +160,7 @@ const Products = ({
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-8">
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.max(prev - 1, 1))
-            }
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-md ${
               currentPage === 1
@@ -214,11 +176,7 @@ const Products = ({
           </span>
 
           <button
-            onClick={() =>
-              setCurrentPage((prev) =>
-                Math.min(prev + 1, totalPages)
-              )
-            }
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-md ${
               currentPage === totalPages

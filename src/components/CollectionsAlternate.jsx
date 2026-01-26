@@ -12,7 +12,6 @@ const CollectionsAlternate = ({
   useEffect(() => {
     const load = async () => {
       try {
-        // 🔹 AHORA sí: el backend ya devuelve colecciones
         const data = await fetchCollectionsWithProductsBySlug(slugs);
         setCollections(data);
       } catch (err) {
@@ -24,7 +23,7 @@ const CollectionsAlternate = ({
     };
 
     load();
-  }, [slugs]);
+  }, []); // ⚡
 
   if (loading) {
     return (

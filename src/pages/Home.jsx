@@ -15,10 +15,7 @@ const Home = () => {
     const loadCollectionProducts = async () => {
       try {
         setLoading(true);
-        const collectionSlug = ["Productos_Destacados"]
         const collection = await fetchProductsByCollectionSlug("productos_destacados");
-
-        console.log("aquiiii", collection);
         
         const products = collection
           .filter(product => product.imageUrls?.[0]) // Solo productos con imagen
