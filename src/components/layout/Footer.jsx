@@ -30,7 +30,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#categorias"
+                  href="/categoria"
                   className="google-font-text text-[0.85rem] text-primary-foreground/80 transition-colors hover:text-primary-foreground"
                 >
                   Categoría
@@ -38,7 +38,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#nosotros"
+                  href="/nosotros"
                   className="google-font-text text-[0.85rem] text-primary-foreground/80 transition-colors hover:text-primary-foreground"
                 >
                   Nosotros
@@ -46,7 +46,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#contacto"
+                  href="/contacto"
                   className="google-font-text text-[0.85rem] text-primary-foreground/80 transition-colors hover:text-primary-foreground"
                 >
                   Contacto

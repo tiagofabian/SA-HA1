@@ -65,53 +65,80 @@ const Categories = () => {
 
   return (
     <div className="flex flex-col gap-8 px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto">
-      <div className="text-center mb-6">
-        <h1 className="text-4xl font-extrabold mb-2 text-[#1a1a1a]">
+      <div className="text-center mb-16 mt-8">
+        <h1 className="google-font-title text-4xl font-extrabold mb-2 text-[#1a1a1a]">
           Categorías Exclusivas
         </h1>
-        <p className="text-[#1a1a1a] max-w-2xl mx-auto">
+        <p className="Monserrat text-[#1a1a1a] max-w-2xl mx-auto">
           Explora nuestra selección de aros, pulseras, anillos y collares,
           creados con pasión y estilo para quienes buscan piezas únicas y llenas de personalidad.
         </p>
       </div>
 
       {/* GRID DE CATEGORÍAS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
         {categoriesMeta.map((cat) => {
           const imgSrc = categoryImages[cat.path];
           const isActive = currentSlug === cat.path;
-
-          // Difuminado para inactivos:
-          // - Siempre que la categoría no sea activa
-          // - Ya sea que haya hover sobre otra o no haya hover sobre ninguna
-          const shouldBlur = !isActive;
 
           return (
             <NavLink
               key={cat.path}
               to={cat.path}
-              className="relative w-full aspect-square overflow-hidden rounded-xl"
               onMouseEnter={() => setHoveredCategory(cat.path)}
               onMouseLeave={() => setHoveredCategory(null)}
+              className="relative w-full aspect-square"
             >
-              {/* Imagen */}
-              {imgSrc && (
-                <img
-                  src={imgSrc}
-                  alt={cat.name}
-                  className={`w-full h-full object-cover transition-all duration-500
-                    ${shouldBlur
-                      ? "opacity-80 blur-[4px] scale-[97%]"
-                      : "opacity-100 blur-0 scale-100"
-                    }`}
-                />
-              )}
+              <div
+                className={`
+                  w-full h-full rounded-2xl overflow-hidden
+                  ring-1 ring-black/20 transition-all duration-300
+                  ${isActive ? "ring-black/50 !ring-[1px]" : hoveredCategory === cat.path ? "ring-[#dadada]" : ""}
+                  flex items-center justify-center
+                `}
+              >
+                {/* Imagen */}
+                {imgSrc && (
+                  <img
+                    src={imgSrc}
+                    alt={cat.name}
+                    className="w-full h-full object-cover transition-all duration-500"
+                  />
+                )}
+
+                {/* Fondo dinámico expandible */}
+                <div
+                  className={`
+                    absolute top-1/2 left-1/2 bg-black/30 rounded-2xl
+                    transition-all duration-500 ease-in-out
+                    transform -translate-x-1/2 -translate-y-1/2
+                    ${isActive
+                      ? "w-[0%] h-[0%]"   //
+                      : "w-full h-full"}
+                  `}
+                ></div>
+
+                {/* Texto siempre centrado */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span
+                    className={`
+                      google-font-text text-[1.2rem] !font-extrabold px-4 py-1
+                      transition-all duration-500
+                      ${isActive 
+                        ? "text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.99)]" 
+                        : " text-white/70"}
+                    `}
+                  >
+                    {cat.name}
+                  </span>
+                </div>
+
+
+              </div>
             </NavLink>
           );
         })}
       </div>
-
-
 
       {/* OUTLET */}
       <div className="p-6 bg-white rounded-xl shadow-md min-h-[400px]">
