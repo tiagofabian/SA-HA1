@@ -1,19 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Descubre nuestras piezas más exclusivas" }) => {
+const PLACEHOLDER_PRODUCT = {
+  id: "placeholder",
+  title: "Próximamente",
+  price: "",
+  image: "https://www.reisender.com.ar/images/product-placeholder.png",
+  isPlaceholder: true,
+};
+
+const Carousel = ({
+  products,
+  title = "Productos Destacados",
+  subtitle = "Descubre nuestras piezas más exclusivas",
+}) => {
   const [current, setCurrent] = useState(0);
   const navigate = useNavigate();
-  const productsPerSlide = 4;
-  const maxProducts = 4;
 
-  // 👇 limitar productos
+  const productsPerSlide = 4;
+  const maxProducts = 12;
+
+  // 1️⃣ Limitar productos reales
   const limitedProducts = products.slice(0, maxProducts);
 
-  // Crear slides dinámicamente
+  // 2️⃣ Rellenar con placeholders si faltan
+  const filledProducts = [
+    ...limitedProducts,
+    ...Array.from(
+      { length: maxProducts - limitedProducts.length },
+      (_, i) => ({
+        ...PLACEHOLDER_PRODUCT,
+        id: `placeholder-${i}`,
+      })
+    ),
+  ];
+
+  // 3️⃣ Crear slides
   const slides = [];
-  for (let i = 0; i < limitedProducts.length; i += productsPerSlide) {
-    slides.push(limitedProducts.slice(i, i + productsPerSlide));
+  for (let i = 0; i < filledProducts.length; i += productsPerSlide) {
+    slides.push(filledProducts.slice(i, i + productsPerSlide));
   }
 
   const nextSlide = () => {
@@ -24,23 +49,23 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  // Función para manejar el click en el producto
   const handleProductClick = (e, product) => {
-    // Usa el ID del producto para navegar a la página de descripción
+    if (product.isPlaceholder) return;
     e.preventDefault();
     e.stopPropagation();
-    console.log("Producto clickeado:", product);
     navigate(`/producto/${product.id}`);
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-20"> 
-
-      {/* Slider container */}
+    <div className="w-full max-w-6xl mx-auto py-20">
       <div className="relative overflow-hidden">
-        <h2 className="google-font-title mb-8 text-3xl text-center font-bold text-foreground md:text-4xl lg:text-[3rem]">
-          Productos Destacados
+        <h2 className="google-font-title mb-2 text-3xl text-center font-bold md:text-4xl">
+          {title}
         </h2>
+        <p className="google-font-text mb-8 text-center text-gray-500">
+          {subtitle}
+        </p>
+
         {/* Slides */}
         <div
           className="flex transition-transform duration-500"
@@ -48,19 +73,31 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
         >
           {slides.map((slide, index) => (
             <div key={index} className="w-full flex-shrink-0">
-              {/* CAMBIAR: grid-cols-4 en lugar de grid-cols-3 */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
                 {slide.map((product) => (
-                  <div key={product.id} onClick={(e) => handleProductClick(e, product)} className="border rounded-xl shadow p-4 bg-white hover:shadow-lg transition-shadow cursor-pointer group">
+                  <div
+                    key={product.id}
+                    onClick={(e) => handleProductClick(e, product)}
+                    className={`border rounded-xl shadow p-4 bg-white transition-shadow group
+                      ${
+                        product.isPlaceholder
+                          ? "cursor-default opacity-70"
+                          : "cursor-pointer hover:shadow-lg"
+                      }`}
+                  >
                     <img
-                      src={product.image || 'https://www.reisender.com.ar/images/product-placeholder.png'}
+                      src={product.image}
                       alt={product.title}
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 
-                        'https://www.reisender.com.ar/images/product-placeholder.png';}}
                       className="w-full h-64 object-cover rounded-md"
                     />
-                    <h3 className="google-font-text mt-3 !font-[500] text-lg line-clamp-1">{product.title}</h3>
-                    <p className="google-font-text text-gray-500 font-medium">{product.price}</p>
+                    <h3 className="google-font-text mt-3 text-lg font-medium text-center">
+                      {product.title}
+                    </h3>
+                    {!product.isPlaceholder && (
+                      <p className="google-font-text text-gray-500 font-medium text-center">
+                        {product.price}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -71,13 +108,13 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
         {/* Buttons */}
         <button
           onClick={prevSlide}
-          className="absolute top-1/2 -translate-y-1/2 left-2 bg-black/70 hover:bg-black text-white px-4 py-3 rounded-full shadow-lg transition-colors"
+          className="absolute top-1/2 -translate-y-1/2 left-2 bg-black/70 hover:bg-black text-white px-4 py-3 rounded-full"
         >
           ←
         </button>
         <button
           onClick={nextSlide}
-          className="absolute top-1/2 -translate-y-1/2 right-2 bg-black/70 hover:bg-black text-white px-4 py-3 rounded-full shadow-lg transition-colors"
+          className="absolute top-1/2 -translate-y-1/2 right-2 bg-black/70 hover:bg-black text-white px-4 py-3 rounded-full"
         >
           →
         </button>
@@ -90,11 +127,10 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
             key={i}
             onClick={() => setCurrent(i)}
             className={`w-3 h-3 rounded-full transition-all ${
-              current === i 
-                ? "bg-black scale-125" 
+              current === i
+                ? "bg-black scale-125"
                 : "bg-gray-300 hover:bg-gray-400"
             }`}
-            aria-label={`Ir a slide ${i + 1}`}
           />
         ))}
       </div>
