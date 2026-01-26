@@ -11,7 +11,7 @@ const UploadImage = ({ onUpload }) => {
       sourceList="local, camera"
       onFileUploadSuccess={(file) => {
         onUpload(file.cdnUrl); // URL pública
-      }}
+      }} 
     />
   );
 };
