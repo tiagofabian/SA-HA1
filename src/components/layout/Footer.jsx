@@ -4,7 +4,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-primary text-primary-foreground mt-48">
+    <footer className="bg-primary text-primary-foreground mt-12">
       <div className="container mx-auto px-6 py-12 md:px-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
@@ -60,7 +60,7 @@ const Footer = () => {
             <h4 className="google-font-text text-[1rem] !font-semibold">Servicios</h4>
             <ul className="space-y-2 text-sm">
               <li className="google-font-text text-[0.85rem] text-primary-foreground/80">
-                Envío gratis +$75.000
+                Envío gratis +$50.000
               </li>
               <li className="google-font-text text-[0.85rem] text-primary-foreground/80">
                 Garantía de calidad

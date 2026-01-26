@@ -3,7 +3,11 @@ import { useAuth } from "@/context/AuthContext";
 import { update } from "@/services/auth.service";
 import { toast } from "react-toastify";
 
-const ManageUserForm = ({ initialData = null, onCancel }) => {
+const ManageUserForm = ({
+  initialData = null,
+  onCancel = () => { },
+  onSuccess = () => { }  // ← AGREGADO con valor por defecto
+}) => {
   const { user: authUser, updateUserContext } = useAuth();
   const isEditing = Boolean(initialData);
 
@@ -20,7 +24,8 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
       setUser({
         name: initialData.name ?? "",
         email: initialData.email ?? "",
-        rol: initialData.rol ?? "USUARIO", // string desde backend
+        phone: initialData.phone ?? "",
+        rol: initialData.rol ?? "USUARIO",
         active: initialData.active ?? true,
       });
     } else {
@@ -39,14 +44,51 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("📝 handleSubmit ejecutado");
 
     try {
-      const updated = await update(authUser.id, user); // PUT al backend
-      updateUserContext(updated); // sincroniza contexto + sessionStorage
-      toast.success("Usuario actualizado");
-      onCancel(); // cierra modal
+      const userData = isEditing
+        ? {
+          name: user.name,
+          email: null,
+          phone: user.phone,
+          rol: user.rol,
+          active: user.active,
+        }
+        : {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          rol: user.rol,
+          active: user.active,
+        };
+
+      const userIdToUpdate = isEditing ? initialData.id : undefined;
+      const updated = await update(userIdToUpdate, userData);
+
+      // Transformar respuesta
+      const successData = {
+        id: updated.id || initialData.id,
+        name: updated.name,
+        email: updated.email,
+        rol: updated.rol,
+        active: updated.active,
+      };
+
+      console.log("🚀 Llamando onSuccess con:", successData);
+      onSuccess(successData);  // ← AHORA onSuccess existe
+
+      // Actualizar contexto solo si es el usuario logueado
+      if (isEditing && initialData.id === authUser.id) {
+        updateUserContext(updated);
+      }
+
+      // Cerrar modal
+      onCancel();
+
     } catch (err) {
-      toast.error(err.message || "Error al actualizar usuario");
+      console.error("💥 Error en handleSubmit:", err);
+      toast.error(err.message || `Error al ${isEditing ? 'actualizar' : 'crear'} usuario`);
     }
   };
 
@@ -68,7 +110,6 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
       <div className="flex flex-col gap-1">
         <label className="font-medium text-gray-700">Email</label>
         {isEditing ? (
-          // Cuando se está editando, mostrar como campo de solo lectura
           <div className="relative">
             <input
               type="email"
@@ -84,7 +125,6 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
             </div>
           </div>
         ) : (
-          // Cuando se está creando nuevo usuario, campo normal***************************
           <input
             type="email"
             name="email"
@@ -94,6 +134,17 @@ const ManageUserForm = ({ initialData = null, onCancel }) => {
             required
           />
         )}
+      </div>
+      {/* Telefono */}
+      <div className="flex flex-col gap-1">
+        <label className="font-medium text-gray-700">Teléfono</label>
+        <input
+          type="text"
+          name="phone"
+          value={user.phone}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
       </div>
 
       {/* Rol */}
