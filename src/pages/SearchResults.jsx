@@ -119,7 +119,7 @@ const SearchResults = ({ itemsPerPage = 8 }) => {
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-md ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-black text-white hover:bg-gray-800"}`}
           >
-            Siguiente
+            Siguiente 
           </button>
         </div>
       )}
