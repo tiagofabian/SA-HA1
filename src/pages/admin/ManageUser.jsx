@@ -30,7 +30,7 @@ const ManageUser = () => {
         setLoading(false);
       }
     };
-    
+
     loadUsers();
   }, []);
 
@@ -87,11 +87,10 @@ const ManageUser = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold text-lg">{user.name || "Sin nombre"}</h3>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      user.rol === "ADMIN" 
-                        ? "bg-purple-100 text-purple-800" 
-                        : "bg-blue-100 text-blue-800"
-                    }`}>
+                    <span className={`px-2 py-1 text-xs rounded-full ${user.rol === "ADMIN"
+                      ? "bg-purple-100 text-purple-800"
+                      : "bg-blue-100 text-blue-800"
+                      }`}>
                       {user.rol || "USUARIO"}
                     </span>
                   </div>
@@ -125,6 +124,7 @@ const ManageUser = () => {
       <Modal
         isOpen={showForm}
         onClose={() => {
+          console.log("Modal cerrado manualmente");
           setShowForm(false);
           setEditingUser(null);
         }}
@@ -133,16 +133,21 @@ const ManageUser = () => {
         <ManageUserForm
           initialData={editingUser}
           onCancel={() => {
+            console.log("onCancel llamado desde ManageUserForm");
             setShowForm(false);
             setEditingUser(null);
           }}
-          onSuccess={(updatedUser) => {
-            // Actualizar la lista después de editar
-            setUsers(prev => prev.map(u => 
-              u.id === editingUser.id ? updatedUser : u
+          onSuccess={(updatedUser) => {  // ← ESTO debe estar
+            console.log("🎯 onSuccess RECIBIDO en ManageUser.jsx");
+            console.log("updatedUser:", updatedUser);
+
+            setUsers(prev => prev.map(u =>
+              u.id === editingUser.id ? { ...u, ...updatedUser } : u
             ));
+
             setShowForm(false);
             setEditingUser(null);
+            toast.success("Usuario actualizado");
           }}
         />
       </Modal>

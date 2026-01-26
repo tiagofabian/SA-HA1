@@ -71,8 +71,11 @@ export const editAddress = async (id, address) => {
   }
 
   const payload = {
-    address_name: address.address_name,
-    description: address.description ?? "",
+    address: address.address || null,
+    city: address.city || null,
+    region: address.region || null,
+    zip_code: address.zip_code != null ? Number(address.zip_code) : null,
+    id_customer: address.id_customer,
   };
 
   const updatedAddress = await updateAddress(id, payload);
