@@ -18,11 +18,12 @@ export const getAuthToken = () => {
   }
 };
 
-export const capitalizeFirst = (value = "") =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/^\w/, (c) => c.toUpperCase());
+export const capitalizeFirst = (value = "") => {
+  const text = value.trim();
+  if (!text) return "";
+
+  return text[0].toUpperCase() + text.slice(1);
+};
 
 
 export const getBGColorTag = (slug) => {
