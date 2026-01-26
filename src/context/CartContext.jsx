@@ -20,14 +20,12 @@ export const CartProvider = ({ children }) => {
           const backendCart = await cartService.fetchCart();
           setCart(backendCart);
           setIsUsingBackend(true);
-          console.log("Carrito cargado desde backend");
         } else {
           // Usuario no logueado: cargar de localStorage
           const storedCart = localStorage.getItem("cart");
           const localCart = storedCart ? JSON.parse(storedCart) : [];
           setCart(localCart);
           setIsUsingBackend(false);
-          console.log("Carrito cargado desde localStorage");
         }
       } catch (error) {
         console.error("Error al cargar carrito:", error);
@@ -95,11 +93,9 @@ export const CartProvider = ({ children }) => {
     if (!loading) {
       if (isUsingBackend) {
         // El backend ya guardó los cambios, no necesitamos hacer nada extra
-        console.log("Cambios guardados en backend");
       } else {
         // Guardar en localStorage
         localStorage.setItem("cart", JSON.stringify(cart));
-        console.log("Cambios guardados en localStorage");
       }
     }
   }, [cart, isUsingBackend, loading]);

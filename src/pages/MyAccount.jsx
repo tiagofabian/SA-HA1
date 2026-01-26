@@ -24,7 +24,6 @@ const MyAccount = () => {
     setLoading(true);
     try {
       const customerData = await fetchCustomerByEmail(user.email);
-      console.log("📥 Cliente cargado:", customerData);
       setCustomer(customerData);
       setCustomerForm({ 
         name: customerData.nombre || customerData.name || "", 
@@ -32,10 +31,8 @@ const MyAccount = () => {
       });
 
       if (customerData.id) {
-        console.log("🔍 Buscando dirección para cliente ID:", customerData.id);
         try {
           const addressData = await fetchAddressByIdCustomer(customerData.id);
-          console.log("📥 Dirección cargada:", addressData);
           setAddress(addressData);
           setAddressForm({
             address: addressData?.address || "",
@@ -44,7 +41,6 @@ const MyAccount = () => {
             zip_code: addressData?.zip_code || "",
           });
         } catch (addrErr) {
-          console.log("ℹ️ No se encontró dirección:", addrErr.message);
           setAddress(null);
         }
       }
@@ -101,7 +97,7 @@ const MyAccount = () => {
       let updated;
 
       if (address?.id_address) {
-        console.log("🔄 MODE: Actualizando dirección existente");
+        console.log("MODE: Actualizando dirección existente");
         console.log("ID dirección a actualizar:", address.id_address);
         console.log("Datos a enviar:", {
           address: addressForm.address || null,
@@ -119,7 +115,7 @@ const MyAccount = () => {
           id_customer: customer.id
         });
       } else {
-        console.log("🆕 MODE: Creando nueva dirección");
+        console.log("MODE: Creando nueva dirección");
         console.log("Datos a enviar:", {
           address: addressForm.address || null,
           city: addressForm.city || null,
@@ -137,7 +133,6 @@ const MyAccount = () => {
         });
       }
 
-      console.log("✅ RESPUESTA del backend:", updated);
       setAddress(updated);
       setEditingAddress(false);
       toast.success("Dirección guardada correctamente");
