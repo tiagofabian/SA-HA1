@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Package, Truck, Home, ShoppingBag, Calendar, MapPin, CreditCard } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import hector from "@/assets/images/hector1.png";
+import hector from "@/assets/images/hector2.png";
 
 const OrderConfirmation = () => {
     const navigate = useNavigate();
