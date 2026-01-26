@@ -5,23 +5,17 @@
 /* Aquí abajo es donde puedes usar @layer base */
 
 @layer base {
-
   :root {
-
     --background: 0 0% 100%;
 
     --foreground: 222.2 84% 4.9%;
 
     /* ... resto de tus variables ... */
-
   }
 
   body {
-
     @apply bg-background text-foreground;
-
   }
-
 }
 
 /* Animaciones personalizadas */
@@ -29,6 +23,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -39,6 +34,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -69,7 +65,6 @@
   --tw-gradient-to: rgba(254, 107, 57, 0.2);
 }
 
-
 /* GLOBAL */
 .google-font-title {
   /* font-family: "Cinzel", serif; */
@@ -90,6 +85,47 @@
 
 .btn-green-arcadia:hover {
   color: black;
-  border: 1px solid black
+  border: 1px solid black;
 }
- 
+
+/* Responsive Utilities */
+.container-home {
+  @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+}
+
+/* Mobile-first responsive text */
+.text-responsive {
+  @apply text-sm sm:text-base lg:text-lg;
+}
+
+/* Responsive spacing */
+.p-responsive {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Responsive grid columns */
+.grid-responsive {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+/* Hamburger menu animation */
+.hamburger-line {
+  @apply block w-6 h-0.5 bg-current transition-all duration-300;
+}
+
+.hamburger-open .hamburger-line:nth-child(1) {
+  @apply rotate-45 translate-y-1.5;
+}
+
+.hamburger-open .hamburger-line:nth-child(2) {
+  @apply opacity-0;
+}
+
+.hamburger-open .hamburger-line:nth-child(3) {
+  @apply -rotate-45 -translate-y-1.5;
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  @apply overflow-x-hidden max-w-full;
+}
