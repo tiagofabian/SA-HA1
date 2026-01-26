@@ -20,7 +20,9 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6",
+    "react-sortablejs": "^6.1.4",
     "react-toastify": "^11.0.5",
+    "sortablejs": "^1.15.6",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
