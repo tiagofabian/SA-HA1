@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import { fetchAllProducts } from "@/services/product.service";
+import { fetchProductById } from "@/services/product.service"; // ← CAMBIADO
 
 // Importar componentes
 import ProductImages from "@/components/pdp/ProductImages";
@@ -22,10 +22,10 @@ const ProductDescriptionPage = () => {
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        const products = await fetchAllProducts();
-        const prod = products.find((p) => p.id.toString() === id);
-        if (!prod) throw new Error("Producto no encontrado");
-        setProduct(prod);
+        // USAR fetchProductById EN LUGAR DE fetchAllProducts
+        const productData = await fetchProductById(id); // ← CAMBIADO
+        if (!productData) throw new Error("Producto no encontrado");
+        setProduct(productData);
         setCurrentImageIndex(0);
       } catch (err) {
         setError(err.message || "Error al cargar producto");
@@ -101,7 +101,7 @@ const ProductDescriptionPage = () => {
   );
 };
 
-// Componentes para estados
+// Componentes para estados (sin cambios)
 const LoadingState = () => (
   <div className="flex justify-center items-center min-h-screen">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
