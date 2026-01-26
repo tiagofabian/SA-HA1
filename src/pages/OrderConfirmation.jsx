@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Package, Truck, Home, ShoppingBag, Calendar, MapPin, CreditCard } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import hector from "@/assets/images/hector1.png";
 
 const OrderConfirmation = () => {
     const navigate = useNavigate();
@@ -149,6 +150,10 @@ const OrderConfirmation = () => {
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                         ¡Pedido Confirmado!
                     </h1>
+                    <div className="flex flex-row justify-center">
+                      <img src={hector} alt="111" width={"300px"}/>
+                    </div>
+                    
                     <p className="text-gray-600 text-lg mb-2">
                         Gracias por tu compra, <span className="font-semibold">{orderDetails.customerName}</span>.
                     </p>

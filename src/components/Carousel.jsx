@@ -5,11 +5,15 @@ const Carousel = ({ products, title = "Colecciones Destacadas", subtitle = "Desc
   const [current, setCurrent] = useState(0);
   const navigate = useNavigate();
   const productsPerSlide = 4;
-  
-  // Crear slides dinámicamente basado en productsPerSlide
+  const maxProducts = 4;
+
+  // 👇 limitar productos
+  const limitedProducts = products.slice(0, maxProducts);
+
+  // Crear slides dinámicamente
   const slides = [];
-  for (let i = 0; i < products.length; i += productsPerSlide) {
-    slides.push(products.slice(i, i + productsPerSlide));
+  for (let i = 0; i < limitedProducts.length; i += productsPerSlide) {
+    slides.push(limitedProducts.slice(i, i + productsPerSlide));
   }
 
   const nextSlide = () => {
