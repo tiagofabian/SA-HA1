@@ -1,50 +1,82 @@
 import React, { useState, useEffect } from 'react'
 import HeroSlider from '../components/HeroSlider'
 import Testimonials from '../components/Testimonials'
-// import ThematicCollections from '@/components/ThematicCollections';
 import Benefits from '../components/Benefits'
 import Carousel from "@/components/Carousel";
 import CollectionsAlternate from "@/components/CollectionsAlternate";
-import FeaturedCollection from "@/components/FeaturedCollection"; // Importar nuevo componente
+import FeaturedCollection from "@/components/FeaturedCollection";
 import { fetchAllProducts } from '@/services/product.service';
 
 const Home = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCollectionProducts = async () => {
       try {
-        // 1. Obtener todos los productos
+        setLoading(true);
         const allProducts = await fetchAllProducts();
         
-        // 2. Mapear al formato que espera el Carousel
         const products = allProducts
+          .filter(product => product.imageUrls?.[0]) // Solo productos con imagen
+          .slice(0, 12) // Limitar a 12 productos para mobile
           .map(product => ({
             id: product.id,
-            title: product.name || product.nombre || "Producto sin nombre",
-            price: typeof product.price === 'string' ? product.price : `$${product.price}`,
-            image: product.image || product.imageUrls?.[0]
+            title: product.name || "Producto sin nombre",
+            price: `$${product.price?.toLocaleString() || "0"}`,
+            image: product.imageUrls?.[0]
           }));
         
         setFilteredProducts(products);
       } catch (error) {
         console.error('Error al cargar los productos:', error);
         setFilteredProducts([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadCollectionProducts();
   }, []);
+
   return (
-    <div className='container-home'>
-      <HeroSlider/>
-      <Carousel products={filteredProducts}/>
-      <FeaturedCollection/> {/* Nueva sección destacada */}
-      <CollectionsAlternate/>
-      <Testimonials/>
-      <Benefits/>
+    <div className="min-h-screen">
+      <HeroSlider />
+      
+      {/* Carousel section with responsive padding */}
+      <section className="py-8 md:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+            </div>
+          ) : (
+            <Carousel products={filteredProducts} />
+          )}
+        </div>
+      </section>
+
+      <FeaturedCollection />
+      
+      <section className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <CollectionsAlternate />
+        </div>
+      </section>
+
+      <section className="py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <Testimonials />
+        </div>
+      </section>
+
+      <section className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <Benefits />
+        </div>
+      </section>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;
