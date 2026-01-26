@@ -18,7 +18,7 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🔹 foco visual actual (hover o activo)
+  // foco visual (hover o activo)
   const [focusedCategory, setFocusedCategory] = useState(
     categoriesMeta[0].path
   );
@@ -36,7 +36,15 @@ const Categories = () => {
         const imagesObj = {};
 
         data.forEach((cat) => {
-          categoryObj[cat.slug] = cat.products ?? [];
+          const products = cat.products ?? [];
+
+          // ✅ DEDUPLICACIÓN POR CATEGORÍA (por product.id)
+          const uniqueProducts = products.filter(
+            (product, index, self) =>
+              index === self.findIndex((p) => p.id === product.id)
+          );
+
+          categoryObj[cat.slug] = uniqueProducts;
           imagesObj[cat.slug] = cat.image ?? null;
         });
 
@@ -97,11 +105,7 @@ const Categories = () => {
                 className={`
                   relative w-full h-full rounded-2xl overflow-hidden
                   ring-1 transition-all duration-300
-                  ${
-                    isFocused
-                      ? "ring-black/40"
-                      : "ring-black/20"
-                  }
+                  ${isFocused ? "ring-black/40" : "ring-black/20"}
                 `}
               >
                 {/* Imagen */}
@@ -111,11 +115,7 @@ const Categories = () => {
                     alt={cat.name}
                     className={`
                       w-full h-full object-cover transition-all duration-700 ease-out
-                      ${
-                        isFocused
-                          ? "scale-100 blur-0"
-                          : "scale-105 blur-[1.5px]"
-                      }
+                      ${isFocused ? "scale-100 blur-0" : "scale-105 blur-[1.5px]"}
                     `}
                   />
                 )}
@@ -124,11 +124,7 @@ const Categories = () => {
                 <div
                   className={`
                     absolute inset-0 transition-all duration-700
-                    ${
-                      isFocused
-                        ? "bg-black/15"
-                        : "bg-black/25"
-                    }
+                    ${isFocused ? "bg-black/15" : "bg-black/25"}
                   `}
                 />
 

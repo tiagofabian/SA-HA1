@@ -107,7 +107,7 @@ const Products = ({
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto gap-28 flex flex-col min-h-screen">
+    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto gap-28 flex flex-col">
       <h1 className="text-3xl font-bold text-center">
         {dynamicTitle || title}
       </h1>
