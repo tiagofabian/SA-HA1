@@ -45,7 +45,7 @@ const SearchResults = ({ itemsPerPage = 8 }) => {
   const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
-  if (loadingData) return <p className="text-center mt-10">Cargando productos...</p>;
+  if (loadingData) return <p className="text-center mt-10 min-h-screen">Cargando productos...</p>;
   if (!products.length) return <p className="text-center mt-10">No se encontraron productos</p>;
 
   return (
@@ -55,7 +55,7 @@ const SearchResults = ({ itemsPerPage = 8 }) => {
       </h1>
 
       {!imagesReady && (
-        <p className="text-center text-gray-400 mb-6">Cargando imágenes…</p>
+        <p className="text-center text-gray-400 mb-6 min-h-screen">Cargando imágenes…</p>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">

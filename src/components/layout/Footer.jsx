@@ -22,7 +22,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="#inicio"
+                  href="/inicio"
                   className="google-font-text text-[0.85rem] text-primary-foreground/80 transition-colors hover:text-primary-foreground"
                 >
                   Inicio

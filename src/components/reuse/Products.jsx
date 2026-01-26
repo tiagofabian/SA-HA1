@@ -92,7 +92,7 @@ const Products = ({
   // 🌀 Estados visuales
   if (loadingData) {
     return (
-      <p className="text-center mt-10 text-gray-500">
+      <p className="text-center mt-10 text-gray-500 min-h-screen">
         Cargando productos...
       </p>
     );
@@ -100,14 +100,14 @@ const Products = ({
 
   if (!products.length) {
     return (
-      <p className="text-center mt-10 text-gray-500">
+      <p className="text-center mt-10 text-gray-500 min-h-screen">
         No hay productos disponibles
       </p>
     );
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto gap-28 flex flex-col">
+    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto gap-28 flex flex-col min-h-screen">
       <h1 className="text-3xl font-bold text-center">
         {dynamicTitle || title}
       </h1>
