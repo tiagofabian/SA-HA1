@@ -5,7 +5,7 @@ import Benefits from '../components/Benefits'
 import Carousel from "@/components/Carousel";
 import CollectionsAlternate from "@/components/CollectionsAlternate";
 import FeaturedCollection from "@/components/FeaturedCollection";
-import { fetchAllProducts } from '@/services/product.service';
+import { fetchProductsByCollectionSlug } from '@/services/product.service';
 
 const Home = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -15,9 +15,12 @@ const Home = () => {
     const loadCollectionProducts = async () => {
       try {
         setLoading(true);
-        const allProducts = await fetchAllProducts();
+        const collectionSlug = ["Productos_Destacados"]
+        const collection = await fetchProductsByCollectionSlug("productos_destacados");
+
+        console.log("aquiiii", collection);
         
-        const products = allProducts
+        const products = collection
           .filter(product => product.imageUrls?.[0]) // Solo productos con imagen
           .slice(0, 12) // Limitar a 12 productos para mobile
           .map(product => ({
