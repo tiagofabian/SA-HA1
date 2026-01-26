@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 import { slides } from "@/lib/hero-slider";
 
 const HeroSlider = () => {
@@ -27,7 +27,9 @@ const HeroSlider = () => {
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? "opacity-100" : "opacity-0"
+            index === currentSlide
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
           }`}
         >
           <img
@@ -35,7 +37,6 @@ const HeroSlider = () => {
             alt={slide.title}
             className="h-full w-full object-cover"
           />
-          {/* Cambia el overlay a algo más oscuro */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-6 md:px-12">
@@ -46,12 +47,12 @@ const HeroSlider = () => {
                 <p className="google-font-text mb-8 text-lg text-white md:text-xl drop-shadow">
                   {slide.subtitle}
                 </p>
-                <Button
-                  size="lg"
+                <Link
+                  to={slide.link}
                   className="google-font-text bg-white text-black hover:bg-white/90 shadow-2xl transition-all hover:scale-105 px-8 py-6 text-lg font-bold rounded-full"
                 >
                   Explorar Colección
-                </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -88,7 +89,7 @@ const HeroSlider = () => {
         ))}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default HeroSlider
+export default HeroSlider;

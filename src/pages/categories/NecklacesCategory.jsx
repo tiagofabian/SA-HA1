@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 
 const NecklacesCategory = ({ itemsPerPage = 8 }) => {
@@ -50,17 +50,19 @@ const NecklacesCategory = ({ itemsPerPage = 8 }) => {
               key={product.id}
               className="border rounded-xl shadow p-4 bg-white transition-opacity duration-300 max-w-[300px] w-full mx-auto"
             >
-              <img
-                src={mainImage}
-                alt={product.name}
-                className="w-full h-64 object-cover rounded-md mb-3"
-                onLoad={() => setLoadedImages((prev) => prev + 1)}
-                onError={() => setLoadedImages((prev) => prev + 1)}
-              />
+              <Link to={`/producto/${product.id}`}>
+                <img
+                  src={mainImage}
+                  alt={product.name}
+                  className="w-full h-64 object-cover rounded-md mb-3"
+                  onLoad={() => setLoadedImages((prev) => prev + 1)}
+                  onError={() => setLoadedImages((prev) => prev + 1)}
+                />
 
-              <h3 className="google-font-text font-medium text-lg line-clamp-1 mb-1">
-                {product.name}
-              </h3>
+                <h3 className="google-font-text font-medium text-lg line-clamp-1 mb-1">
+                  {product.name}
+                </h3>
+              </Link>
 
               <p className="google-font-text text-gray-500 font-medium mb-2">
                 ${product.price.toLocaleString()}

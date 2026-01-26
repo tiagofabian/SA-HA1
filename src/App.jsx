@@ -22,6 +22,7 @@ import RingsCategory from "./pages/categories/RingsCategory"
 import EarringsCategory from "./pages/categories/EarringsCategory";
 import BraceletsCategory from "./pages/categories/BraceletsCategory";
 import NecklacesCategory from "./pages/categories/NecklacesCategory";
+import SearchResults from "./pages/SearchResults";
 
 
 // Páginas protegidas (requieren login)
@@ -72,6 +73,7 @@ const App = () => {
           <Routes>
             {/* ========== RUTAS PÚBLICAS ========== */}
             <Route path="/" element={<Home />} />
+            <Route path="/search/:term" element={<SearchResults />} />
             <Route path="/categoria" element={<Categories />}>
               <Route path="anillos" index element={<RingsCategory/>} />
               <Route path="aros" element={<EarringsCategory/>} />
