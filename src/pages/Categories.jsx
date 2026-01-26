@@ -17,9 +17,12 @@ const Categories = () => {
   const [categoryImages, setCategoryImages] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [hoveredCategory, setHoveredCategory] = useState(null); // estado simple para hover
 
-  // Cargar categorías y productos
+  // 🔹 foco visual actual (hover o activo)
+  const [focusedCategory, setFocusedCategory] = useState(
+    categoriesMeta[0].path
+  );
+
   useEffect(() => {
     const loadCategories = async () => {
       setLoading(true);
@@ -33,11 +36,7 @@ const Categories = () => {
         const imagesObj = {};
 
         data.forEach((cat) => {
-          const products = cat.products ?? [];
-          const dedupedProducts = Array.from(
-            new Map(products.map((p) => [p.id, p])).values()
-          );
-          categoryObj[cat.slug] = dedupedProducts;
+          categoryObj[cat.slug] = cat.products ?? [];
           imagesObj[cat.slug] = cat.image ?? null;
         });
 
@@ -47,10 +46,11 @@ const Categories = () => {
         const pathSlug = location.pathname.split("/").pop();
         if (!slugs.includes(pathSlug)) {
           navigate(categoriesMeta[0].path, { replace: true });
+        } else {
+          setFocusedCategory(pathSlug);
         }
-
       } catch (err) {
-        console.error("Error al obtener categorías:", err);
+        console.error(err);
         setError("No se pudo cargar la data de categorías");
       } finally {
         setLoading(false);
@@ -60,41 +60,48 @@ const Categories = () => {
     loadCategories();
   }, [location.pathname, navigate]);
 
-  const currentSlug = location.pathname.split("/").pop() || categoriesMeta[0].path;
+  const currentSlug =
+    location.pathname.split("/").pop() || categoriesMeta[0].path;
+
   const currentProducts = categoryData[currentSlug] ?? [];
 
   return (
     <div className="flex flex-col gap-8 px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto">
+      {/* HEADER */}
       <div className="text-center mb-16 mt-8">
         <h1 className="google-font-title text-4xl font-extrabold mb-2 text-[#1a1a1a]">
           Categorías Exclusivas
         </h1>
         <p className="Monserrat text-[#1a1a1a] max-w-2xl mx-auto">
-          Explora nuestra selección de aros, pulseras, anillos y collares,
-          creados con pasión y estilo para quienes buscan piezas únicas y llenas de personalidad.
+          Explora nuestra selección de joyas únicas
         </p>
       </div>
 
       {/* GRID DE CATEGORÍAS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+      <div
+        className="grid grid-cols-2 md:grid-cols-4 gap-20"
+        onMouseLeave={() => setFocusedCategory(currentSlug)}
+      >
         {categoriesMeta.map((cat) => {
           const imgSrc = categoryImages[cat.path];
-          const isActive = currentSlug === cat.path;
+          const isFocused = focusedCategory === cat.path;
 
           return (
             <NavLink
               key={cat.path}
               to={cat.path}
-              onMouseEnter={() => setHoveredCategory(cat.path)}
-              onMouseLeave={() => setHoveredCategory(null)}
+              onMouseEnter={() => setFocusedCategory(cat.path)}
               className="relative w-full aspect-square"
             >
               <div
                 className={`
-                  w-full h-full rounded-2xl overflow-hidden
-                  ring-1 ring-black/20 transition-all duration-300
-                  ${isActive ? "ring-black/50 !ring-[1px]" : hoveredCategory === cat.path ? "ring-[#dadada]" : ""}
-                  flex items-center justify-center
+                  relative w-full h-full rounded-2xl overflow-hidden
+                  ring-1 transition-all duration-300
+                  ${
+                    isFocused
+                      ? "ring-black/40"
+                      : "ring-black/20"
+                  }
                 `}
               >
                 {/* Imagen */}
@@ -102,38 +109,45 @@ const Categories = () => {
                   <img
                     src={imgSrc}
                     alt={cat.name}
-                    className="w-full h-full object-cover transition-all duration-500"
+                    className={`
+                      w-full h-full object-cover transition-all duration-700 ease-out
+                      ${
+                        isFocused
+                          ? "scale-100 blur-0"
+                          : "scale-105 blur-[1.5px]"
+                      }
+                    `}
                   />
                 )}
 
-                {/* Fondo dinámico expandible */}
+                {/* Overlay */}
                 <div
                   className={`
-                    absolute top-1/2 left-1/2 bg-black/30 rounded-2xl
-                    transition-all duration-500 ease-in-out
-                    transform -translate-x-1/2 -translate-y-1/2
-                    ${isActive
-                      ? "w-[0%] h-[0%]"   //
-                      : "w-full h-full"}
+                    absolute inset-0 transition-all duration-700
+                    ${
+                      isFocused
+                        ? "bg-black/15"
+                        : "bg-black/25"
+                    }
                   `}
-                ></div>
+                />
 
-                {/* Texto siempre centrado */}
+                {/* Texto */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <span
                     className={`
-                      google-font-text text-[1.2rem] !font-extrabold px-4 py-1
+                      google-font-text text-[1.25rem] !font-extrabold px-4 py-1
                       transition-all duration-500
-                      ${isActive 
-                        ? "text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.99)]" 
-                        : " text-white/70"}
+                      ${
+                        isFocused
+                          ? "text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]"
+                          : "text-white/75"
+                      }
                     `}
                   >
                     {cat.name}
                   </span>
                 </div>
-
-
               </div>
             </NavLink>
           );
