@@ -36,44 +36,59 @@ const SearchResults = ({ itemsPerPage = 20 }) => {
   const currentProducts = products.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
-  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handlePrev = () =>
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+
   const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   if (loadingData)
     return (
-      <p className="text-center mt-10 min-h-screen">
+      <p className="text-center mt-10 min-h-screen text-gray-500">
         Cargando productos...
       </p>
     );
 
   if (!products.length)
     return (
-      <p className="text-center mt-10">No se encontraron productos</p>
+      <p className="text-center mt-10 min-h-screen">
+        No se encontraron productos
+      </p>
     );
 
   return (
-    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto gap-28 flex flex-col">
+    <div className="px-4 sm:px-6 lg:px-12 py-8 max-w-[1600px] mx-auto flex flex-col gap-28">
       <h1 className="text-3xl font-bold text-center mb-8">
         Resultados para: "{term}"
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
+      {/* ✅ FLEX CENTRADO REAL */}
+      <div className="flex flex-wrap justify-center gap-6 mb-8">
         {currentProducts.map((product) => {
-          const cartItem = cart.find((item) => item.id_product === product.id);
-          const mainImage = product.imageUrls?.[0] || "/placeholder.png";
+          const cartItem = cart.find(
+            (item) => item.id_product === product.id
+          );
+
+          const mainImage =
+            product.imageUrls?.[0] ?? "/placeholder.png";
 
           return (
             <div
               key={product.id}
-              className="border rounded-xl shadow p-4 bg-white transition-opacity duration-300 max-w-[300px] w-full mx-auto"
+              className="
+                border rounded-xl shadow p-4 bg-white
+                w-[280px]
+                transition-shadow hover:shadow-lg
+              "
             >
               <Link to={`/producto/${product.id}`}>
                 <img
                   src={mainImage}
                   alt={product.name}
                   className="w-full h-64 object-cover rounded-md mb-3"
+                  loading="lazy"
                 />
+
                 <h3 className="font-medium text-lg line-clamp-1">
                   {product.name}
                 </h3>
@@ -92,10 +107,17 @@ const SearchResults = ({ itemsPerPage = 20 }) => {
                     >
                       −
                     </button>
-                    <span className="font-medium">{cartItem.quantity}</span>
+
+                    <span className="font-medium">
+                      {cartItem.quantity}
+                    </span>
+
                     <button
                       onClick={() =>
-                        addToCart({ ...product, imageSrc: mainImage })
+                        addToCart({
+                          ...product,
+                          imageSrc: mainImage,
+                        })
                       }
                       className="border border-black px-2 rounded hover:bg-gray-100"
                     >
@@ -105,7 +127,10 @@ const SearchResults = ({ itemsPerPage = 20 }) => {
                 ) : (
                   <button
                     onClick={() =>
-                      addToCart({ ...product, imageSrc: mainImage })
+                      addToCart({
+                        ...product,
+                        imageSrc: mainImage,
+                      })
                     }
                     className="bg-black text-white py-1 px-3 rounded text-sm hover:bg-gray-800 transition-colors"
                   >
@@ -118,7 +143,7 @@ const SearchResults = ({ itemsPerPage = 20 }) => {
         })}
       </div>
 
-      {/* Paginación */}
+      {/* 📄 Paginación */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-8">
           <button

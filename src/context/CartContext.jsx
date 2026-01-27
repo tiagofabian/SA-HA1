@@ -168,35 +168,33 @@ export const CartProvider = ({ children }) => {
   };
 
   // Disminuir cantidad
-  const decreaseQuantity = async (id) => {
+  const decreaseQuantity = async (productId) => {
     if (isUsingBackend && isAuthenticated) {
+      const item = cart.find(item => item.id === productId);
+      if (!item) return;
+
       try {
-        const item = cart.find(item => item.id === id);
-        if (item && item.cartProductId) {
-          const newQuantity = item.quantity - 1;
-          if (newQuantity > 0) {
-            await cartService.updateQuantity(item.cartProductId, newQuantity);
-            setCart(prev =>
-              prev.map(item =>
-                item.id === id
-                  ? { ...item, quantity: newQuantity }
-                  : item
-              )
-            );
-          } else {
-            await cartService.removeFromCart(item.cartProductId);
-            setCart(prev => prev.filter(item => item.id !== id));
-          }
+        const newQuantity = item.quantity - 1;
+
+        if (newQuantity > 0) {
+          await cartService.updateQuantity(item.cartProductId, newQuantity);
+          setCart(prev =>
+            prev.map(i =>
+              i.id === productId ? { ...i, quantity: newQuantity } : i
+            )
+          );
+        } else {
+          await cartService.removeFromCart(item.cartProductId);
+          setCart(prev => prev.filter(i => i.id !== productId));
         }
       } catch (error) {
         console.error("Error al disminuir cantidad (backend):", error);
-        fallbackToLocalStorage();
-        decreaseQuantityLocal(id);
       }
     } else {
-      decreaseQuantityLocal(id);
+      decreaseQuantityLocal(productId);
     }
   };
+
 
   const decreaseQuantityLocal = (id) => {
     setCart(prev =>
@@ -211,23 +209,22 @@ export const CartProvider = ({ children }) => {
   };
 
   // Eliminar producto
-  const removeFromCart = async (id) => {
+  const removeFromCart = async (productId) => {
     if (isUsingBackend && isAuthenticated) {
+      const item = cart.find(item => item.id === productId);
+      if (!item) return;
+
       try {
-        const item = cart.find(item => item.id === id);
-        if (item && item.cartProductId) {
-          await cartService.removeFromCart(item.cartProductId);
-          setCart(prev => prev.filter(item => item.id !== id));
-        }
+        await cartService.removeFromCart(item.cartProductId);
+        setCart(prev => prev.filter(i => i.id !== productId));
       } catch (error) {
         console.error("Error al eliminar del carrito (backend):", error);
-        fallbackToLocalStorage();
-        removeFromCartLocal(id);
       }
     } else {
-      removeFromCartLocal(id);
+      removeFromCartLocal(productId);
     }
   };
+
 
   const removeFromCartLocal = (id) => {
     setCart(prev => prev.filter(item => item.id !== id));
