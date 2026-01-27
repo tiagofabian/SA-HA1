@@ -62,11 +62,11 @@ const ManageContact = () => {
                 </p>
             </div>
 
-            <Card className="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                <CardHeader>
+            <Card className="bg-white rounded-xl shadow px-6 py-4 flex flex-col justify-between">
+                <CardHeader className="!px-4 !mb-3">
                     <CardTitle className="text-xl font-semibold">Mensajes de Contacto</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="!p-0">
                     {loading ? (
                         <div className="flex justify-center items-center py-12">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
