@@ -171,7 +171,7 @@ const ManageCategory = () => {
           {filteredCategories.map((category) => (
             <div
               key={category.id}
-              className="bg-white rounded-xl shadow p-4 flex justify-between items-center"
+              className="bg-white rounded-xl shadow px-6 py-4 flex justify-between items-center"
             >
               <div className="flex items-center gap-4">
                 {category.image && (
